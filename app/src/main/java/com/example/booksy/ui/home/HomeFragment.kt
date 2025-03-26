@@ -29,6 +29,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private val homeViewModel: HomeViewModel by viewModels()
 
+    private lateinit var bookAdapter: BookAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -38,6 +40,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
@@ -50,16 +53,23 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun setupRecyclerView() {
-        binding.booksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        bookAdapter = BookAdapter(emptyList()) { book ->
+            Toast.makeText(requireContext(), "Clicked ${book.title}", Toast.LENGTH_SHORT).show()
+        }
 
+        binding.booksRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = bookAdapter
+        }
     }
+
 
     private fun observeViewModel() {
         homeViewModel.books.observe(viewLifecycleOwner) { books ->
-
-            Toast.makeText(requireContext(), "Loaded ${books.size} books", Toast.LENGTH_SHORT).show()
+            bookAdapter.updateBooks(books)
 
             googleMap?.let { map ->
+                map.clear()
                 books.forEach { book ->
                     map.addMarker(
                         MarkerOptions()
@@ -74,6 +84,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
     }
+
 
     private fun setupToggle() {
         binding.toggleViewButton.setOnClickListener {

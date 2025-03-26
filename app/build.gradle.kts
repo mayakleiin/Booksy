@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.navigation.safeargs)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -61,11 +62,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 
+
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.storage.ktx)
+    implementation(libs.firebase.analytics)
 
 // Navigation
     implementation(libs.androidx.navigation.fragment.ktx)
@@ -96,3 +99,5 @@ dependencies {
 
 
 }
+
+apply(plugin = "com.google.gms.google-services")
