@@ -1,13 +1,16 @@
 package com.example.booksy.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.booksy.model.Book
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
-    private val firestore = FirebaseFirestore.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
     private val _books = MutableLiveData<List<Book>>()
     val books: LiveData<List<Book>> = _books
@@ -18,18 +21,17 @@ class HomeViewModel : ViewModel() {
     fun loadBooks() {
         _isLoading.value = true
 
-        firestore.collection("books")
+        db.collection("books")
             .get()
             .addOnSuccessListener { result ->
-                val booksList = result.documents.mapNotNull { doc ->
-                    doc.toObject(Book::class.java)
-                }
-                _books.value = booksList
+                val bookList = result.toObjects(Book::class.java)
+                _books.value = bookList
                 _isLoading.value = false
             }
             .addOnFailureListener {
+                _books.value = emptyList()
                 _isLoading.value = false
-
             }
     }
 }
+

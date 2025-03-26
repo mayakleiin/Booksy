@@ -4,20 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksy.databinding.FragmentHomeBinding
 import com.example.booksy.viewmodel.HomeViewModel
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-
-
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -28,7 +25,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private var googleMap: GoogleMap? = null
 
     private val homeViewModel: HomeViewModel by viewModels()
-
     private lateinit var bookAdapter: BookAdapter
 
     override fun onCreateView(
@@ -40,7 +36,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
@@ -53,16 +48,10 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun setupRecyclerView() {
-        bookAdapter = BookAdapter(emptyList()) { book ->
-            Toast.makeText(requireContext(), "Clicked ${book.title}", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.booksRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = bookAdapter
-        }
+        bookAdapter = BookAdapter(emptyList())
+        binding.booksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.booksRecyclerView.adapter = bookAdapter
     }
-
 
     private fun observeViewModel() {
         homeViewModel.books.observe(viewLifecycleOwner) { books ->
@@ -85,12 +74,11 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-
     private fun setupToggle() {
         binding.toggleViewButton.setOnClickListener {
-            val mapVisible = binding.mapView.visibility == View.VISIBLE
-            binding.mapView.visibility = if (mapVisible) View.GONE else View.VISIBLE
-            binding.booksRecyclerView.visibility = if (mapVisible) View.VISIBLE else View.GONE
+            val isMapVisible = binding.mapView.visibility == View.VISIBLE
+            binding.mapView.visibility = if (isMapVisible) View.GONE else View.VISIBLE
+            binding.booksRecyclerView.visibility = if (isMapVisible) View.VISIBLE else View.GONE
         }
     }
 
