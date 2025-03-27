@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Booksy"
 include(":app")
- 

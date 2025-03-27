@@ -6,13 +6,13 @@ data class Book(
     val author: String = "",
     val genre: String = "",
     val imageUrl: String = "",
-    val status: Status = Status.AVAILABLE,
+    val status: BookStatus = BookStatus.AVAILABLE,
     val ownerId: String = "",
-    val lat: Double = 0.0,
-    val lng: Double = 0.0
-) {
-    enum class Status {
-        AVAILABLE,
-        BORROWED
-    }
+    val lat: Double? = null,
+    val lng: Double? = null
+)
+
+enum class BookStatus {
+    AVAILABLE,
+    BORROWED
 }
