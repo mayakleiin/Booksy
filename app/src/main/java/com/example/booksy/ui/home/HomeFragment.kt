@@ -17,6 +17,7 @@ import com.example.booksy.R
 import com.example.booksy.databinding.FragmentHomeBinding
 import com.example.booksy.viewmodel.HomeViewModel
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
@@ -51,6 +52,10 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
+
+        binding.mapView.visibility = View.GONE
+        binding.booksRecyclerView.visibility = View.VISIBLE
+        binding.toggleViewButton.setImageResource(R.drawable.ic_map)
 
         setupRecyclerView()
         setupNearbyRecyclerView()
@@ -159,6 +164,12 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(map: GoogleMap) {
         MapsInitializer.initialize(requireContext())
         googleMap = map
+
+        homeViewModel.currentLocation?.let { location ->
+            val latLng = LatLng(location.latitude, location.longitude)
+            googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f)) // 17 זה רחוב ממש
+        }
+
     }
 
     override fun onResume() {

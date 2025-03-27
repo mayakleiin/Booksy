@@ -92,11 +92,13 @@ class AddBookFragment : Fragment() {
         val title = binding.titleEditText.text.toString().trim()
         val author = binding.authorEditText.text.toString().trim()
         val genre = binding.genreEditText.text.toString().trim()
+        val description = binding.descriptionEditText.text.toString().trim()
+        val language = binding.languageEditText.text.toString().trim()
+        val pages = binding.pagesEditText.text.toString().toIntOrNull() ?: 0
         val useCurrentLocation = binding.shareLocationCheckbox.isChecked
         val addressText = binding.addressEditText.text.toString().trim()
 
-
-        if (title.isEmpty() || author.isEmpty() || genre.isEmpty() || (!useCurrentLocation && addressText.isEmpty())) {
+        if (title.isEmpty() || author.isEmpty() || genre.isEmpty() || description.isEmpty() || language.isEmpty() || (!useCurrentLocation && addressText.isEmpty())) {
             Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
             return
         }
@@ -118,6 +120,9 @@ class AddBookFragment : Fragment() {
                 title = title,
                 author = author,
                 genre = genre,
+                description = description,
+                language = language,
+                pages = pages,
                 imageUrl = imageUrl,
                 status = BookStatus.AVAILABLE,
                 ownerId = FirebaseAuth.getInstance().uid ?: "user1",
@@ -138,7 +143,6 @@ class AddBookFragment : Fragment() {
                 }
         }
 
-
         if (imageUri != null) {
             val storageRef = FirebaseStorage.getInstance().getReference("book_images/$bookId.jpg")
             storageRef.putFile(imageUri!!)
@@ -151,10 +155,10 @@ class AddBookFragment : Fragment() {
                     Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
                 }
         } else {
-
             saveBookToFirestore("")
         }
     }
+
 
 
 }

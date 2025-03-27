@@ -20,7 +20,7 @@ class HomeViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private var currentLocation: Location? = null
+    var currentLocation: Location? = null
 
     private val _filterDistanceMeters = MutableLiveData(2000f)
     val filterDistanceMeters: LiveData<Float> = _filterDistanceMeters
