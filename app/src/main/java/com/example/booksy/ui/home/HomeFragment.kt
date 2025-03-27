@@ -60,11 +60,15 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             googleMap?.let { map ->
                 map.clear()
                 books.forEach { book ->
-                    map.addMarker(
-                        MarkerOptions()
-                            .position(LatLng(book.lat, book.lng))
-                            .title(book.title)
-                    )
+                    val lat = book.lat
+                    val lng = book.lng
+                    if (lat != null && lng != null) {
+                        map.addMarker(
+                            MarkerOptions()
+                                .position(LatLng(lat, lng))
+                                .title(book.title)
+                        )
+                    }
                 }
             }
         }
@@ -73,6 +77,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
     }
+
 
     private fun setupToggle() {
         binding.toggleViewButton.setOnClickListener {
