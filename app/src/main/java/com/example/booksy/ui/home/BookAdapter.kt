@@ -1,5 +1,6 @@
 package com.example.booksy.ui.home
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,6 +46,7 @@ class BookAdapter(private var books: List<Book>) : RecyclerView.Adapter<BookAdap
     }
 
     // function for updating the booklist from outside
+    @SuppressLint("NotifyDataSetChanged")
     fun updateBooks(newBooks: List<Book>) {
         books = newBooks
         notifyDataSetChanged()

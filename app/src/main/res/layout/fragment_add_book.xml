@@ -18,7 +18,7 @@
             android:layout_height="150dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_book_placeholder"
-            android:contentDescription="Book cover" />
+            android:contentDescription="@string/book_cover" />
 
         <Button
             android:id="@+id/selectImageButton"

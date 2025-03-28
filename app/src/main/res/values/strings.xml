@@ -25,4 +25,13 @@
     <string name="owner_name">Owner name</string>
     <string name="open_map">350m • Open map</string>
     <string name="ask">Ask</string>
+
+    <!-- Extra from main -->
+    <string name="book_image">Book cover</string>
+    <string name="find_a_book">Find a book</string>
+    <string name="toggle_view">Toggle view</string>
+    <string name="books_nearby">Books nearby: 0</string>
+    <string name="genre">Genre</string>
+    <string name="available">AVAILABLE</string>
 </resources>
+
