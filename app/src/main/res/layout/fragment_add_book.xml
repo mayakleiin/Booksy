@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,6 +13,7 @@
         android:gravity="center_horizontal"
         android:padding="16dp">
 
+        <!-- Book Image Upload -->
         <ImageView
             android:id="@+id/bookImageView"
             android:layout_width="150dp"
@@ -25,51 +27,123 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Upload Image"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/black" />
 
+        <!-- Title Input -->
         <EditText
             android:id="@+id/titleEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Book Title"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:background="@drawable/edittext_bg" />
 
+        <!-- Author Input -->
         <EditText
             android:id="@+id/authorEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Author"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:background="@drawable/edittext_bg" />
 
-        <EditText
-            android:id="@+id/genreEditText"
+        <!-- Genre Selection -->
+        <TextView
+            android:text="Genre"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"/>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/genreChipGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Genre"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            app:chipSpacing="8dp"
+            android:chipBackgroundColor="@color/white"
+            android:chipStrokeColor="@android:color/black"
+            android:chipStrokeWidth="1dp"
+            app:singleSelection="false" />
 
+        <!-- Language Selection -->
+        <TextView
+            android:text="Language"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"/>
 
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/languageChipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:chipSpacing="8dp"
+            android:chipBackgroundColor="@color/white"
+            android:chipStrokeColor="@android:color/black"
+            android:chipStrokeWidth="1dp"
+            app:singleSelection="false" />
+
+        <!-- Description Input -->
+        <EditText
+            android:id="@+id/descriptionEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description"
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:background="@drawable/edittext_bg"
+            android:inputType="textMultiLine" />
+
+        <!-- Pages Input -->
+        <EditText
+            android:id="@+id/pagesEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Number of Pages"
+            android:inputType="number"
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:background="@drawable/edittext_bg" />
+
+        <!-- Address Input (Visible if location is not shared) -->
         <EditText
             android:id="@+id/addressEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter address manually"
             android:layout_marginTop="8dp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:background="@drawable/edittext_bg" />
 
-
+        <!-- Share Location Checkbox -->
         <CheckBox
             android:id="@+id/shareLocationCheckbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Use current location"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black" />
 
+        <!-- Save Book Button -->
         <Button
             android:id="@+id/saveBookButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save Book"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/black"
             android:layout_marginTop="24dp" />
 
     </LinearLayout>

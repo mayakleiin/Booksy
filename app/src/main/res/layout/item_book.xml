@@ -53,6 +53,14 @@
                 android:textColor="#777" />
 
             <TextView
+                android:id="@+id/bookLanguage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/language"
+                android:textSize="14sp"
+                android:textColor="#777" />
+
+            <TextView
                 android:id="@+id/bookStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

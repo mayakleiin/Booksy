@@ -82,7 +82,10 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
 
     private fun setupRecyclerView() {
-        bookAdapter = BookAdapter(emptyList())
+        bookAdapter = BookAdapter(emptyList()) { book ->
+            val action = HomeFragmentDirections.actionHomeFragmentToBookDetailFragment(book.id)
+            findNavController().navigate(action)
+        }
         binding.booksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.booksRecyclerView.adapter = bookAdapter
     }
