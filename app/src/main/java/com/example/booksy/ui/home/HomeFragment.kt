@@ -23,6 +23,7 @@ import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import androidx.navigation.fragment.findNavController
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 

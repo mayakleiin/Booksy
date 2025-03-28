@@ -20,7 +20,8 @@
             android:layout_height="150dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_book_placeholder"
-            android:contentDescription="@string/book_cover" />
+            android:contentDescription="@string/book_cover_desc"
+            />
 
         <Button
             android:id="@+id/selectImageButton"
@@ -67,9 +68,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             app:chipSpacing="8dp"
-            android:chipBackgroundColor="@color/white"
-            android:chipStrokeColor="@android:color/black"
-            android:chipStrokeWidth="1dp"
+            app:chipBackgroundColor="@color/white"
+            app:chipStrokeColor="@android:color/black"
+            app:chipStrokeWidth="1dp"
             app:singleSelection="false" />
 
         <!-- Language Selection -->
@@ -86,9 +87,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             app:chipSpacing="8dp"
-            android:chipBackgroundColor="@color/white"
-            android:chipStrokeColor="@android:color/black"
-            android:chipStrokeWidth="1dp"
+            app:chipBackgroundColor="@color/white"
+            app:chipStrokeColor="@android:color/black"
+            app:chipStrokeWidth="1dp"
             app:singleSelection="false" />
 
         <!-- Description Input -->

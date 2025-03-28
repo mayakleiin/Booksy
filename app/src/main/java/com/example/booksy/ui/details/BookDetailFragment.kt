@@ -12,6 +12,10 @@ import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.booksy.databinding.FragmentBookDetailBinding
 import com.example.booksy.viewmodel.BookDetailViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import androidx.core.content.ContextCompat
+import com.example.booksy.R
 
 class BookDetailFragment : Fragment() {
 
@@ -48,17 +52,35 @@ class BookDetailFragment : Fragment() {
                 error(android.R.drawable.ic_delete)
             }
 
-            binding.borrowButton.setOnClickListener {
-                viewModel.requestToBorrow(book)
-            }
+            val userId = FirebaseAuth.getInstance().uid ?: return@observe
+
+            FirebaseFirestore.getInstance()
+                .collection("borrowRequests")
+                .whereEqualTo("bookId", book.id)
+                .whereEqualTo("requesterId", userId)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        binding.borrowButton.text = getString(R.string.request_sent)
+                        binding.borrowButton.isEnabled = false
+                        binding.borrowButton.setBackgroundColor(
+                            ContextCompat.getColor(requireContext(), android.R.color.darker_gray)
+                        )
+                    } else {
+                        binding.borrowButton.setOnClickListener {
+                            viewModel.requestToBorrow(book)
+                        }
+                    }
+                }
 
             binding.openMapButton.setOnClickListener {
                 val lat = book.lat
                 val lng = book.lng
                 if (lat == null || lng == null) return@setOnClickListener
                 val uri = Uri.parse("geo:$lat,$lng?q=$lat,$lng(Book Location)")
-                val intent = Intent(Intent.ACTION_VIEW, uri)
-                intent.setPackage("com.google.android.apps.maps")
+                val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                    setPackage("com.google.android.apps.maps")
+                }
                 if (intent.resolveActivity(requireActivity().packageManager) != null) {
                     startActivity(intent)
                 } else {
@@ -71,6 +93,7 @@ class BookDetailFragment : Fragment() {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
