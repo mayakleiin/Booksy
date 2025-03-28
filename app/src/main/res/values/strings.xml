@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">Booksy</string>
+    <string name="book_cover_desc">Book cover image</string>
+
+    <!-- Book info -->
+    <string name="book_title">Book Title</string>
+    <string name="author">Author</string>
+    <string name="request_to_borrow">Request to Borrow</string>
+    <string name="ask_from">Ask from</string>
+    <string name="about">About</string>
+    <string name="book_description">Book description goes here...</string>
+
+    <!-- Values -->
+    <string name="distance">350m</string>
+    <string name="pages">253</string>
+    <string name="language">Eng</string>
+    <string name="condition">New</string>
+
+    <!-- Tags -->
+    <string name="tag_existentialism">Existentialism</string>
+    <string name="tag_novel">Novel</string>
+    <string name="tag_philosophical">Philosophical novel</string>
+
+    <!-- Owner -->
+    <string name="owner_name">Owner name</string>
+    <string name="open_map">350m • Open map</string>
+    <string name="ask">Ask</string>
 </resources>

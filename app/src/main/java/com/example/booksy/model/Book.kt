@@ -9,8 +9,11 @@ data class Book(
     val status: BookStatus = BookStatus.AVAILABLE,
     val ownerId: String = "",
     val lat: Double? = null,
-    val lng: Double? = null
-)
+    val lng: Double? = null,
+    val pages: Int = 0,
+    val description: String = "",
+    val language: String = "",
+    )
 
 enum class BookStatus {
     AVAILABLE,

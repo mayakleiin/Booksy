@@ -25,9 +25,15 @@
         android:id="@+id/addBookFragment"
         android:name="com.example.booksy.ui.add.AddBookFragment"
         android:label="Add Book">
-
     </fragment>
 
-
+    <fragment
+        android:id="@+id/bookDetailFragment"
+        android:name="com.example.booksy.ui.details.BookDetailFragment"
+        android:label="Book Detail" >
+        <argument
+            android:name="bookId"
+            app:argType="string" />
+    </fragment>
 
 </navigation>
