@@ -2,9 +2,6 @@ package com.example.booksy.ui.add
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
@@ -18,16 +15,18 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.booksy.R
 import com.example.booksy.databinding.FragmentAddBookBinding
 import com.example.booksy.model.Book
 import com.example.booksy.model.BookStatus
+import com.example.booksy.model.Genre
+import com.example.booksy.model.Language
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import java.io.ByteArrayOutputStream
 import java.util.*
+
+
 
 class AddBookFragment : Fragment() {
 
@@ -35,7 +34,8 @@ class AddBookFragment : Fragment() {
     private var currentLat: Double? = null
     private var currentLng: Double? = null
     private var imageUri: Uri? = null
-
+    private val selectedGenres = mutableListOf<Genre>()
+    private val selectedLanguages = mutableListOf<Language>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -52,6 +52,50 @@ class AddBookFragment : Fragment() {
 
         binding.saveBookButton.setOnClickListener {
             uploadBook()
+        }
+
+        // Genre selection
+        Genre.values().forEach { genre ->
+            val chip = createChip(genre.name, selectedGenres.contains(genre))
+            chip.setOnClickListener {
+                if (selectedGenres.contains(genre)) {
+                    selectedGenres.remove(genre)
+                } else {
+                    selectedGenres.add(genre)
+                }
+                updateChips(binding.genreChipGroup, selectedGenres)
+            }
+            binding.genreChipGroup.addView(chip)
+        }
+
+        // Language selection
+        Language.values().forEach { lang ->
+            val chip = createChip(lang.name, selectedLanguages.contains(lang))
+            chip.setOnClickListener {
+                if (selectedLanguages.contains(lang)) {
+                    selectedLanguages.remove(lang)
+                } else {
+                    selectedLanguages.add(lang)
+                }
+                updateChips(binding.languageChipGroup, selectedLanguages)
+            }
+            binding.languageChipGroup.addView(chip)
+        }
+    }
+
+    private fun createChip(text: String, isChecked: Boolean): com.google.android.material.chip.Chip {
+        val chip = com.google.android.material.chip.Chip(requireContext())
+        chip.text = text
+        chip.isCheckable = true
+        chip.isChecked = isChecked
+        return chip
+    }
+
+    private fun updateChips(group: ViewGroup, selectedList: List<Enum<*>>) {
+        group.removeAllViews()
+        selectedList.forEach { item ->
+            val chip = createChip(item.name, true)
+            group.addView(chip)
         }
     }
 
@@ -91,12 +135,12 @@ class AddBookFragment : Fragment() {
     private fun uploadBook() {
         val title = binding.titleEditText.text.toString().trim()
         val author = binding.authorEditText.text.toString().trim()
-        val genre = binding.genreEditText.text.toString().trim()
+        val description = binding.descriptionEditText.text.toString().trim()
+        val pages = binding.pagesEditText.text.toString().toIntOrNull() ?: 0
         val useCurrentLocation = binding.shareLocationCheckbox.isChecked
         val addressText = binding.addressEditText.text.toString().trim()
 
-
-        if (title.isEmpty() || author.isEmpty() || genre.isEmpty() || (!useCurrentLocation && addressText.isEmpty())) {
+        if (title.isEmpty() || author.isEmpty() || description.isEmpty() || selectedGenres.isEmpty() || selectedLanguages.isEmpty() || (!useCurrentLocation && addressText.isEmpty())) {
             Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
             return
         }
@@ -117,13 +161,19 @@ class AddBookFragment : Fragment() {
                 id = bookId,
                 title = title,
                 author = author,
-                genre = genre,
+                genres = selectedGenres,
+                description = description,
+                languages = selectedLanguages,
+                pages = pages,
                 imageUrl = imageUrl,
                 status = BookStatus.AVAILABLE,
                 ownerId = FirebaseAuth.getInstance().uid ?: "user1",
                 lat = currentLat ?: 0.0,
                 lng = currentLng ?: 0.0
             )
+
+
+
 
             FirebaseFirestore.getInstance()
                 .collection("books")
@@ -138,7 +188,6 @@ class AddBookFragment : Fragment() {
                 }
         }
 
-
         if (imageUri != null) {
             val storageRef = FirebaseStorage.getInstance().getReference("book_images/$bookId.jpg")
             storageRef.putFile(imageUri!!)
@@ -151,10 +200,8 @@ class AddBookFragment : Fragment() {
                     Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
                 }
         } else {
-
             saveBookToFirestore("")
         }
     }
-
 
 }

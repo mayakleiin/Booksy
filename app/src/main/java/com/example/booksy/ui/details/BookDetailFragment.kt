@@ -38,8 +38,9 @@ class BookDetailFragment : Fragment() {
             binding.title.text = book.title
             binding.author.text = book.author
             binding.pages.text = book.pages.toString()
-            binding.language.text = book.genre
-            binding.about.text = "Description coming soon..."
+            binding.language.text = book.languages.joinToString(", ") { it.name }
+            binding.about.text = book.description
+            binding.bookGenre.text = book.genres.joinToString(", ") { it.name }
 
             binding.bookCover.load(book.imageUrl) {
                 crossfade(true)
@@ -56,9 +57,8 @@ class BookDetailFragment : Fragment() {
                 val lng = book.lng
                 if (lat == null || lng == null) return@setOnClickListener
                 val uri = Uri.parse("geo:$lat,$lng?q=$lat,$lng(Book Location)")
-                val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-                    setPackage("com.google.android.apps.maps")
-                }
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                intent.setPackage("com.google.android.apps.maps")
                 if (intent.resolveActivity(requireActivity().packageManager) != null) {
                     startActivity(intent)
                 } else {
