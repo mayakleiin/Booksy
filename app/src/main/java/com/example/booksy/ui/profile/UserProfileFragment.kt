@@ -57,5 +57,10 @@ class UserProfileFragment : Fragment() {
             val dialogFragment = EditProfileDialogFragment()
             dialogFragment.show(childFragmentManager, "EditProfileDialog")
         }
+
+        binding.logoutButton.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            findNavController().navigate(R.id.action_userProfileFragment_to_loginFragment)
+        }
     }
 }
