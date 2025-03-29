@@ -10,6 +10,7 @@
     <string name="ask_from">Ask from</string>
     <string name="about">About</string>
     <string name="book_description">Book description goes here...</string>
+    <string name="profile_picture">Profile picture</string>
 
     <!-- Values -->
     <string name="distance">350m</string>
@@ -34,6 +35,5 @@
     <string name="books_nearby">Books nearby: 0</string>
     <string name="genre">Genre</string>
     <string name="available">AVAILABLE</string>
-    <string name="filter" />
+    <string name="filter">Filter</string>
 </resources>
-

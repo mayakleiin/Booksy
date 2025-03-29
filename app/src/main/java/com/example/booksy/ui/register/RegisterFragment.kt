@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentRegisterBinding
-import com.google.firebase.auth.FirebaseAuth
-import com.example.booksy.model.User
+import com.example.booksy.viewmodel.AuthViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterFragment : Fragment() {
@@ -18,54 +19,65 @@ class RegisterFragment : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var auth: FirebaseAuth
+    private lateinit var authViewModel: AuthViewModel
+    private lateinit var loadingOverlay: FrameLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRegisterBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        auth = FirebaseAuth.getInstance()
+        authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
+
+        loadingOverlay = view.findViewById(R.id.loadingOverlay)
+
+        authViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            loadingOverlay.visibility = if (loading) View.VISIBLE else View.GONE
+        }
 
         binding.registerButton.setOnClickListener {
-            val name = binding.nameEditText.text.toString().trim()
+            val fullName = binding.nameEditText.text.toString().trim()
             val email = binding.emailEditText.text.toString().trim()
             val password = binding.passwordEditText.text.toString().trim()
 
-            if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-                auth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val userId = auth.currentUser?.uid ?: return@addOnCompleteListener
-                            val newUser = User(uid = userId, name = name, email = email)
-
+            if (fullName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+                authViewModel.register(email, password,
+                    onSuccess = {
+                        val uid = authViewModel.getCurrentUserId()
+                        if (uid != null) {
+                            val userMap = hashMapOf(
+                                "name" to fullName,
+                                "email" to email,
+                                "imageUrl" to ""
+                            )
                             FirebaseFirestore.getInstance()
                                 .collection("users")
-                                .document(userId)
-                                .set(newUser)
+                                .document(uid)
+                                .set(userMap)
                                 .addOnSuccessListener {
-                                    Toast.makeText(requireContext(), "Welcome $name!", Toast.LENGTH_SHORT).show()
-                                    findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+                                    Toast.makeText(requireContext(), "Welcome!", Toast.LENGTH_SHORT).show()
+                                    findNavController().navigate(R.id.action_registerFragment_to_userProfileFragment)
                                 }
                                 .addOnFailureListener {
-                                    Toast.makeText(requireContext(), "Failed to save user: ${it.message}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(requireContext(), "Failed saving user info", Toast.LENGTH_LONG).show()
                                 }
-
-                        } else {
-                            Toast.makeText(requireContext(), "Registration failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                         }
+                    },
+                    onError = { error ->
+                        Toast.makeText(requireContext(), "Register failed: $error", Toast.LENGTH_LONG).show()
                     }
+                )
             } else {
                 Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.goToLoginButton.setOnClickListener {
-            findNavController().navigate(R.id.action_registerFragment_to_userProfileFragment)
+            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
     }
 

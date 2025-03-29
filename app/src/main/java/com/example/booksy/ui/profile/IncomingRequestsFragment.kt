@@ -13,25 +13,29 @@ import com.example.booksy.model.RequestStatus
 import com.example.booksy.model.RequestedBook
 import com.example.booksy.viewmodel.UserProfileViewModel
 import com.google.firebase.firestore.FirebaseFirestore
+import androidx.navigation.fragment.findNavController
+import com.example.booksy.R
+import com.google.firebase.auth.FirebaseAuth
 
 class IncomingRequestsFragment : Fragment() {
-
     private var _binding: FragmentIncomingRequestsBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var viewModel: UserProfileViewModel
     private lateinit var adapter: RequestedBookAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentIncomingRequestsBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity())[UserProfileViewModel::class.java]
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            findNavController().navigate(R.id.loginFragment)
+            return
+        }
+
         adapter = RequestedBookAdapter(
             requestedBooks = emptyList(),
             isIncomingRequest = true,
@@ -45,6 +49,7 @@ class IncomingRequestsFragment : Fragment() {
 
         viewModel.incomingRequests.observe(viewLifecycleOwner) {
             adapter.updateData(it)
+            binding.emptyIncomingRequestsMessage.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
         }
 
         viewModel.toastMessage.observe(viewLifecycleOwner) {
@@ -74,3 +79,6 @@ class IncomingRequestsFragment : Fragment() {
         _binding = null
     }
 }
+
+// Additional fragments should follow a similar cleanup strategy
+// Let me know if you want me to continue and clean the rest (MyRequests, UserBooks, UserProfile)!

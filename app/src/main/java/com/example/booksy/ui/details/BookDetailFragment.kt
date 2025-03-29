@@ -7,15 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import coil.load
+import com.example.booksy.R
 import com.example.booksy.databinding.FragmentBookDetailBinding
 import com.example.booksy.viewmodel.BookDetailViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import androidx.core.content.ContextCompat
-import com.example.booksy.R
 
 class BookDetailFragment : Fragment() {
 
@@ -24,7 +25,8 @@ class BookDetailFragment : Fragment() {
     private lateinit var viewModel: BookDetailViewModel
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentBookDetailBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(
@@ -35,6 +37,12 @@ class BookDetailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            findNavController().navigate(R.id.loginFragment)
+            return
+        }
+
         val bookId = arguments?.getString("bookId") ?: return
         viewModel.loadBookDetails(bookId)
 
@@ -52,31 +60,57 @@ class BookDetailFragment : Fragment() {
                 error(android.R.drawable.ic_delete)
             }
 
-            val userId = FirebaseAuth.getInstance().uid ?: return@observe
+            val userId = currentUser.uid
 
-            FirebaseFirestore.getInstance()
-                .collection("borrowRequests")
-                .whereEqualTo("bookId", book.id)
-                .whereEqualTo("requesterId", userId)
-                .get()
-                .addOnSuccessListener { documents ->
-                    if (!documents.isEmpty) {
-                        binding.borrowButton.text = getString(R.string.request_sent)
-                        binding.borrowButton.isEnabled = false
-                        binding.borrowButton.setBackgroundColor(
-                            ContextCompat.getColor(requireContext(), android.R.color.darker_gray)
-                        )
-                    } else {
-                        binding.borrowButton.setOnClickListener {
-                            viewModel.requestToBorrow(book)
-                        }
-                    }
+            if (book.ownerId == userId) {
+                binding.editButton.visibility = View.VISIBLE
+                binding.deleteButton.visibility = View.VISIBLE
+                binding.borrowButton.visibility = View.GONE
+
+                binding.editButton.setOnClickListener {
+                    val action = BookDetailFragmentDirections.actionBookDetailFragmentToAddBookFragment(book)
+                    findNavController().navigate(action)
                 }
 
+                binding.deleteButton.setOnClickListener {
+                    FirebaseFirestore.getInstance()
+                        .collection("books").document(book.id).delete()
+                        .addOnSuccessListener {
+                            Toast.makeText(requireContext(), "Book deleted", Toast.LENGTH_SHORT).show()
+                            findNavController().navigateUp()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(requireContext(), "Failed to delete book", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            } else {
+                FirebaseFirestore.getInstance()
+                    .collection("borrowRequests")
+                    .whereEqualTo("bookId", book.id)
+                    .whereEqualTo("requesterId", userId)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        if (!documents.isEmpty) {
+                            binding.borrowButton.text = getString(R.string.request_sent)
+                            binding.borrowButton.isEnabled = false
+                            binding.borrowButton.setBackgroundColor(
+                                ContextCompat.getColor(requireContext(), android.R.color.darker_gray)
+                            )
+                        } else {
+                            binding.borrowButton.setOnClickListener {
+                                viewModel.requestToBorrow(book)
+                            }
+                        }
+                    }
+
+                binding.editButton.visibility = View.GONE
+                binding.deleteButton.visibility = View.GONE
+                binding.borrowButton.visibility = View.VISIBLE
+            }
+
             binding.openMapButton.setOnClickListener {
-                val lat = book.lat
-                val lng = book.lng
-                if (lat == null || lng == null) return@setOnClickListener
+                val lat = book.lat ?: return@setOnClickListener
+                val lng = book.lng ?: return@setOnClickListener
                 val uri = Uri.parse("geo:$lat,$lng?q=$lat,$lng(Book Location)")
                 val intent = Intent(Intent.ACTION_VIEW, uri).apply {
                     setPackage("com.google.android.apps.maps")
@@ -93,7 +127,6 @@ class BookDetailFragment : Fragment() {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

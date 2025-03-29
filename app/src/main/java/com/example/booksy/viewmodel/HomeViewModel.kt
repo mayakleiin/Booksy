@@ -11,7 +11,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 class HomeViewModel : ViewModel() {
 
     private val db = FirebaseFirestore.getInstance()
-
     private var allBooks: List<Book> = emptyList()
 
     private val _books = MutableLiveData<List<Book>>()
@@ -36,7 +35,6 @@ class HomeViewModel : ViewModel() {
         calculateNearbyBooks()
     }
 
-
     private fun filterBooks() {
         val location = currentLocation
         val maxDistanceMeters = currentFilters.maxDistanceKm * 1000
@@ -51,17 +49,13 @@ class HomeViewModel : ViewModel() {
                     longitude = book.lng
                 }
                 location.distanceTo(bookLocation) <= maxDistanceMeters
-            } else {
-                // אם אין מיקום, פשוט תאפשר כניסה במקום לפסול
-                true
-            }
+            } else true
 
             matchesGenre && matchesLanguage && distanceOk
         }
 
         _books.value = filtered
     }
-
 
     fun setFilterDistance(distance: Float) {
         _filterDistanceMeters.value = distance
@@ -105,7 +99,7 @@ class HomeViewModel : ViewModel() {
                 Pair(book, distance)
             } else null
         }.sortedBy { it.second }
-            .filter { it.second <= (_filterDistanceMeters.value ?: 10f) }
+            .filter { it.second <= (_filterDistanceMeters.value ?: 2000f) }
 
         _nearbyBooks.value = nearby
     }

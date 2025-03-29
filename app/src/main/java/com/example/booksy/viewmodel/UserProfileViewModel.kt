@@ -3,12 +3,9 @@ package com.example.booksy.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.booksy.model.Book
-import com.example.booksy.model.User
+import com.example.booksy.model.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.booksy.model.Request
-import com.example.booksy.model.RequestedBook
 
 class UserProfileViewModel : ViewModel() {
 
@@ -21,15 +18,11 @@ class UserProfileViewModel : ViewModel() {
     private val _userBooks = MutableLiveData<List<Book>>()
     val userBooks: LiveData<List<Book>> get() = _userBooks
 
-    private val _myRequests = MutableLiveData<List<Request>>()
-    val myRequests: LiveData<List<Request>> get() = _myRequests
-
     private val _requestedBooks = MutableLiveData<List<RequestedBook>>()
     val requestedBooks: LiveData<List<RequestedBook>> get() = _requestedBooks
 
     private val _incomingRequests = MutableLiveData<List<RequestedBook>>()
     val incomingRequests: LiveData<List<RequestedBook>> get() = _incomingRequests
-
 
     fun loadCurrentUser() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -65,21 +58,6 @@ class UserProfileViewModel : ViewModel() {
             }
     }
 
-    fun loadMyRequests() {
-        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        FirebaseFirestore.getInstance()
-            .collection("requests")
-            .whereEqualTo("fromUserId", currentUserId)
-            .get()
-            .addOnSuccessListener { result ->
-                val requests = result.toObjects(Request::class.java)
-                _myRequests.postValue(requests)
-            }
-            .addOnFailureListener {
-                _toastMessage.postValue("Failed to load requests: ${it.message}")
-            }
-    }
-
     fun loadRequestedBooks() {
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val db = FirebaseFirestore.getInstance()
@@ -89,8 +67,6 @@ class UserProfileViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { requestDocs ->
                 val requests = requestDocs.toObjects(Request::class.java)
-
-                // Check if there are no requests
                 if (requests.isEmpty()) {
                     _requestedBooks.postValue(emptyList())
                     return@addOnSuccessListener
@@ -152,5 +128,21 @@ class UserProfileViewModel : ViewModel() {
             }
     }
 
+    fun updateUserProfile(newName: String, newImageUrl: String?) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val updates = hashMapOf<String, Any>("name" to newName)
+        newImageUrl?.let { updates["imageUrl"] = it }
 
+        FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(uid)
+            .update(updates)
+            .addOnSuccessListener {
+                loadCurrentUser()
+                _toastMessage.value = "Profile updated successfully"
+            }
+            .addOnFailureListener {
+                _toastMessage.value = "Failed to update profile"
+            }
+    }
 }

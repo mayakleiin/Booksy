@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.booksy.R
 import com.example.booksy.databinding.FragmentAddBookBinding
 import com.example.booksy.model.Book
 import com.example.booksy.model.BookStatus
@@ -25,8 +26,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.util.*
-
-
 
 class AddBookFragment : Fragment() {
 
@@ -45,6 +44,12 @@ class AddBookFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            findNavController().navigate(R.id.loginFragment)
+            return
+        }
+
         binding.shareLocationCheckbox.setOnCheckedChangeListener { _, isChecked ->
             binding.addressEditText.isVisible = !isChecked
             if (isChecked) requestLocation()
@@ -56,7 +61,7 @@ class AddBookFragment : Fragment() {
 
         // Genre selection
         Genre.values().forEach { genre ->
-            val chip = createChip(genre.name, selectedGenres.contains(genre))
+            val chip = createChip(genre.displayName, selectedGenres.contains(genre))
             chip.setOnClickListener {
                 if (selectedGenres.contains(genre)) {
                     selectedGenres.remove(genre)
@@ -70,7 +75,7 @@ class AddBookFragment : Fragment() {
 
         // Language selection
         Language.values().forEach { lang ->
-            val chip = createChip(lang.name, selectedLanguages.contains(lang))
+            val chip = createChip(lang.displayName, selectedLanguages.contains(lang))
             chip.setOnClickListener {
                 if (selectedLanguages.contains(lang)) {
                     selectedLanguages.remove(lang)
@@ -94,7 +99,12 @@ class AddBookFragment : Fragment() {
     private fun updateChips(group: ViewGroup, selectedList: List<Enum<*>>) {
         group.removeAllViews()
         selectedList.forEach { item ->
-            val chip = createChip(item.name, true)
+            val chip = createChip(
+                if (item is Genre) item.displayName
+                else if (item is Language) item.displayName
+                else item.name,
+                true
+            )
             group.addView(chip)
         }
     }
@@ -172,9 +182,6 @@ class AddBookFragment : Fragment() {
                 lng = currentLng ?: 0.0
             )
 
-
-
-
             FirebaseFirestore.getInstance()
                 .collection("books")
                 .document(bookId)
@@ -203,5 +210,4 @@ class AddBookFragment : Fragment() {
             saveBookToFirestore("")
         }
     }
-
 }
