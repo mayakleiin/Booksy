@@ -54,6 +54,7 @@ class MyRequestsFragment : Fragment() {
 
         viewModel.requestedBooks.observe(viewLifecycleOwner) {
             adapter.updateData(it)
+            binding.emptyMyRequestsMessage.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
         }
 
         viewModel.toastMessage.observe(viewLifecycleOwner) {
