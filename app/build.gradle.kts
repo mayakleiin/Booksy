@@ -111,4 +111,7 @@ dependencies {
     implementation(libs.material.v1100)
 
     implementation(libs.picasso)
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 }
