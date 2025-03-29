@@ -10,6 +10,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.example.booksy.model.User
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterFragment : Fragment() {
 
@@ -38,8 +40,21 @@ class RegisterFragment : Fragment() {
                 auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            Toast.makeText(requireContext(), "Welcome $name!", Toast.LENGTH_SHORT).show()
-                            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+                            val userId = auth.currentUser?.uid ?: return@addOnCompleteListener
+                            val newUser = User(uid = userId, name = name, email = email)
+
+                            FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(userId)
+                                .set(newUser)
+                                .addOnSuccessListener {
+                                    Toast.makeText(requireContext(), "Welcome $name!", Toast.LENGTH_SHORT).show()
+                                    findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(requireContext(), "Failed to save user: ${it.message}", Toast.LENGTH_SHORT).show()
+                                }
+
                         } else {
                             Toast.makeText(requireContext(), "Registration failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                         }
@@ -50,7 +65,7 @@ class RegisterFragment : Fragment() {
         }
 
         binding.goToLoginButton.setOnClickListener {
-            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+            findNavController().navigate(R.id.action_registerFragment_to_userProfileFragment)
         }
     }
 
