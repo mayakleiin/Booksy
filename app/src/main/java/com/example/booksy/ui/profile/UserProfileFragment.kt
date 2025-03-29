@@ -9,13 +9,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.booksy.databinding.FragmentUserProfileBinding
+import com.example.booksy.ui.home.BookAdapter
 import com.example.booksy.viewmodel.UserProfileViewModel
+import com.google.android.material.tabs.TabLayoutMediator
+
 
 class UserProfileFragment : Fragment() {
 
     private var _binding: FragmentUserProfileBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: UserProfileViewModel
+    private lateinit var bookAdapter: BookAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -36,10 +40,17 @@ class UserProfileFragment : Fragment() {
         }
 
         viewModel.loadCurrentUser()
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        val adapter = UserProfilePagerAdapter(this)
+        binding.viewPager.adapter = adapter
+
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> "My Books"
+                1 -> "My Requests"
+                2 -> "Incoming Requests"
+                else -> ""
+            }
+        }.attach()
     }
 }

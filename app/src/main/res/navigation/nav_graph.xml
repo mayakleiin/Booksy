@@ -20,10 +20,16 @@
         android:id="@+id/registerFragment"
         android:name="com.example.booksy.ui.register.RegisterFragment"
         android:label="Register">
+
         <action
             android:id="@+id/action_registerFragment_to_userProfileFragment"
             app:destination="@id/userProfileFragment" />
+
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
+
 
     <fragment
         android:id="@+id/addBookFragment"
