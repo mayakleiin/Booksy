@@ -47,7 +47,6 @@
             android:text="Logout"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp" />
-
     </LinearLayout>
 
     <!-- Tabs -->

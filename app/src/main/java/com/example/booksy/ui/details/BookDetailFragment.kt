@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -24,7 +25,8 @@ class BookDetailFragment : Fragment() {
     private lateinit var viewModel: BookDetailViewModel
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentBookDetailBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(
@@ -35,7 +37,6 @@ class BookDetailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             findNavController().navigate(R.id.loginFragment)
@@ -83,12 +84,28 @@ class BookDetailFragment : Fragment() {
                         }
                 }
             } else {
+                FirebaseFirestore.getInstance()
+                    .collection("borrowRequests")
+                    .whereEqualTo("bookId", book.id)
+                    .whereEqualTo("requesterId", userId)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        if (!documents.isEmpty) {
+                            binding.borrowButton.text = getString(R.string.request_sent)
+                            binding.borrowButton.isEnabled = false
+                            binding.borrowButton.setBackgroundColor(
+                                ContextCompat.getColor(requireContext(), android.R.color.darker_gray)
+                            )
+                        } else {
+                            binding.borrowButton.setOnClickListener {
+                                viewModel.requestToBorrow(book)
+                            }
+                        }
+                    }
+
                 binding.editButton.visibility = View.GONE
                 binding.deleteButton.visibility = View.GONE
                 binding.borrowButton.visibility = View.VISIBLE
-                binding.borrowButton.setOnClickListener {
-                    viewModel.requestToBorrow(book)
-                }
             }
 
             binding.openMapButton.setOnClickListener {

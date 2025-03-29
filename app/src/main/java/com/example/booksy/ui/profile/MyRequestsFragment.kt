@@ -7,15 +7,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.booksy.R
 import com.example.booksy.databinding.FragmentMyRequestsBinding
 import com.example.booksy.model.RequestedBook
 import com.example.booksy.viewmodel.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import androidx.navigation.fragment.findNavController
-import com.example.booksy.R
-
 
 class MyRequestsFragment : Fragment() {
 
@@ -25,10 +24,7 @@ class MyRequestsFragment : Fragment() {
     private lateinit var viewModel: UserProfileViewModel
     private lateinit var adapter: RequestedBookAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMyRequestsBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity())[UserProfileViewModel::class.java]
         return binding.root

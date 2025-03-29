@@ -36,7 +36,6 @@
             android:name="bookToEdit"
             app:argType="com.example.booksy.model.Book"
             app:nullable="true" />
-
         <action
             android:id="@+id/action_addBookFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
@@ -51,7 +50,6 @@
             app:destination="@id/bookDetailFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left" />
-
         <action
             android:id="@+id/action_homeFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
@@ -64,11 +62,9 @@
         <argument
             android:name="bookId"
             app:argType="string" />
-
         <action
             android:id="@+id/action_bookDetailFragment_to_addBookFragment"
             app:destination="@id/addBookFragment" />
-
         <action
             android:id="@+id/action_bookDetailFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
@@ -90,13 +86,11 @@
         <action
             android:id="@+id/action_userBooksFragment_to_addBookFragment"
             app:destination="@id/addBookFragment" />
-
         <action
             android:id="@+id/action_userBooksFragment_to_bookDetailFragment"
             app:destination="@id/bookDetailFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left" />
-
         <action
             android:id="@+id/action_userBooksFragment_to_loginFragment"
             app:destination="@id/loginFragment" />

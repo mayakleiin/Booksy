@@ -1,4 +1,3 @@
-
 package com.example.booksy.ui.home
 
 import android.annotation.SuppressLint
@@ -49,12 +48,10 @@ class BookAdapter(
                 binding.bookImage.setImageResource(R.drawable.ic_book_placeholder)
             }
 
-            // When user clicks the whole card
             binding.root.setOnClickListener {
                 onItemClick(book)
             }
 
-            // Show or hide Edit button based on context
             if (onEditClick != null) {
                 binding.editButton.visibility = View.VISIBLE
                 binding.editButton.setOnClickListener {

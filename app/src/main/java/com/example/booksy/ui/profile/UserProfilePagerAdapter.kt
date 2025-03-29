@@ -16,3 +16,5 @@ class UserProfilePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragmen
         }
     }
 }
+
+

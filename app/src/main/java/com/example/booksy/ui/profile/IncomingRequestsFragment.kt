@@ -18,17 +18,12 @@ import com.example.booksy.R
 import com.google.firebase.auth.FirebaseAuth
 
 class IncomingRequestsFragment : Fragment() {
-
     private var _binding: FragmentIncomingRequestsBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var viewModel: UserProfileViewModel
     private lateinit var adapter: RequestedBookAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentIncomingRequestsBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity())[UserProfileViewModel::class.java]
         return binding.root
@@ -84,3 +79,6 @@ class IncomingRequestsFragment : Fragment() {
         _binding = null
     }
 }
+
+// Additional fragments should follow a similar cleanup strategy
+// Let me know if you want me to continue and clean the rest (MyRequests, UserBooks, UserProfile)!
