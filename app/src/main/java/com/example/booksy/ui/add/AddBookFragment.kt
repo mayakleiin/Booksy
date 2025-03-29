@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -30,6 +31,8 @@ import java.util.*
 class AddBookFragment : Fragment() {
 
     private lateinit var binding: FragmentAddBookBinding
+    private lateinit var loadingOverlay: FrameLayout
+
     private var currentLat: Double? = null
     private var currentLng: Double? = null
     private var imageUri: Uri? = null
@@ -49,6 +52,8 @@ class AddBookFragment : Fragment() {
             findNavController().navigate(R.id.loginFragment)
             return
         }
+
+        loadingOverlay = view.findViewById(R.id.loadingOverlay)
 
         binding.shareLocationCheckbox.setOnCheckedChangeListener { _, isChecked ->
             binding.addressEditText.isVisible = !isChecked
@@ -150,10 +155,15 @@ class AddBookFragment : Fragment() {
         val useCurrentLocation = binding.shareLocationCheckbox.isChecked
         val addressText = binding.addressEditText.text.toString().trim()
 
-        if (title.isEmpty() || author.isEmpty() || description.isEmpty() || selectedGenres.isEmpty() || selectedLanguages.isEmpty() || (!useCurrentLocation && addressText.isEmpty())) {
+        if (title.isEmpty() || author.isEmpty() || description.isEmpty()
+            || selectedGenres.isEmpty() || selectedLanguages.isEmpty()
+            || (!useCurrentLocation && addressText.isEmpty())
+        ) {
             Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
             return
         }
+
+        showLoading(true)
 
         if (!useCurrentLocation) {
             val geocoder = Geocoder(requireContext(), Locale.getDefault())
@@ -187,10 +197,12 @@ class AddBookFragment : Fragment() {
                 .document(bookId)
                 .set(book)
                 .addOnSuccessListener {
+                    showLoading(false)
                     Toast.makeText(requireContext(), "Book saved successfully", Toast.LENGTH_SHORT).show()
                     findNavController().navigateUp()
                 }
                 .addOnFailureListener {
+                    showLoading(false)
                     Toast.makeText(requireContext(), "Failed to save book", Toast.LENGTH_SHORT).show()
                 }
         }
@@ -204,10 +216,15 @@ class AddBookFragment : Fragment() {
                     }
                 }
                 .addOnFailureListener {
+                    showLoading(false)
                     Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
                 }
         } else {
             saveBookToFirestore("")
         }
+    }
+
+    private fun showLoading(show: Boolean) {
+        loadingOverlay.visibility = if (show) View.VISIBLE else View.GONE
     }
 }
