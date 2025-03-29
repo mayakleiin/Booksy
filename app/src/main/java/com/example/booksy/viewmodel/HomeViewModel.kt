@@ -7,6 +7,13 @@ import androidx.lifecycle.ViewModel
 import com.example.booksy.model.Book
 import com.example.booksy.model.BookFilters
 import com.google.firebase.firestore.FirebaseFirestore
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import com.example.booksy.data.FirestoreBookPagingSource
+
+
 
 class HomeViewModel : ViewModel() {
 
@@ -56,6 +63,16 @@ class HomeViewModel : ViewModel() {
 
         _books.value = filtered
     }
+
+    fun getPagedBooks(): Flow<PagingData<Book>> {
+        val baseQuery = db.collection("books").orderBy("title")
+
+        return Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = { FirestoreBookPagingSource(baseQuery) }
+        ).flow
+    }
+
 
     fun setFilterDistance(distance: Float) {
         _filterDistanceMeters.value = distance

@@ -1,10 +1,11 @@
 package com.example.booksy.ui.home
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.booksy.R
@@ -13,10 +14,9 @@ import com.example.booksy.model.Book
 import com.example.booksy.model.BookStatus
 
 class BookAdapter(
-    private var books: List<Book>,
     private val onItemClick: (Book) -> Unit,
     private val onEditClick: ((Book) -> Unit)? = null
-) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
+) : PagingDataAdapter<Book, BookAdapter.BookViewHolder>(BookDiffCallback()) {
 
     inner class BookViewHolder(private val binding: ItemBookBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -68,15 +68,20 @@ class BookAdapter(
         return BookViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = books.size
-
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
-        holder.bind(books[position])
+        val book = getItem(position)
+        if (book != null) {
+            holder.bind(book)
+        }
+    }
+}
+
+class BookDiffCallback : DiffUtil.ItemCallback<Book>() {
+    override fun areItemsTheSame(oldItem: Book, newItem: Book): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateBooks(newBooks: List<Book>) {
-        books = newBooks
-        notifyDataSetChanged()
+    override fun areContentsTheSame(oldItem: Book, newItem: Book): Boolean {
+        return oldItem == newItem
     }
 }

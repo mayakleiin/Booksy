@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksy.R
@@ -28,6 +29,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -75,7 +78,9 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         observeViewModel()
         setupToggle()
         requestCurrentLocation()
-        homeViewModel.loadBooks()
+
+        // לא קוראים יותר ל־loadBooks – Paging דואג לזה
+        // homeViewModel.loadBooks()
     }
 
     private fun requestCurrentLocation() {
@@ -98,14 +103,24 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private fun setupRecyclerView() {
         bookAdapter = BookAdapter(
-            books = emptyList(),
             onItemClick = { book ->
                 val action = HomeFragmentDirections.actionHomeFragmentToBookDetailFragment(book.id)
                 findNavController().navigate(action)
             }
         )
+
         binding.booksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.booksRecyclerView.adapter = bookAdapter
+
+        collectPagingData()
+    }
+
+    private fun collectPagingData() {
+        lifecycleScope.launch {
+            homeViewModel.getPagedBooks().collectLatest { pagingData ->
+                bookAdapter.submitData(pagingData)
+            }
+        }
     }
 
     private fun setupNearbyRecyclerView() {
@@ -121,8 +136,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     @SuppressLint("SetTextI18n")
     private fun observeViewModel() {
         homeViewModel.books.observe(viewLifecycleOwner) { books ->
-            bookAdapter.updateBooks(books)
-
             val nearbyBooks = books.filter {
                 it.lat != null && it.lng != null &&
                         calculateDistance(it.lat, it.lng) <= defaultNearbyDistanceMeters
@@ -186,6 +199,5 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         if (::mapView.isInitialized) {
             mapView.onDestroy()
         }
-
     }
 }
