@@ -1,79 +1,70 @@
-package com.example.booksy.ui.register
+package com.example.booksy.ui.profile
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import coil.load
 import com.example.booksy.R
-import com.example.booksy.databinding.FragmentRegisterBinding
-import com.example.booksy.viewmodel.AuthViewModel
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.booksy.databinding.FragmentUserProfileBinding
+import com.example.booksy.viewmodel.UserProfileViewModel
+import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.auth.FirebaseAuth
 
-class RegisterFragment : Fragment() {
+class UserProfileFragment : Fragment() {
 
-    private var _binding: FragmentRegisterBinding? = null
+    private var _binding: FragmentUserProfileBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var authViewModel: AuthViewModel
-    private lateinit var loadingOverlay: FrameLayout
+    private lateinit var viewModel: UserProfileViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentRegisterBinding.inflate(inflater, container, false)
+        _binding = FragmentUserProfileBinding.inflate(inflater, container, false)
+        viewModel = ViewModelProvider(this)[UserProfileViewModel::class.java]
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
-        loadingOverlay = view.findViewById(R.id.loadingOverlay)
-
-        authViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
-            loadingOverlay.visibility = if (loading) View.VISIBLE else View.GONE
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            findNavController().navigate(R.id.loginFragment)
+            return
         }
 
-        binding.registerButton.setOnClickListener {
-            val fullName = binding.nameEditText.text.toString().trim()
-            val email = binding.emailEditText.text.toString().trim()
-            val password = binding.passwordEditText.text.toString().trim()
+        viewModel.user.observe(viewLifecycleOwner) { user ->
+            binding.userName.text = user.name
+            binding.userImage.load(user.imageUrl)
+        }
 
-            if (fullName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-                authViewModel.register(email, password,
-                    onSuccess = {
-                        val uid = authViewModel.getCurrentUserId()
-                        if (uid != null) {
-                            val userMap = hashMapOf(
-                                "name" to fullName,
-                                "email" to email,
-                                "imageUrl" to ""
-                            )
-                            FirebaseFirestore.getInstance()
-                                .collection("users")
-                                .document(uid)
-                                .set(userMap)
-                                .addOnSuccessListener {
-                                    Toast.makeText(requireContext(), "Welcome!", Toast.LENGTH_SHORT).show()
-                                    findNavController().navigate(R.id.action_registerFragment_to_userProfileFragment)
-                                }
-                                .addOnFailureListener {
-                                    Toast.makeText(requireContext(), "Failed saving user info", Toast.LENGTH_LONG).show()
-                                }
-                        }
-                    },
-                    onError = { error ->
-                        Toast.makeText(requireContext(), "Register failed: $error", Toast.LENGTH_LONG).show()
-                    }
-                )
-            } else {
-                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
+        viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
+
+        viewModel.loadCurrentUser()
+
+        val adapter = UserProfilePagerAdapter(this)
+        binding.viewPager.adapter = adapter
+
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> "My Books"
+                1 -> "My Requests"
+                2 -> "Incoming Requests"
+                else -> ""
             }
+        }.attach()
+
+        binding.editProfileButton.setOnClickListener {
+            val dialogFragment = EditProfileDialogFragment()
+            dialogFragment.show(childFragmentManager, "EditProfileDialog")
         }
 
-        binding.goToLoginButton.setOnClickListener {
-            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+        binding.logoutButton.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            findNavController().navigate(R.id.action_userProfileFragment_to_loginFragment)
         }
     }
 
