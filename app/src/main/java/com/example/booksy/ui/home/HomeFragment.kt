@@ -180,6 +180,9 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        mapView.onDestroy()
+        if (::mapView.isInitialized) {
+            mapView.onDestroy()
+        }
+
     }
 }
