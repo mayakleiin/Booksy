@@ -65,7 +65,7 @@ class RegisterFragment : Fragment() {
         }
 
         binding.goToLoginButton.setOnClickListener {
-            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+            findNavController().navigate(R.id.action_registerFragment_to_userProfileFragment)
         }
     }
 
