@@ -15,6 +15,8 @@ coreKtx = "1.15.0"
 lifecycleRuntimeKtx = "2.8.7"
 lifecycleViewmodelKtx = "2.8.7"
 lifecycleLivedataKtx = "2.8.7"
+materialVersion = "1.10.0"
+picasso = "2.71828"
 viewmodelCompose = "2.8.7"
 
 # Navigation
@@ -83,6 +85,8 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRunt
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 
 # Maps
+material-v1100 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
+picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 android-maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtils" }
 play-services-places = { module = "com.google.android.libraries.places:places", version.ref = "playServicesPlaces" }

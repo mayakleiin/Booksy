@@ -52,5 +52,10 @@ class UserProfileFragment : Fragment() {
                 else -> ""
             }
         }.attach()
+
+        binding.editProfileButton.setOnClickListener {
+            val dialogFragment = EditProfileDialogFragment()
+            dialogFragment.show(childFragmentManager, "EditProfileDialog")
+        }
     }
 }
