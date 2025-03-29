@@ -40,6 +40,14 @@
             android:contentDescription="Edit Profile"
             android:layout_marginStart="8dp" />
 
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp" />
+
     </LinearLayout>
 
     <!-- Tabs -->

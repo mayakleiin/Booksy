@@ -12,7 +12,9 @@ import com.example.booksy.databinding.FragmentUserProfileBinding
 import com.example.booksy.ui.home.BookAdapter
 import com.example.booksy.viewmodel.UserProfileViewModel
 import com.google.android.material.tabs.TabLayoutMediator
-
+import com.google.firebase.auth.FirebaseAuth
+import androidx.navigation.fragment.findNavController
+import com.example.booksy.R
 
 class UserProfileFragment : Fragment() {
 
@@ -56,6 +58,11 @@ class UserProfileFragment : Fragment() {
         binding.editProfileButton.setOnClickListener {
             val dialogFragment = EditProfileDialogFragment()
             dialogFragment.show(childFragmentManager, "EditProfileDialog")
+        }
+
+        binding.logoutButton.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            findNavController().navigate(R.id.action_userProfileFragment_to_loginFragment)
         }
     }
 }

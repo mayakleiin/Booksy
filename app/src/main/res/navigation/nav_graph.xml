@@ -70,7 +70,12 @@
     <fragment
         android:id="@+id/userProfileFragment"
         android:name="com.example.booksy.ui.profile.UserProfileFragment"
-        android:label="User Profile" />
+        android:label="User Profile">
+
+        <action
+            android:id="@+id/action_userProfileFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/userBooksFragment"

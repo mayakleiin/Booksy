@@ -56,15 +56,32 @@ class BookDetailFragment : Fragment() {
 
             val userId = FirebaseAuth.getInstance().uid ?: return@observe
 
-            // Show Edit button if user is the owner
+            // Show Edit and Delete buttons if user is the owner
             if (book.ownerId == userId) {
                 binding.editButton.visibility = View.VISIBLE
+                binding.deleteButton.visibility = View.VISIBLE
+
                 binding.editButton.setOnClickListener {
                     val action = BookDetailFragmentDirections.actionBookDetailFragmentToAddBookFragment(book)
                     findNavController().navigate(action)
                 }
+
+                binding.deleteButton.setOnClickListener {
+                    FirebaseFirestore.getInstance()
+                        .collection("books")
+                        .document(book.id)
+                        .delete()
+                        .addOnSuccessListener {
+                            Toast.makeText(requireContext(), "Book deleted", Toast.LENGTH_SHORT).show()
+                            findNavController().navigateUp()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(requireContext(), "Failed to delete book", Toast.LENGTH_SHORT).show()
+                        }
+                }
             } else {
                 binding.editButton.visibility = View.GONE
+                binding.deleteButton.visibility = View.GONE
             }
 
             FirebaseFirestore.getInstance()
