@@ -3,9 +3,15 @@ package com.example.booksy.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.example.booksy.data.FirestoreBookPagingSource
 import com.example.booksy.model.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.flow.Flow
 
 class UserProfileViewModel : ViewModel() {
 
@@ -176,5 +182,27 @@ class UserProfileViewModel : ViewModel() {
 
     fun setIsLoading(value: Boolean) {
         _isLoading.value = value
+    }
+
+    fun getPagedUserBooks(): Flow<PagingData<Book>> {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = {
+                FirestoreBookPagingSource(
+                    FirebaseFirestore.getInstance().collection("books")
+                        .whereEqualTo("ownerId", "invalid")
+                )
+            }
+        ).flow
+
+        val query: Query = FirebaseFirestore.getInstance()
+            .collection("books")
+            .whereEqualTo("ownerId", userId)
+            .orderBy("title")
+
+        return Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = { FirestoreBookPagingSource(query) }
+        ).flow
     }
 }
