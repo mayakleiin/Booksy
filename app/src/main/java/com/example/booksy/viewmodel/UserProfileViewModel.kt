@@ -173,4 +173,8 @@ class UserProfileViewModel : ViewModel() {
                 _toastMessage.value = "Failed to update profile"
             }
     }
+
+    fun setIsLoading(value: Boolean) {
+        _isLoading.value = value
+    }
 }

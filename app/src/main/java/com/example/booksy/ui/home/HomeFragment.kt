@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -34,6 +35,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private val binding get() = _binding!!
     private lateinit var mapView: MapView
     private var googleMap: GoogleMap? = null
+    private lateinit var loadingOverlay: FrameLayout
 
     private val defaultNearbyDistanceMeters = 2.0f
     private val currentUserLat = 32.08
@@ -48,6 +50,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        loadingOverlay = view.findViewById(R.id.loadingOverlay)
+
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             findNavController().navigate(R.id.loginFragment)
@@ -70,7 +74,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         setupNearbyRecyclerView()
         observeViewModel()
         setupToggle()
-
         requestCurrentLocation()
         homeViewModel.loadBooks()
     }
@@ -141,7 +144,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
 
         homeViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            loadingOverlay.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
     }
 

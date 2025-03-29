@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -20,11 +21,13 @@ class MyRequestsFragment : Fragment() {
 
     private var _binding: FragmentMyRequestsBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var viewModel: UserProfileViewModel
     private lateinit var adapter: RequestedBookAdapter
+    private lateinit var loadingOverlay: FrameLayout
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentMyRequestsBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity())[UserProfileViewModel::class.java]
         return binding.root
@@ -35,6 +38,12 @@ class MyRequestsFragment : Fragment() {
         if (currentUser == null) {
             findNavController().navigate(R.id.loginFragment)
             return
+        }
+
+        loadingOverlay = view.findViewById(R.id.loadingOverlay)
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            loadingOverlay.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
         adapter = RequestedBookAdapter(
@@ -61,9 +70,10 @@ class MyRequestsFragment : Fragment() {
     }
 
     private fun cancelRequest(requestedBook: RequestedBook) {
+        viewModel.setIsLoading(true)
         val requestId = requestedBook.request.id
-        val db = FirebaseFirestore.getInstance()
-        db.collection("requests")
+        FirebaseFirestore.getInstance()
+            .collection("requests")
             .document(requestId)
             .delete()
             .addOnSuccessListener {
@@ -72,6 +82,7 @@ class MyRequestsFragment : Fragment() {
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "Failed to cancel request", Toast.LENGTH_SHORT).show()
+                viewModel.setIsLoading(false)
             }
     }
 

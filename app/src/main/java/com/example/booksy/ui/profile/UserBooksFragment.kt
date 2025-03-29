@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -20,8 +21,11 @@ class UserBooksFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel: UserProfileViewModel
     private lateinit var adapter: BookAdapter
+    private lateinit var loadingOverlay: FrameLayout
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentUserBooksBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity())[UserProfileViewModel::class.java]
         return binding.root
@@ -32,6 +36,12 @@ class UserBooksFragment : Fragment() {
         if (currentUser == null) {
             findNavController().navigate(R.id.loginFragment)
             return
+        }
+
+        loadingOverlay = view.findViewById(R.id.loadingOverlay)
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            loadingOverlay.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
         adapter = BookAdapter(
