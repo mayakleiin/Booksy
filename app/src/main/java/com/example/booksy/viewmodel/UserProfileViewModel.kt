@@ -152,5 +152,22 @@ class UserProfileViewModel : ViewModel() {
             }
     }
 
+    fun updateUserProfile(newName: String, newImageUrl: String?) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val updates = hashMapOf<String, Any>("name" to newName)
+        newImageUrl?.let { updates["imageUrl"] = it }
+
+        FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(uid)
+            .update(updates)
+            .addOnSuccessListener {
+                loadCurrentUser() // Reload to update LiveData
+                _toastMessage.value = "Profile updated successfully"
+            }
+            .addOnFailureListener {
+                _toastMessage.value = "Failed to update profile"
+            }
+    }
 
 }

@@ -1,3 +1,4 @@
+
 package com.example.booksy.ui.details
 
 import android.content.Intent
@@ -7,15 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import coil.load
+import com.example.booksy.R
 import com.example.booksy.databinding.FragmentBookDetailBinding
 import com.example.booksy.viewmodel.BookDetailViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import androidx.core.content.ContextCompat
-import com.example.booksy.R
 
 class BookDetailFragment : Fragment() {
 
@@ -53,6 +55,17 @@ class BookDetailFragment : Fragment() {
             }
 
             val userId = FirebaseAuth.getInstance().uid ?: return@observe
+
+            // Show Edit button if user is the owner
+            if (book.ownerId == userId) {
+                binding.editButton.visibility = View.VISIBLE
+                binding.editButton.setOnClickListener {
+                    val action = BookDetailFragmentDirections.actionBookDetailFragmentToAddBookFragment(book)
+                    findNavController().navigate(action)
+                }
+            } else {
+                binding.editButton.visibility = View.GONE
+            }
 
             FirebaseFirestore.getInstance()
                 .collection("borrowRequests")
@@ -93,7 +106,6 @@ class BookDetailFragment : Fragment() {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

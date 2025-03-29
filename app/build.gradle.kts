@@ -3,9 +3,12 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.google.services)
+    id("kotlin-parcelize")
 }
+
+
+apply(plugin = "androidx.navigation.safeargs.kotlin")
 
 android {
     namespace = "com.example.booksy"
@@ -105,5 +108,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Material Components for XML (required for ChipGroup, chipSpacing etc.)
-    implementation("com.google.android.material:material:1.10.0")
+    implementation(libs.material.v1100)
+
+    implementation(libs.picasso)
 }
