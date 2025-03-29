@@ -52,11 +52,14 @@ class UserBooksFragment : Fragment() {
         binding.userBooksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.userBooksRecyclerView.adapter = adapter
 
-        viewModel.userBooks.observe(viewLifecycleOwner) {
-            adapter.updateBooks(it)
-        }
 
         viewModel.loadUserBooks()
+
+        viewModel.userBooks.observe(viewLifecycleOwner) {
+            adapter.updateBooks(it)
+            binding.emptyMessage.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+        }
+
     }
 
 

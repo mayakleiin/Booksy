@@ -54,6 +54,7 @@ class IncomingRequestsFragment : Fragment() {
 
         viewModel.incomingRequests.observe(viewLifecycleOwner) {
             adapter.updateData(it)
+            binding.emptyIncomingRequestsMessage.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
         }
 
         viewModel.toastMessage.observe(viewLifecycleOwner) {
