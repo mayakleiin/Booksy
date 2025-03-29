@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +23,7 @@ class UserProfileFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel: UserProfileViewModel
     private lateinit var bookAdapter: BookAdapter
+    private lateinit var loadingOverlay: FrameLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -32,10 +34,16 @@ class UserProfileFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        loadingOverlay = view.findViewById(R.id.loadingOverlay)
+
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             findNavController().navigate(R.id.loginFragment)
             return
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            loadingOverlay.visibility = if (loading) View.VISIBLE else View.GONE
         }
 
         viewModel.user.observe(viewLifecycleOwner) { user ->
@@ -70,5 +78,10 @@ class UserProfileFragment : Fragment() {
             FirebaseAuth.getInstance().signOut()
             findNavController().navigate(R.id.action_userProfileFragment_to_loginFragment)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
