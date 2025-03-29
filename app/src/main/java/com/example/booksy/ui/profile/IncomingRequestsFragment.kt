@@ -13,6 +13,9 @@ import com.example.booksy.model.RequestStatus
 import com.example.booksy.model.RequestedBook
 import com.example.booksy.viewmodel.UserProfileViewModel
 import com.google.firebase.firestore.FirebaseFirestore
+import androidx.navigation.fragment.findNavController
+import com.example.booksy.R
+import com.google.firebase.auth.FirebaseAuth
 
 class IncomingRequestsFragment : Fragment() {
 
@@ -32,6 +35,12 @@ class IncomingRequestsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            findNavController().navigate(R.id.loginFragment)
+            return
+        }
+
         adapter = RequestedBookAdapter(
             requestedBooks = emptyList(),
             isIncomingRequest = true,

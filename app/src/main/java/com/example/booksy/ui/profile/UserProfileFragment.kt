@@ -32,6 +32,12 @@ class UserProfileFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            findNavController().navigate(R.id.loginFragment)
+            return
+        }
+
         viewModel.user.observe(viewLifecycleOwner) { user ->
             binding.userName.text = user.name
             binding.userImage.load(user.imageUrl)

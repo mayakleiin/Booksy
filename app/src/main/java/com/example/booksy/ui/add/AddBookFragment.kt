@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.booksy.R
 import com.example.booksy.databinding.FragmentAddBookBinding
 import com.example.booksy.model.Book
 import com.example.booksy.model.BookStatus
@@ -45,6 +46,12 @@ class AddBookFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            findNavController().navigate(R.id.loginFragment)
+            return
+        }
+
         binding.shareLocationCheckbox.setOnCheckedChangeListener { _, isChecked ->
             binding.addressEditText.isVisible = !isChecked
             if (isChecked) requestLocation()
