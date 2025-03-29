@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Book Cover -->
+        <ImageView
+            android:id="@+id/book_cover"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/book_cover_desc"
+            android:src="@android:drawable/ic_menu_gallery" />
+
+        <!-- Title & Author -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/book_title"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/author"
+                android:textColor="#555" />
+
+            <TextView
+                android:id="@+id/bookGenre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Genre"
+                android:textSize="14sp"
+                android:textColor="#777"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp" />
+
+        </LinearLayout>
+
+        <!-- Info row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/distance"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/distance"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/pages"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/pages"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/language"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/language"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/condition"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/condition"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <!-- Tags -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="@string/tag_existentialism"
+                android:background="@android:color/darker_gray"
+                android:textColor="@android:color/white"
+                android:padding="6dp"
+                android:layout_marginEnd="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="@string/tag_novel"
+                android:background="@android:color/darker_gray"
+                android:textColor="@android:color/white"
+                android:padding="6dp"
+                android:layout_marginEnd="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="@string/tag_philosophical"
+                android:background="@android:color/darker_gray"
+                android:textColor="@android:color/white"
+                android:padding="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- Owner section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ask_from"
+            android:textStyle="bold"
+            android:padding="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/ownerImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/sym_def_app_icon"
+                android:layout_marginEnd="8dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/book_cover_desc" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/ownerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/owner_name"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/openMapButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/open_map"
+                    android:textSize="12sp"
+                    android:textColor="#1E88E5"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/borrow_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ask" />
+        </LinearLayout>
+
+        <!-- About -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about"
+            android:textStyle="bold"
+            android:padding="16dp"/>
+
+        <TextView
+            android:id="@+id/about"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/book_description"
+            android:padding="16dp"
+            android:textColor="#444"/>
+    </LinearLayout>
+</ScrollView>

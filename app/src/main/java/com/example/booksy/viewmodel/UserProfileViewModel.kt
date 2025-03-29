@@ -1,0 +1,156 @@
+package com.example.booksy.viewmodel
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.example.booksy.model.Book
+import com.example.booksy.model.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.example.booksy.model.Request
+import com.example.booksy.model.RequestedBook
+
+class UserProfileViewModel : ViewModel() {
+
+    private val _user = MutableLiveData<User>()
+    val user: LiveData<User> get() = _user
+
+    private val _toastMessage = MutableLiveData<String>()
+    val toastMessage: LiveData<String> get() = _toastMessage
+
+    private val _userBooks = MutableLiveData<List<Book>>()
+    val userBooks: LiveData<List<Book>> get() = _userBooks
+
+    private val _myRequests = MutableLiveData<List<Request>>()
+    val myRequests: LiveData<List<Request>> get() = _myRequests
+
+    private val _requestedBooks = MutableLiveData<List<RequestedBook>>()
+    val requestedBooks: LiveData<List<RequestedBook>> get() = _requestedBooks
+
+    private val _incomingRequests = MutableLiveData<List<RequestedBook>>()
+    val incomingRequests: LiveData<List<RequestedBook>> get() = _incomingRequests
+
+
+    fun loadCurrentUser() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(userId)
+            .get()
+            .addOnSuccessListener { doc ->
+                val user = doc.toObject(User::class.java)
+                if (user != null) {
+                    _user.postValue(user)
+                } else {
+                    _toastMessage.postValue("User not found.")
+                }
+            }
+            .addOnFailureListener {
+                _toastMessage.postValue("Failed to load user: ${it.message}")
+            }
+    }
+
+    fun loadUserBooks() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        FirebaseFirestore.getInstance()
+            .collection("books")
+            .whereEqualTo("ownerId", userId)
+            .get()
+            .addOnSuccessListener { result ->
+                val books = result.toObjects(Book::class.java)
+                _userBooks.postValue(books)
+            }
+            .addOnFailureListener {
+                _toastMessage.postValue("Failed to load user's books: ${it.message}")
+            }
+    }
+
+    fun loadMyRequests() {
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        FirebaseFirestore.getInstance()
+            .collection("requests")
+            .whereEqualTo("fromUserId", currentUserId)
+            .get()
+            .addOnSuccessListener { result ->
+                val requests = result.toObjects(Request::class.java)
+                _myRequests.postValue(requests)
+            }
+            .addOnFailureListener {
+                _toastMessage.postValue("Failed to load requests: ${it.message}")
+            }
+    }
+
+    fun loadRequestedBooks() {
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("requests")
+            .whereEqualTo("fromUserId", currentUserId)
+            .get()
+            .addOnSuccessListener { requestDocs ->
+                val requests = requestDocs.toObjects(Request::class.java)
+
+                // Check if there are no requests
+                if (requests.isEmpty()) {
+                    _requestedBooks.postValue(emptyList())
+                    return@addOnSuccessListener
+                }
+
+                val bookIds = requests.map { it.bookId }
+
+                db.collection("books")
+                    .whereIn("id", bookIds)
+                    .get()
+                    .addOnSuccessListener { bookDocs ->
+                        val books = bookDocs.toObjects(Book::class.java)
+                        val combined = books.mapNotNull { book ->
+                            val matchingRequest = requests.find { it.bookId == book.id }
+                            matchingRequest?.let { request ->
+                                RequestedBook(book, request)
+                            }
+                        }
+                        _requestedBooks.postValue(combined)
+                    }
+            }
+            .addOnFailureListener {
+                _toastMessage.postValue("Failed to load requested books: ${it.message}")
+            }
+    }
+
+    fun loadIncomingRequests() {
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("requests")
+            .whereEqualTo("toUserId", currentUserId)
+            .get()
+            .addOnSuccessListener { requestDocs ->
+                val requests = requestDocs.toObjects(Request::class.java)
+                if (requests.isEmpty()) {
+                    _incomingRequests.postValue(emptyList())
+                    return@addOnSuccessListener
+                }
+
+                val bookIds = requests.map { it.bookId }
+
+                db.collection("books")
+                    .whereIn("id", bookIds)
+                    .get()
+                    .addOnSuccessListener { bookDocs ->
+                        val books = bookDocs.toObjects(Book::class.java)
+                        val combined = books.mapNotNull { book ->
+                            val matchingRequest = requests.find { it.bookId == book.id }
+                            matchingRequest?.let { request ->
+                                RequestedBook(book, request)
+                            }
+                        }
+                        _incomingRequests.postValue(combined)
+                    }
+            }
+            .addOnFailureListener {
+                _toastMessage.postValue("Failed to load incoming requests: ${it.message}")
+            }
+    }
+
+
+}

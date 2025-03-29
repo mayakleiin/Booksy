@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "131594635873",
+    "project_id": "booksy-1",
+    "storage_bucket": "booksy-1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:131594635873:android:ae7c2ba3f44e8f2a9bf820",
+        "android_client_info": {
+          "package_name": "com.example.booksy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnNwA1NTbWfw5Z0HEqEL3QsytdSCwIb-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
