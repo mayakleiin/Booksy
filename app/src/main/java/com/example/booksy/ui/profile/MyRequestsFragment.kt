@@ -11,7 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksy.databinding.FragmentMyRequestsBinding
 import com.example.booksy.model.RequestedBook
 import com.example.booksy.viewmodel.UserProfileViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import androidx.navigation.fragment.findNavController
+import com.example.booksy.R
+
 
 class MyRequestsFragment : Fragment() {
 
@@ -31,6 +35,12 @@ class MyRequestsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            findNavController().navigate(R.id.loginFragment)
+            return
+        }
+
         adapter = RequestedBookAdapter(
             requestedBooks = emptyList(),
             isIncomingRequest = false,

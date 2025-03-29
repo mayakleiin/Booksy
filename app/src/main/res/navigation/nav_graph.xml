@@ -20,28 +20,27 @@
         android:id="@+id/registerFragment"
         android:name="com.example.booksy.ui.register.RegisterFragment"
         android:label="Register">
-
         <action
             android:id="@+id/action_registerFragment_to_userProfileFragment"
             app:destination="@id/userProfileFragment" />
-
         <action
             android:id="@+id/action_registerFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
     </fragment>
 
-
     <fragment
         android:id="@+id/addBookFragment"
         android:name="com.example.booksy.ui.add.AddBookFragment"
-        android:label="Add Book" >
-
+        android:label="Add Book">
         <argument
             android:name="bookToEdit"
             app:argType="com.example.booksy.model.Book"
             app:nullable="true" />
-    </fragment>
 
+        <action
+            android:id="@+id/action_addBookFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/homeFragment"
@@ -52,12 +51,16 @@
             app:destination="@id/bookDetailFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/bookDetailFragment"
         android:name="com.example.booksy.ui.details.BookDetailFragment"
-        android:label="Book Detail" >
+        android:label="Book Detail">
         <argument
             android:name="bookId"
             app:argType="string" />
@@ -65,13 +68,16 @@
         <action
             android:id="@+id/action_bookDetailFragment_to_addBookFragment"
             app:destination="@id/addBookFragment" />
+
+        <action
+            android:id="@+id/action_bookDetailFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/userProfileFragment"
         android:name="com.example.booksy.ui.profile.UserProfileFragment"
         android:label="User Profile">
-
         <action
             android:id="@+id/action_userProfileFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
@@ -81,7 +87,6 @@
         android:id="@+id/userBooksFragment"
         android:name="com.example.booksy.ui.profile.UserBooksFragment"
         android:label="My Books">
-
         <action
             android:id="@+id/action_userBooksFragment_to_addBookFragment"
             app:destination="@id/addBookFragment" />
@@ -91,6 +96,28 @@
             app:destination="@id/bookDetailFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left" />
+
+        <action
+            android:id="@+id/action_userBooksFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/myRequestsFragment"
+        android:name="com.example.booksy.ui.profile.MyRequestsFragment"
+        android:label="My Requests">
+        <action
+            android:id="@+id/action_myRequestsFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/incomingRequestsFragment"
+        android:name="com.example.booksy.ui.profile.IncomingRequestsFragment"
+        android:label="Incoming Requests">
+        <action
+            android:id="@+id/action_incomingRequestsFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
 </navigation>

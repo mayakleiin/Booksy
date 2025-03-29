@@ -11,6 +11,8 @@ import com.example.booksy.databinding.FragmentUserBooksBinding
 import com.example.booksy.ui.home.BookAdapter
 import com.example.booksy.viewmodel.UserProfileViewModel
 import androidx.navigation.fragment.findNavController
+import com.example.booksy.R
+import com.google.firebase.auth.FirebaseAuth
 
 class UserBooksFragment : Fragment() {
 
@@ -29,6 +31,12 @@ class UserBooksFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            findNavController().navigate(R.id.loginFragment)
+            return
+        }
+
         adapter = BookAdapter(
             books = emptyList(),
             onItemClick = { book ->

@@ -1,4 +1,3 @@
-
 package com.example.booksy.ui.details
 
 import android.content.Intent
@@ -8,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -37,6 +35,13 @@ class BookDetailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            findNavController().navigate(R.id.loginFragment)
+            return
+        }
+
         val bookId = arguments?.getString("bookId") ?: return
         viewModel.loadBookDetails(bookId)
 
@@ -54,12 +59,12 @@ class BookDetailFragment : Fragment() {
                 error(android.R.drawable.ic_delete)
             }
 
-            val userId = FirebaseAuth.getInstance().uid ?: return@observe
+            val userId = currentUser.uid
 
-            // Show Edit and Delete buttons if user is the owner
             if (book.ownerId == userId) {
                 binding.editButton.visibility = View.VISIBLE
                 binding.deleteButton.visibility = View.VISIBLE
+                binding.borrowButton.visibility = View.GONE
 
                 binding.editButton.setOnClickListener {
                     val action = BookDetailFragmentDirections.actionBookDetailFragmentToAddBookFragment(book)
@@ -68,9 +73,7 @@ class BookDetailFragment : Fragment() {
 
                 binding.deleteButton.setOnClickListener {
                     FirebaseFirestore.getInstance()
-                        .collection("books")
-                        .document(book.id)
-                        .delete()
+                        .collection("books").document(book.id).delete()
                         .addOnSuccessListener {
                             Toast.makeText(requireContext(), "Book deleted", Toast.LENGTH_SHORT).show()
                             findNavController().navigateUp()
@@ -82,31 +85,15 @@ class BookDetailFragment : Fragment() {
             } else {
                 binding.editButton.visibility = View.GONE
                 binding.deleteButton.visibility = View.GONE
+                binding.borrowButton.visibility = View.VISIBLE
+                binding.borrowButton.setOnClickListener {
+                    viewModel.requestToBorrow(book)
+                }
             }
 
-            FirebaseFirestore.getInstance()
-                .collection("borrowRequests")
-                .whereEqualTo("bookId", book.id)
-                .whereEqualTo("requesterId", userId)
-                .get()
-                .addOnSuccessListener { documents ->
-                    if (!documents.isEmpty) {
-                        binding.borrowButton.text = getString(R.string.request_sent)
-                        binding.borrowButton.isEnabled = false
-                        binding.borrowButton.setBackgroundColor(
-                            ContextCompat.getColor(requireContext(), android.R.color.darker_gray)
-                        )
-                    } else {
-                        binding.borrowButton.setOnClickListener {
-                            viewModel.requestToBorrow(book)
-                        }
-                    }
-                }
-
             binding.openMapButton.setOnClickListener {
-                val lat = book.lat
-                val lng = book.lng
-                if (lat == null || lng == null) return@setOnClickListener
+                val lat = book.lat ?: return@setOnClickListener
+                val lng = book.lng ?: return@setOnClickListener
                 val uri = Uri.parse("geo:$lat,$lng?q=$lat,$lng(Book Location)")
                 val intent = Intent(Intent.ACTION_VIEW, uri).apply {
                     setPackage("com.google.android.apps.maps")
