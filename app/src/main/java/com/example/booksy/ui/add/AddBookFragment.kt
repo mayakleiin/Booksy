@@ -66,7 +66,7 @@ class AddBookFragment : Fragment() {
 
         // Genre selection
         Genre.values().forEach { genre ->
-            val chip = createChip(genre.name, selectedGenres.contains(genre))
+            val chip = createChip(genre.displayName, selectedGenres.contains(genre))
             chip.setOnClickListener {
                 if (selectedGenres.contains(genre)) {
                     selectedGenres.remove(genre)
@@ -80,7 +80,7 @@ class AddBookFragment : Fragment() {
 
         // Language selection
         Language.values().forEach { lang ->
-            val chip = createChip(lang.name, selectedLanguages.contains(lang))
+            val chip = createChip(lang.displayName, selectedLanguages.contains(lang))
             chip.setOnClickListener {
                 if (selectedLanguages.contains(lang)) {
                     selectedLanguages.remove(lang)
@@ -104,7 +104,12 @@ class AddBookFragment : Fragment() {
     private fun updateChips(group: ViewGroup, selectedList: List<Enum<*>>) {
         group.removeAllViews()
         selectedList.forEach { item ->
-            val chip = createChip(item.name, true)
+            val chip = createChip(
+                if (item is Genre) item.displayName
+                else if (item is Language) item.displayName
+                else item.name,
+                true
+            )
             group.addView(chip)
         }
     }

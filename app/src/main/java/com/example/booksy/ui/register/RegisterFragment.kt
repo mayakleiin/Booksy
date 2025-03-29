@@ -52,7 +52,7 @@ class RegisterFragment : Fragment() {
                             val userMap = hashMapOf(
                                 "name" to fullName,
                                 "email" to email,
-                                "imageUrl" to "" // תמונה תגיע בשלב אחר
+                                "imageUrl" to ""
                             )
                             FirebaseFirestore.getInstance()
                                 .collection("users")

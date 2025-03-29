@@ -198,7 +198,7 @@
             android:padding="16dp"
             android:textColor="#444" />
 
-        <!-- Edit Button -->
+        <!-- Edit/Delete Buttons (only for owner) -->
         <Button
             android:id="@+id/editButton"
             android:layout_width="wrap_content"
@@ -207,7 +207,6 @@
             android:layout_margin="16dp"
             android:visibility="gone" />
 
-        <!-- Delete Button -->
         <Button
             android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
@@ -216,6 +215,5 @@
             android:layout_margin="16dp"
             android:visibility="gone"
             android:textColor="@android:color/holo_red_dark" />
-
     </LinearLayout>
 </ScrollView>

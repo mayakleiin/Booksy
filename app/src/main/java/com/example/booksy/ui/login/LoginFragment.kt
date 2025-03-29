@@ -18,14 +18,10 @@ class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var authViewModel: AuthViewModel
     private lateinit var loadingOverlay: FrameLayout
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -50,7 +46,9 @@ class LoginFragment : Fragment() {
             val password = binding.passwordEditText.text.toString().trim()
 
             if (email.isNotEmpty() && password.isNotEmpty()) {
-                authViewModel.login(email, password,
+                authViewModel.login(
+                    email = email,
+                    password = password,
                     onSuccess = {
                         Toast.makeText(requireContext(), "Welcome!", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.action_loginFragment_to_userProfileFragment)

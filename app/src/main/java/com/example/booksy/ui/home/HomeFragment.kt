@@ -1,5 +1,6 @@
 package com.example.booksy.ui.home
 
+import FilterBottomSheetFragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -12,9 +13,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentHomeBinding
+import com.example.booksy.model.BookFilters
 import com.example.booksy.viewmodel.HomeViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
@@ -23,34 +26,28 @@ import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mapView: MapView
+    private var googleMap: GoogleMap? = null
 
     private val defaultNearbyDistanceMeters = 2.0f
     private val currentUserLat = 32.08
     private val currentUserLng = 34.78
 
-    private lateinit var mapView: MapView
-    private var googleMap: GoogleMap? = null
-
     private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var bookAdapter: BookAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             findNavController().navigate(R.id.loginFragment)
@@ -60,6 +57,14 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
+
+        binding.filterButton.setOnClickListener {
+            FilterBottomSheetFragment(
+                currentFilters = BookFilters(homeViewModel.filterDistanceMeters.value ?: 10f)
+            ) { filters ->
+                homeViewModel.applyFilters(filters)
+            }.show(parentFragmentManager, "FilterSheet")
+        }
 
         setupRecyclerView()
         setupNearbyRecyclerView()
@@ -73,8 +78,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private fun requestCurrentLocation() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+            == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
                     homeViewModel.updateCurrentLocation(location)
@@ -89,32 +93,27 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-
     private fun setupRecyclerView() {
         bookAdapter = BookAdapter(
             books = emptyList(),
             onItemClick = { book ->
                 val action = HomeFragmentDirections.actionHomeFragmentToBookDetailFragment(book.id)
                 findNavController().navigate(action)
-            },
-            onEditClick = null
+            }
         )
-
         binding.booksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.booksRecyclerView.adapter = bookAdapter
     }
 
     private fun setupNearbyRecyclerView() {
         val nearbyAdapter = NearbyBooksAdapter(emptyList())
-        binding.nearbyBooksRecyclerView.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.nearbyBooksRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.nearbyBooksRecyclerView.adapter = nearbyAdapter
 
         homeViewModel.nearbyBooks.observe(viewLifecycleOwner) { nearby ->
             nearbyAdapter.updateBooks(nearby)
         }
     }
-
 
     @SuppressLint("SetTextI18n")
     private fun observeViewModel() {
@@ -134,9 +133,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     val lng = book.lng
                     if (lat != null && lng != null) {
                         map.addMarker(
-                            MarkerOptions()
-                                .position(LatLng(lat, lng))
-                                .title(book.title)
+                            MarkerOptions().position(LatLng(lat, lng)).title(book.title)
                         )
                     }
                 }
@@ -149,29 +146,21 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun calculateDistance(lat: Double?, lng: Double?): Float {
-        val currentLat = currentUserLat ?: return Float.MAX_VALUE
-        val currentLng = currentUserLng ?: return Float.MAX_VALUE
-
         val results = FloatArray(1)
-        Location.distanceBetween(currentLat, currentLng, lat!!, lng!!, results)
+        Location.distanceBetween(currentUserLat, currentUserLng, lat ?: 0.0, lng ?: 0.0, results)
         return results[0]
     }
-
-
 
     private fun setupToggle() {
         binding.toggleViewButton.setOnClickListener {
             val isMapVisible = binding.mapView.visibility == View.VISIBLE
             binding.mapView.visibility = if (isMapVisible) View.GONE else View.VISIBLE
             binding.booksRecyclerView.visibility = if (isMapVisible) View.VISIBLE else View.GONE
-
-
             binding.toggleViewButton.setImageResource(
                 if (isMapVisible) R.drawable.ic_map else R.drawable.ic_list
             )
         }
     }
-
 
     override fun onMapReady(map: GoogleMap) {
         MapsInitializer.initialize(requireContext())

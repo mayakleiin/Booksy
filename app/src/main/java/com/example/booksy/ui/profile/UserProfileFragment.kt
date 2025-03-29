@@ -8,14 +8,14 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import coil.load
+import com.example.booksy.R
 import com.example.booksy.databinding.FragmentUserProfileBinding
 import com.example.booksy.ui.home.BookAdapter
 import com.example.booksy.viewmodel.UserProfileViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
-import androidx.navigation.fragment.findNavController
-import com.example.booksy.R
 
 class UserProfileFragment : Fragment() {
 
@@ -25,9 +25,7 @@ class UserProfileFragment : Fragment() {
     private lateinit var bookAdapter: BookAdapter
     private lateinit var loadingOverlay: FrameLayout
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentUserProfileBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[UserProfileViewModel::class.java]
         return binding.root

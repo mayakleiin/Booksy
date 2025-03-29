@@ -5,10 +5,8 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
     id("kotlin-parcelize")
+    id("androidx.navigation.safeargs.kotlin")
 }
-
-
-apply(plugin = "androidx.navigation.safeargs.kotlin")
 
 android {
     namespace = "com.example.booksy"
@@ -28,7 +26,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -92,12 +93,19 @@ dependencies {
     implementation(libs.play.services.places)
     implementation(libs.android.maps.utils)
 
-    // Coil (image loading)
+    // Coil
     implementation(libs.coil)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
+
+    // Retrofit & Gson
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    // Picasso
+    implementation(libs.picasso)
 
     // Testing
     testImplementation(libs.junit)
@@ -106,12 +114,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    // Material Components for XML (required for ChipGroup, chipSpacing etc.)
-    implementation(libs.material.v1100)
-
-    implementation(libs.picasso)
-
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
 }

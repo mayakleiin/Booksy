@@ -3,12 +3,9 @@ package com.example.booksy.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.booksy.model.Book
-import com.example.booksy.model.User
+import com.example.booksy.model.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.booksy.model.Request
-import com.example.booksy.model.RequestedBook
 
 class UserProfileViewModel : ViewModel() {
 
@@ -21,23 +18,24 @@ class UserProfileViewModel : ViewModel() {
     private val _userBooks = MutableLiveData<List<Book>>()
     val userBooks: LiveData<List<Book>> get() = _userBooks
 
-    private val _myRequests = MutableLiveData<List<Request>>()
-    val myRequests: LiveData<List<Request>> get() = _myRequests
-
     private val _requestedBooks = MutableLiveData<List<RequestedBook>>()
     val requestedBooks: LiveData<List<RequestedBook>> get() = _requestedBooks
 
     private val _incomingRequests = MutableLiveData<List<RequestedBook>>()
     val incomingRequests: LiveData<List<RequestedBook>> get() = _incomingRequests
 
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
     fun loadCurrentUser() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        _isLoading.value = true
         FirebaseFirestore.getInstance()
             .collection("users")
             .document(userId)
             .get()
             .addOnSuccessListener { doc ->
+                _isLoading.value = false
                 val user = doc.toObject(User::class.java)
                 if (user != null) {
                     _user.postValue(user)
@@ -46,42 +44,32 @@ class UserProfileViewModel : ViewModel() {
                 }
             }
             .addOnFailureListener {
+                _isLoading.value = false
                 _toastMessage.postValue("Failed to load user: ${it.message}")
             }
     }
 
     fun loadUserBooks() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        _isLoading.value = true
         FirebaseFirestore.getInstance()
             .collection("books")
             .whereEqualTo("ownerId", userId)
             .get()
             .addOnSuccessListener { result ->
+                _isLoading.value = false
                 val books = result.toObjects(Book::class.java)
                 _userBooks.postValue(books)
             }
             .addOnFailureListener {
+                _isLoading.value = false
                 _toastMessage.postValue("Failed to load user's books: ${it.message}")
-            }
-    }
-
-    fun loadMyRequests() {
-        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        FirebaseFirestore.getInstance()
-            .collection("requests")
-            .whereEqualTo("fromUserId", currentUserId)
-            .get()
-            .addOnSuccessListener { result ->
-                val requests = result.toObjects(Request::class.java)
-                _myRequests.postValue(requests)
-            }
-            .addOnFailureListener {
-                _toastMessage.postValue("Failed to load requests: ${it.message}")
             }
     }
 
     fun loadRequestedBooks() {
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        _isLoading.value = true
         val db = FirebaseFirestore.getInstance()
 
         db.collection("requests")
@@ -89,9 +77,8 @@ class UserProfileViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { requestDocs ->
                 val requests = requestDocs.toObjects(Request::class.java)
-
-                // Check if there are no requests
                 if (requests.isEmpty()) {
+                    _isLoading.value = false
                     _requestedBooks.postValue(emptyList())
                     return@addOnSuccessListener
                 }
@@ -102,6 +89,7 @@ class UserProfileViewModel : ViewModel() {
                     .whereIn("id", bookIds)
                     .get()
                     .addOnSuccessListener { bookDocs ->
+                        _isLoading.value = false
                         val books = bookDocs.toObjects(Book::class.java)
                         val combined = books.mapNotNull { book ->
                             val matchingRequest = requests.find { it.bookId == book.id }
@@ -111,14 +99,20 @@ class UserProfileViewModel : ViewModel() {
                         }
                         _requestedBooks.postValue(combined)
                     }
+                    .addOnFailureListener {
+                        _isLoading.value = false
+                        _toastMessage.postValue("Failed to load requested books")
+                    }
             }
             .addOnFailureListener {
-                _toastMessage.postValue("Failed to load requested books: ${it.message}")
+                _isLoading.value = false
+                _toastMessage.postValue("Failed to load requests: ${it.message}")
             }
     }
 
     fun loadIncomingRequests() {
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        _isLoading.value = true
         val db = FirebaseFirestore.getInstance()
 
         db.collection("requests")
@@ -127,6 +121,7 @@ class UserProfileViewModel : ViewModel() {
             .addOnSuccessListener { requestDocs ->
                 val requests = requestDocs.toObjects(Request::class.java)
                 if (requests.isEmpty()) {
+                    _isLoading.value = false
                     _incomingRequests.postValue(emptyList())
                     return@addOnSuccessListener
                 }
@@ -137,6 +132,7 @@ class UserProfileViewModel : ViewModel() {
                     .whereIn("id", bookIds)
                     .get()
                     .addOnSuccessListener { bookDocs ->
+                        _isLoading.value = false
                         val books = bookDocs.toObjects(Book::class.java)
                         val combined = books.mapNotNull { book ->
                             val matchingRequest = requests.find { it.bookId == book.id }
@@ -146,8 +142,13 @@ class UserProfileViewModel : ViewModel() {
                         }
                         _incomingRequests.postValue(combined)
                     }
+                    .addOnFailureListener {
+                        _isLoading.value = false
+                        _toastMessage.postValue("Failed to load incoming books")
+                    }
             }
             .addOnFailureListener {
+                _isLoading.value = false
                 _toastMessage.postValue("Failed to load incoming requests: ${it.message}")
             }
     }
@@ -157,17 +158,19 @@ class UserProfileViewModel : ViewModel() {
         val updates = hashMapOf<String, Any>("name" to newName)
         newImageUrl?.let { updates["imageUrl"] = it }
 
+        _isLoading.value = true
         FirebaseFirestore.getInstance()
             .collection("users")
             .document(uid)
             .update(updates)
             .addOnSuccessListener {
-                loadCurrentUser() // Reload to update LiveData
+                _isLoading.value = false
+                loadCurrentUser()
                 _toastMessage.value = "Profile updated successfully"
             }
             .addOnFailureListener {
+                _isLoading.value = false
                 _toastMessage.value = "Failed to update profile"
             }
     }
-
 }
