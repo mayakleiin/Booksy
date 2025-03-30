@@ -53,6 +53,10 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         observeViewModel()
         requestLocationPermission()
 
+        binding.mapView.visibility = View.GONE
+        binding.nearbyBooksRecyclerView.visibility = View.VISIBLE
+        binding.toggleViewButton.setImageResource(R.drawable.ic_map)
+
         binding.toggleViewButton.setOnClickListener {
             val isMapVisible = binding.mapView.visibility == View.VISIBLE
             binding.mapView.visibility = if (isMapVisible) View.GONE else View.VISIBLE
