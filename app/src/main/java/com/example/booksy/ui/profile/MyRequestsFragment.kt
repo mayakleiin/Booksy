@@ -51,8 +51,15 @@ class MyRequestsFragment : Fragment() {
             isIncomingRequest = false,
             onActionClick = { requestedBook, _ ->
                 cancelRequest(requestedBook)
+            },
+            onBookClick = { requestedBook ->
+                findNavController().navigate(
+                    R.id.action_global_bookDetailFragment,
+                    Bundle().apply { putString("bookId", requestedBook.book.id) }
+                )
             }
         )
+
 
         binding.myRequestsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.myRequestsRecyclerView.adapter = adapter
