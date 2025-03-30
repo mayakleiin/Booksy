@@ -79,8 +79,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         setupToggle()
         requestCurrentLocation()
 
-        // לא קוראים יותר ל־loadBooks – Paging דואג לזה
-        // homeViewModel.loadBooks()
+
     }
 
     private fun requestCurrentLocation() {
