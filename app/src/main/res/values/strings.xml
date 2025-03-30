@@ -76,6 +76,7 @@
     <string name="toast_cancel_failed">Failed to cancel request</string>
     <string name="toast_request_updated">Request %1$s</string>
     <string name="toast_update_failed">Failed to update request</string>
+    <string name="add_book">Add Book</string>
 
     <!-- Required for HomeFragment and Filter -->
     <string name="kilometers_format">%1$d km</string>

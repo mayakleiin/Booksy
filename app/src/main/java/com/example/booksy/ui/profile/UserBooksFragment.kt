@@ -69,6 +69,10 @@ class UserBooksFragment : Fragment() {
                 binding.emptyMessage.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
             }
         }
+
+        binding.addBookButton.setOnClickListener {
+            findNavController().navigate(R.id.addBookFragment)
+        }
     }
 
     override fun onDestroyView() {

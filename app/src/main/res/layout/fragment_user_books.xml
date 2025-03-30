@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/userBooksRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -14,11 +15,20 @@
         android:id="@+id/emptyMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="You haven't added any books yet"
+        android:text="@string/no_books_found"
         android:gravity="center"
         android:visibility="gone"
         android:padding="24dp"
         android:layout_gravity="center" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addBookButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/add_book"
+        app:srcCompat="@drawable/ic_add"
+        android:layout_gravity="bottom|end" />
 
     <FrameLayout
         android:id="@+id/loadingOverlay"
