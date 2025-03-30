@@ -1,5 +1,6 @@
 package com.example.booksy.ui.login
 
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,6 +32,10 @@ class LoginFragment : Fragment() {
 
         authViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             loadingOverlay.visibility = if (loading) View.VISIBLE else View.GONE
+        }
+
+        binding.goToRegisterButton.apply {
+            paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
         }
 
         binding.loginButton.setOnClickListener {

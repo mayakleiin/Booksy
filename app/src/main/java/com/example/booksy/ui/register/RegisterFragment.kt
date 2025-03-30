@@ -13,6 +13,7 @@ import com.example.booksy.R
 import com.example.booksy.databinding.FragmentRegisterBinding
 import com.example.booksy.viewmodel.AuthViewModel
 import com.google.firebase.firestore.FirebaseFirestore
+import android.graphics.Paint
 
 class RegisterFragment : Fragment() {
 
@@ -34,6 +35,10 @@ class RegisterFragment : Fragment() {
 
         authViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             loadingOverlay.visibility = if (loading) View.VISIBLE else View.GONE
+        }
+
+        binding.goToLoginButton.apply {
+            paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
         }
 
         binding.registerButton.setOnClickListener {
