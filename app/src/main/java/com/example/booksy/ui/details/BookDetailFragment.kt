@@ -43,7 +43,13 @@ class BookDetailFragment : Fragment() {
             return
         }
 
-        val bookId = arguments?.getString("bookId") ?: return
+        val bookId = arguments?.getString("bookId")
+        if (bookId.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "Book not found", Toast.LENGTH_SHORT).show()
+            findNavController().popBackStack()
+            return
+        }
+
         viewModel.loadBookDetails(bookId)
 
         viewModel.book.observe(viewLifecycleOwner) { book ->
@@ -125,6 +131,10 @@ class BookDetailFragment : Fragment() {
 
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
+
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
         }
     }
 

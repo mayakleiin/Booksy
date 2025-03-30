@@ -2,8 +2,22 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/splashFragment">
 
+    <!-- SplashFragment -->
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.booksy.ui.splash.SplashFragment"
+        android:label="Splash">
+        <action
+            android:id="@+id/action_splashFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_splashFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+    </fragment>
+
+    <!-- LoginFragment -->
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.booksy.ui.login.LoginFragment"
@@ -16,6 +30,7 @@
             app:destination="@id/userProfileFragment" />
     </fragment>
 
+    <!-- RegisterFragment -->
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.example.booksy.ui.register.RegisterFragment"
@@ -28,19 +43,7 @@
             app:destination="@id/loginFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/addBookFragment"
-        android:name="com.example.booksy.ui.add.AddBookFragment"
-        android:label="Add Book">
-        <argument
-            android:name="bookToEdit"
-            app:argType="com.example.booksy.model.Book"
-            app:nullable="true" />
-        <action
-            android:id="@+id/action_addBookFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
-    </fragment>
-
+    <!-- HomeFragment -->
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.booksy.ui.home.HomeFragment"
@@ -55,6 +58,21 @@
             app:destination="@id/loginFragment" />
     </fragment>
 
+    <!-- AddBookFragment -->
+    <fragment
+        android:id="@+id/addBookFragment"
+        android:name="com.example.booksy.ui.add.AddBookFragment"
+        android:label="Add Book">
+        <argument
+            android:name="bookToEdit"
+            app:argType="com.example.booksy.model.Book"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_addBookFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+
+    <!-- BookDetailFragment -->
     <fragment
         android:id="@+id/bookDetailFragment"
         android:name="com.example.booksy.ui.details.BookDetailFragment"
@@ -70,6 +88,7 @@
             app:destination="@id/loginFragment" />
     </fragment>
 
+    <!-- UserProfileFragment -->
     <fragment
         android:id="@+id/userProfileFragment"
         android:name="com.example.booksy.ui.profile.UserProfileFragment"
@@ -79,6 +98,7 @@
             app:destination="@id/loginFragment" />
     </fragment>
 
+    <!-- UserBooksFragment -->
     <fragment
         android:id="@+id/userBooksFragment"
         android:name="com.example.booksy.ui.profile.UserBooksFragment"
@@ -96,6 +116,7 @@
             app:destination="@id/loginFragment" />
     </fragment>
 
+    <!-- MyRequestsFragment -->
     <fragment
         android:id="@+id/myRequestsFragment"
         android:name="com.example.booksy.ui.profile.MyRequestsFragment"
@@ -105,6 +126,7 @@
             app:destination="@id/loginFragment" />
     </fragment>
 
+    <!-- IncomingRequestsFragment -->
     <fragment
         android:id="@+id/incomingRequestsFragment"
         android:name="com.example.booksy.ui.profile.IncomingRequestsFragment"
