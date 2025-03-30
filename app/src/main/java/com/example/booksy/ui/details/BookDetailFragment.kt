@@ -55,37 +55,13 @@ class BookDetailFragment : Fragment() {
 
         viewModel.loadBookDetails(bookId)
 
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         viewModel.book.observe(viewLifecycleOwner) { book ->
-            binding.title.text = book.title
-            binding.author.text = book.author
-            binding.pages.text = book.pages.toString()
-            binding.language.text = book.languages.joinToString(", ") { it.name }
-            binding.about.text = book.description
-            binding.bookGenre.text = book.genres.joinToString(", ") { it.name }
-
-            Picasso.get()
-                .load(book.imageUrl)
-                .placeholder(android.R.drawable.ic_menu_gallery)
-                .error(android.R.drawable.ic_delete)
-                .into(binding.bookCover)
-
-            if (book.ownerId.isNotEmpty()) {
-                FirebaseFirestore.getInstance()
-                    .collection("users")
-                    .document(book.ownerId)
-                    .get()
-                    .addOnSuccessListener { document ->
-                        val ownerName = document.getString("name") ?: "Unknown Owner"
-                        binding.ownerName.text = ownerName
-                    }
-            }
-
-            // ✅ הצגת או הסתרת כפתור openMapButton לפי מיקום
-            if (book.lat != null && book.lng != null) {
-                binding.openMapButton.visibility = View.VISIBLE
-            } else {
-                binding.openMapButton.visibility = View.GONE
-            }
+            updateBookUI(book)
+            loadOwnerInfo(book.ownerId)
 
             val userId = currentUser.uid
             if (book.ownerId == userId) {
@@ -94,18 +70,13 @@ class BookDetailFragment : Fragment() {
                 setupBorrowerUI(book)
             }
 
-            binding.openMapButton.setOnClickListener {
-                val lat = book.lat ?: return@setOnClickListener
-                val lng = book.lng ?: return@setOnClickListener
-                val uri = "geo:$lat,$lng?q=$lat,$lng(Book Location)".toUri()
-                val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-                    setPackage("com.google.android.apps.maps")
+            if (book.lat != null && book.lng != null) {
+                binding.openMapButton.visibility = View.VISIBLE
+                binding.openMapButton.setOnClickListener {
+                    openMap(book.lat, book.lng)
                 }
-                if (intent.resolveActivity(requireActivity().packageManager) != null) {
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(requireContext(), getString(R.string.toast_maps_not_found), Toast.LENGTH_SHORT).show()
-                }
+            } else {
+                binding.openMapButton.visibility = View.GONE
             }
         }
 
@@ -113,8 +84,66 @@ class BookDetailFragment : Fragment() {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
 
-        binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
+        viewModel.hasPendingRequest.observe(viewLifecycleOwner) { hasPendingRequest ->
+            if (hasPendingRequest) {
+                binding.borrowButton.text = getString(R.string.request_sent)
+                binding.borrowButton.isEnabled = false
+                binding.borrowButton.setBackgroundColor(
+                    ContextCompat.getColor(requireContext(), android.R.color.darker_gray)
+                )
+            } else {
+                binding.borrowButton.text = getString(R.string.request_to_borrow)
+                binding.borrowButton.isEnabled = true
+                binding.borrowButton.setBackgroundResource(R.color.white)
+            }
+        }
+    }
+
+    private fun updateBookUI(book: Book) {
+        binding.title.text = book.title
+        binding.author.text = book.author
+        binding.pages.text = book.pages.toString()
+        binding.language.text = book.languages.joinToString(", ") { it.name }
+        binding.about.text = book.description
+        binding.bookGenre.text = book.genres.joinToString(", ") { it.name }
+
+        Picasso.get()
+            .load(book.imageUrl)
+            .placeholder(R.drawable.ic_book_placeholder)
+            .error(R.drawable.ic_book_placeholder)
+            .into(binding.bookCover)
+    }
+
+    private fun loadOwnerInfo(ownerId: String) {
+        FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(ownerId)
+            .get()
+            .addOnSuccessListener { document ->
+                val ownerName = document.getString("name") ?: "Unknown Owner"
+                val ownerImageUrl = document.getString("imageUrl")
+
+                binding.ownerName.text = ownerName
+
+                if (!ownerImageUrl.isNullOrEmpty()) {
+                    Picasso.get()
+                        .load(ownerImageUrl)
+                        .placeholder(R.drawable.ic_user_placeholder)
+                        .error(R.drawable.ic_user_placeholder)
+                        .into(binding.ownerImage)
+                }
+            }
+    }
+
+    private fun openMap(lat: Double, lng: Double) {
+        val uri = "geo:$lat,$lng?q=$lat,$lng(Book Location)".toUri()
+        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            setPackage("com.google.android.apps.maps")
+        }
+        if (intent.resolveActivity(requireActivity().packageManager) != null) {
+            startActivity(intent)
+        } else {
+            Toast.makeText(requireContext(), getString(R.string.toast_maps_not_found), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -154,29 +183,22 @@ class BookDetailFragment : Fragment() {
     private fun setupBorrowerUI(book: Book) {
         val userId = auth.uid ?: return
 
-        FirebaseFirestore.getInstance()
-            .collection("borrowRequests")
-            .whereEqualTo("bookId", book.id)
-            .whereEqualTo("requesterId", userId)
-            .get()
-            .addOnSuccessListener { requests ->
-                if (!requests.isEmpty) {
-                    binding.borrowButton.text = getString(R.string.request_sent)
-                    binding.borrowButton.isEnabled = false
-                    binding.borrowButton.setBackgroundColor(
-                        ContextCompat.getColor(requireContext(), android.R.color.darker_gray)
-                    )
-                } else {
-                    binding.borrowButton.setOnClickListener {
-                        viewModel.requestToBorrow(book)
-                    }
-                }
-            }
-
-        binding.editButton.visibility = View.GONE
-        binding.deleteButton.visibility = View.GONE
-        binding.returnButton.visibility = View.GONE
+        binding.ownerActionsLayout.visibility = View.GONE
         binding.borrowButton.visibility = View.VISIBLE
+
+        if (book.status == BookStatus.BORROWED) {
+            binding.borrowButton.text = getString(R.string.book_already_borrowed)
+            binding.borrowButton.isEnabled = false
+            binding.borrowButton.setBackgroundColor(
+                ContextCompat.getColor(requireContext(), android.R.color.darker_gray)
+            )
+        } else {
+            binding.borrowButton.setOnClickListener {
+                viewModel.requestToBorrow(book)
+            }
+        }
+
+        viewModel.checkIfRequestExists(book.id)
     }
 
     override fun onDestroyView() {
