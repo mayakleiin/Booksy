@@ -28,17 +28,10 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
-
         loadingOverlay = view.findViewById(R.id.loadingOverlay)
 
         authViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             loadingOverlay.visibility = if (loading) View.VISIBLE else View.GONE
-        }
-
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null) {
-            findNavController().navigate(R.id.action_loginFragment_to_userProfileFragment)
-            return
         }
 
         binding.loginButton.setOnClickListener {
@@ -66,6 +59,7 @@ class LoginFragment : Fragment() {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
