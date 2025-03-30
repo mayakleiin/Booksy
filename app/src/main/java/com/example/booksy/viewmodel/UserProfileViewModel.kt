@@ -85,7 +85,7 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
         _isLoading.value = true
         val db = FirebaseFirestore.getInstance()
 
-        db.collection("requests")
+        db.collection("borrowRequests")
             .whereEqualTo("fromUserId", currentUserId)
             .get()
             .addOnSuccessListener { requestDocs ->
@@ -128,7 +128,7 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
         _isLoading.value = true
         val db = FirebaseFirestore.getInstance()
 
-        db.collection("requests")
+        db.collection("borrowRequests")
             .whereEqualTo("toUserId", currentUserId)
             .get()
             .addOnSuccessListener { requestDocs ->
