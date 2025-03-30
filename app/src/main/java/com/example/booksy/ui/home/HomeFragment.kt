@@ -77,8 +77,10 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         setupNearbyRecyclerView()
         observeViewModel()
         setupToggle()
+        binding.mapView.visibility = View.GONE
+        binding.booksRecyclerView.visibility = View.VISIBLE
+        binding.toggleViewButton.setImageResource(R.drawable.ic_map)
         requestCurrentLocation()
-
 
     }
 
