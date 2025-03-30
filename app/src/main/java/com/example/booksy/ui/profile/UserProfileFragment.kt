@@ -45,8 +45,10 @@ class UserProfileFragment : Fragment() {
         }
 
         viewModel.user.observe(viewLifecycleOwner) { user ->
-            binding.userName.text = user.name
-            binding.userImage.load(user.imageUrl)
+            user?.let {
+                binding.userName.text = it.name
+                binding.userImage.load(it.imageUrl)
+            }
         }
 
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
