@@ -1,22 +1,29 @@
 package com.example.booksy.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.booksy.data.FirestoreBookPagingSource
+import com.example.booksy.local.AppDatabase
+import com.example.booksy.local.entity.BookEntity
 import com.example.booksy.model.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
-class UserProfileViewModel : ViewModel() {
+class UserProfileViewModel(private val context: Context) : ViewModel() {
 
-    private val _user = MutableLiveData<User>()
-    val user: LiveData<User> get() = _user
+    private val _user = MutableLiveData<User?>()
+    val user: LiveData<User?> get() = _user
+
+    private val bookDao = AppDatabase.getDatabase(context).bookDao()
 
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> get() = _toastMessage
@@ -183,6 +190,34 @@ class UserProfileViewModel : ViewModel() {
     fun setIsLoading(value: Boolean) {
         _isLoading.value = value
     }
+
+    fun cacheUserBooksLocally(books: List<Book>) {
+        viewModelScope.launch {
+            val entities = books.map {
+                BookEntity(
+                    id = it.id,
+                    title = it.title,
+                    author = it.author,
+                    genres = it.genres.joinToString(",") { g -> g.name },
+                    languages = it.languages.joinToString(",") { l -> l.name },
+                    pages = it.pages,
+                    description = it.description,
+                    imageUrl = it.imageUrl,
+                    status = it.status.name,
+                    ownerId = it.ownerId,
+                    lat = it.lat,
+                    lng = it.lng
+                )
+            }
+            bookDao.deleteAllBooks()
+            bookDao.insertBooks(entities)
+        }
+    }
+
+    fun getCachedUserBooks(): Flow<List<BookEntity>> = bookDao.getBooksByOwner(
+        FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    )
+
 
     fun getPagedUserBooks(): Flow<PagingData<Book>> {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return Pager(

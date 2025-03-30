@@ -14,6 +14,7 @@ import com.example.booksy.R
 import com.example.booksy.databinding.FragmentUserBooksBinding
 import com.example.booksy.ui.home.BookAdapter
 import com.example.booksy.viewmodel.UserProfileViewModel
+import com.example.booksy.viewmodel.UserProfileViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -30,7 +31,8 @@ class UserBooksFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentUserBooksBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(requireActivity())[UserProfileViewModel::class.java]
+        val factory = UserProfileViewModelFactory(requireContext())
+        viewModel = ViewModelProvider(requireActivity(), factory)[UserProfileViewModel::class.java]
         return binding.root
     }
 
@@ -64,12 +66,9 @@ class UserBooksFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.getPagedUserBooks().collectLatest { pagingData ->
                 adapter.submitData(pagingData)
-                // לא חובה, אבל אפשר לבדוק אם יש תוכן ולהסתיר / להראות הודעת ריקנות
                 binding.emptyMessage.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
             }
         }
-
-        // לא צריך לקרוא ל־viewModel.loadUserBooks() כי Paging מביא אוטומטית
     }
 
     override fun onDestroyView() {
