@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="8dp"
-        app:cardElevation="4dp">
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/booksy_surface_light">
 
         <ImageView
             android:id="@+id/bookImageView"
@@ -30,6 +31,7 @@
         android:textColor="@color/booksy_available"
         android:drawableStart="@drawable/ic_map"
         android:drawablePadding="4dp"
+        android:drawableTint="@color/booksy_available"
         android:layout_marginTop="6dp"
         android:textSize="12sp" />
 

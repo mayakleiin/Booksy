@@ -69,6 +69,24 @@ class BookDetailFragment : Fragment() {
                 .error(android.R.drawable.ic_delete)
                 .into(binding.bookCover)
 
+            if (book.ownerId.isNotEmpty()) {
+                FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(book.ownerId)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        val ownerName = document.getString("name") ?: "Unknown Owner"
+                        binding.ownerName.text = ownerName
+                    }
+            }
+
+            // ✅ הצגת או הסתרת כפתור openMapButton לפי מיקום
+            if (book.lat != null && book.lng != null) {
+                binding.openMapButton.visibility = View.VISIBLE
+            } else {
+                binding.openMapButton.visibility = View.GONE
+            }
+
             val userId = currentUser.uid
             if (book.ownerId == userId) {
                 setupOwnerUI(book)
