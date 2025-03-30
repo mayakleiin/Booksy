@@ -75,5 +75,15 @@
             app:destination="@id/bookDetailFragment" />
     </fragment>
 
+    <action
+        android:id="@+id/action_global_bookDetailFragment"
+        app:destination="@id/bookDetailFragment" />
+
+    <action
+        android:id="@+id/action_global_addBookFragment"
+        app:destination="@id/addBookFragment" />
+
+
+
 
 </navigation>

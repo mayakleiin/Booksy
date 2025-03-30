@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksy.R
@@ -18,6 +19,8 @@ import com.example.booksy.viewmodel.UserProfileViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import androidx.navigation.fragment.findNavController
+
 
 class UserBooksFragment : Fragment() {
 
@@ -51,24 +54,34 @@ class UserBooksFragment : Fragment() {
 
         adapter = BookAdapter(
             onItemClick = { book ->
-                val action = UserBooksFragmentDirections.actionUserBooksFragmentToBookDetailFragment(book.id)
-                findNavController().navigate(action)
+                findNavController().navigate(
+                    R.id.action_global_bookDetailFragment,
+                    Bundle().apply { putString("bookId", book.id) }
+                )
             },
             onEditClick = { book ->
-                val action = UserBooksFragmentDirections.actionUserBooksFragmentToAddBookFragment(book)
-                findNavController().navigate(action)
+                findNavController().navigate(
+                    R.id.action_global_addBookFragment,
+                    Bundle().apply { putParcelable("bookToEdit", book) }
+                )
             }
         )
+
+
+
+
+
 
         binding.userBooksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.userBooksRecyclerView.adapter = adapter
 
         lifecycleScope.launch {
-            viewModel.getPagedUserBooks().collectLatest { pagingData ->
+            viewModel.pagedUserBooks.collectLatest { pagingData ->
                 adapter.submitData(pagingData)
                 binding.emptyMessage.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
             }
         }
+
 
         binding.addBookButton.setOnClickListener {
             findNavController().navigate(R.id.addBookFragment)
