@@ -53,12 +53,12 @@ class UserProfileFragment : Fragment() {
 
                 val imageUrl = it.imageUrl
                 if (imageUrl.isNullOrBlank()) {
-                    binding.userImage.setImageResource(R.drawable.ic_user_placeholder)
+                    binding.userImage.setImageResource(R.drawable.default_profile)
                 } else {
                     Picasso.get()
                         .load(imageUrl)
-                        .placeholder(R.drawable.ic_user_placeholder)
-                        .error(R.drawable.ic_user_placeholder)
+                        .placeholder(R.drawable.default_profile)
+                        .error(R.drawable.default_profile)
                         .transform(CircleTransformation())
                         .into(binding.userImage)
                 }

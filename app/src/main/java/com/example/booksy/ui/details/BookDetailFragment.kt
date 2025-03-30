@@ -128,8 +128,8 @@ class BookDetailFragment : Fragment() {
                 if (!ownerImageUrl.isNullOrEmpty()) {
                     Picasso.get()
                         .load(ownerImageUrl)
-                        .placeholder(R.drawable.ic_user_placeholder)
-                        .error(R.drawable.ic_user_placeholder)
+                        .placeholder(R.drawable.default_profile)
+                        .error(R.drawable.default_profile)
                         .into(binding.ownerImage)
                 }
             }
