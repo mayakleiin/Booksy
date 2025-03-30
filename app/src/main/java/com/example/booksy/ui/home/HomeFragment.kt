@@ -23,6 +23,8 @@ import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.firebase.auth.FirebaseAuth
+import android.graphics.Bitmap
+import android.graphics.Canvas
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -48,11 +50,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
         loadingOverlay = binding.loadingOverlay
 
-        var mapViewBundle: Bundle? = null
-        if (savedInstanceState != null) {
-            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY)
-        }
-
+        val mapViewBundle = savedInstanceState?.getBundle(MAP_VIEW_BUNDLE_KEY)
         mapView = binding.mapView
         mapView.onCreate(mapViewBundle)
         mapView.getMapAsync(this)
@@ -78,11 +76,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private fun setupProfileButton() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         binding.profileButton.setOnClickListener {
-            if (currentUser != null) {
-                findNavController().navigate(R.id.userProfileFragment)
-            } else {
-                findNavController().navigate(R.id.loginFragment)
-            }
+            val destination = if (currentUser != null) R.id.userProfileFragment else R.id.loginFragment
+            findNavController().navigate(destination)
         }
     }
 
@@ -111,15 +106,18 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private fun observeViewModel() {
         viewModel.books.observe(viewLifecycleOwner) { books ->
             googleMap?.clear()
+
+            val bookIcon = getScaledMarker(R.drawable.book_marker)
+
             books.forEach { book ->
                 if (book.lat != null && book.lng != null) {
-                    val marker = googleMap?.addMarker(
+                    googleMap?.addMarker(
                         MarkerOptions()
                             .position(LatLng(book.lat, book.lng))
                             .title(book.title)
                             .snippet(getString(R.string.by_author_format, book.author))
-                    )
-                    marker?.tag = book.id
+                            .icon(bookIcon)
+                    )?.tag = book.id
                 }
             }
         }
@@ -136,8 +134,24 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(map: GoogleMap) {
-        MapsInitializer.initialize(requireContext())
         googleMap = map
+        MapsInitializer.initialize(requireContext())
+
+        googleMap?.apply {
+            uiSettings.isZoomControlsEnabled = true
+            uiSettings.isMyLocationButtonEnabled = true
+            uiSettings.isCompassEnabled = true
+            uiSettings.isScrollGesturesEnabled = true
+            uiSettings.isZoomGesturesEnabled = true
+            uiSettings.isRotateGesturesEnabled = true
+
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
+            ) {
+                isMyLocationEnabled = true
+            }
+        }
+
         setupMarkerClickListener()
         viewModel.loadBooks()
         moveToUserLocation()
@@ -193,8 +207,8 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private fun moveToUserLocation() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
-            PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
                     moveToLocation(it)
@@ -211,11 +225,13 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private fun addUserMarker(location: Location) {
         val userLatLng = LatLng(location.latitude, location.longitude)
+        val userIcon = getScaledMarker(R.drawable.user_marker)
+
         googleMap?.addMarker(
             MarkerOptions()
                 .position(userLatLng)
                 .title("You")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                .icon(userIcon)
         )
     }
 
@@ -245,5 +261,14 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     override fun onLowMemory() {
         super.onLowMemory()
         mapView.onLowMemory()
+    }
+
+    private fun getScaledMarker(resourceId: Int, width: Int = 72, height: Int = 72): BitmapDescriptor {
+        val drawable = ContextCompat.getDrawable(requireContext(), resourceId)
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable?.setBounds(0, 0, canvas.width, canvas.height)
+        drawable?.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }
