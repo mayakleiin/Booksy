@@ -2,20 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/splashFragment">
-
-    <!-- SplashFragment -->
-    <fragment
-        android:id="@+id/splashFragment"
-        android:name="com.example.booksy.ui.splash.SplashFragment"
-        android:label="Splash">
-        <action
-            android:id="@+id/action_splashFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
-        <action
-            android:id="@+id/action_splashFragment_to_userProfileFragment"
-            app:destination="@id/userProfileFragment" />
-    </fragment>
+    app:startDestination="@id/loginFragment">
 
     <!-- LoginFragment -->
     <fragment
