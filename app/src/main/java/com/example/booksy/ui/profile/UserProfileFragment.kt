@@ -16,6 +16,7 @@ import com.example.booksy.viewmodel.UserProfileViewModel
 import com.example.booksy.viewmodel.UserProfileViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
+import coil.load
 
 class UserProfileFragment : Fragment() {
 
@@ -48,13 +49,18 @@ class UserProfileFragment : Fragment() {
             user?.let {
                 binding.userName.text = it.name
 
-                Glide.with(this)
-                    .load(it.imageUrl)
-                    .placeholder(R.drawable.ic_profile_placeholder)
-                    .error(R.drawable.ic_profile_placeholder)
-                    .into(binding.userImage)
+                val imageUrl = it.imageUrl
+                if (imageUrl.isNullOrBlank()) {
+                    binding.userImage.setImageResource(R.drawable.default_profile)
+                } else {
+                    binding.userImage.load(imageUrl) {
+                        placeholder(R.drawable.default_profile)
+                        error(R.drawable.default_profile)
+                    }
+                }
             }
         }
+
 
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), getString(R.string.toast_profile_generic, message), Toast.LENGTH_SHORT).show()

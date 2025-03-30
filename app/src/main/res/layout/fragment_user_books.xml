@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/userBooksRoot"
@@ -18,6 +17,8 @@
         android:text="@string/no_books_found"
         android:gravity="center"
         android:visibility="gone"
+        android:textColor="@color/white"
+        android:textSize="16sp"
         android:padding="24dp"
         android:layout_gravity="center" />
 
@@ -26,8 +27,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:contentDescription="@string/add_book"
         app:srcCompat="@drawable/ic_add"
+        android:contentDescription="@string/add_book"
         android:layout_gravity="bottom|end" />
 
     <FrameLayout
@@ -38,7 +39,6 @@
         android:visibility="gone"
         android:clickable="true"
         android:focusable="true">
-
         <ProgressBar
             android:id="@+id/loadingSpinner"
             android:layout_width="48dp"

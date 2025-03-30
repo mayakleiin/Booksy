@@ -1,12 +1,12 @@
 package com.example.booksy.ui.profile
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -14,11 +14,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import coil.load
-import com.example.booksy.R
 import com.example.booksy.databinding.FragmentEditProfileDialogBinding
 import com.example.booksy.viewmodel.UserProfileViewModel
 import com.google.firebase.storage.FirebaseStorage
 import java.util.*
+import com.example.booksy.R
 
 class EditProfileDialogFragment : DialogFragment() {
 
@@ -34,14 +34,12 @@ class EditProfileDialogFragment : DialogFragment() {
             }
         }
 
-    @SuppressLint("UseGetLayoutInflater")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = FragmentEditProfileDialogBinding.inflate(LayoutInflater.from(context))
 
         val user = viewModel.user.value
         binding.nameEditText.setText(user?.name)
-        binding.profileImage.load(user?.imageUrl)
-
+        binding.profileImage.load(user?.imageUrl ?: R.drawable.default_profile)
         binding.profileImage.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK).apply {
                 type = "image/*"
@@ -53,10 +51,13 @@ class EditProfileDialogFragment : DialogFragment() {
             binding.loader.isVisible = loading
         }
 
+        // Hide FAB when dialog is shown
+        (parentFragment?.view?.findViewById<View>(com.example.booksy.R.id.addBookButton))?.visibility = View.GONE
+
         return AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.dialog_edit_profile_title))
+            .setTitle("Edit Profile")
             .setView(binding.root)
-            .setPositiveButton(getString(R.string.save)) { _, _ ->
+            .setPositiveButton("Save") { _, _ ->
                 val newName = binding.nameEditText.text.toString().trim()
                 if (newName.isNotEmpty()) {
                     if (selectedImageUri != null) {
@@ -65,11 +66,17 @@ class EditProfileDialogFragment : DialogFragment() {
                         viewModel.updateUserProfile(newName, user?.imageUrl)
                     }
                 } else {
-                    Toast.makeText(requireContext(), getString(R.string.toast_name_required), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton(getString(R.string.cancel), null)
+            .setNegativeButton("Cancel") { _, _ -> dismiss() }
             .create()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Show FAB again when dialog is dismissed
+        (parentFragment?.view?.findViewById<View>(com.example.booksy.R.id.addBookButton))?.visibility = View.VISIBLE
     }
 
     private fun uploadImageToFirebase(name: String, imageUri: Uri) {
@@ -85,7 +92,7 @@ class EditProfileDialogFragment : DialogFragment() {
                 viewModel.updateUserProfile(name, uri.toString())
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), getString(R.string.toast_image_failed), Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
             }
     }
 }

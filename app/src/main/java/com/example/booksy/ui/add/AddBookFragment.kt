@@ -29,6 +29,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.android.material.chip.Chip
 import java.util.*
 
 class AddBookFragment : Fragment() {
@@ -121,11 +122,15 @@ class AddBookFragment : Fragment() {
         }
     }
 
-    private fun createChip(text: String, isChecked: Boolean): com.google.android.material.chip.Chip {
-        return com.google.android.material.chip.Chip(requireContext()).apply {
+    private fun createChip(text: String, isChecked: Boolean): Chip {
+        return Chip(requireContext()).apply {
             this.text = text
             isCheckable = true
             this.isChecked = isChecked
+            setTextColor(ContextCompat.getColor(context, R.color.chip_text))
+            chipBackgroundColor = android.content.res.ColorStateList.valueOf(
+                ContextCompat.getColor(context, R.color.chip_background)
+            )
         }
     }
 

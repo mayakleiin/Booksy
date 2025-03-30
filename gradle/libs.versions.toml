@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.1"
+coilVersion = "2.4.0"
 coreSplashscreen = "1.0.1"
 kotlin = "2.1.10"
 ksp = "2.1.10-1.0.31"
@@ -48,6 +49,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+coil-v240 = { module = "io.coil-kt:coil", version.ref = "coilVersion" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 material-v1100 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
