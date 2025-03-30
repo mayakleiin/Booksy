@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentLoginBinding
 import com.example.booksy.viewmodel.AuthViewModel
-import com.google.firebase.auth.FirebaseAuth
 
 class LoginFragment : Fragment() {
 
@@ -43,15 +42,15 @@ class LoginFragment : Fragment() {
                     email = email,
                     password = password,
                     onSuccess = {
-                        Toast.makeText(requireContext(), "Welcome!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), getString(R.string.toast_login_success), Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.action_loginFragment_to_userProfileFragment)
                     },
                     onError = { error ->
-                        Toast.makeText(requireContext(), "Login failed: $error", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), getString(R.string.toast_login_failed, error), Toast.LENGTH_LONG).show()
                     }
                 )
             } else {
-                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.toast_fill_all_fields), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -59,7 +58,6 @@ class LoginFragment : Fragment() {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -37,12 +37,31 @@
     <string name="available">AVAILABLE</string>
     <string name="filter">Filter</string>
 
-    <!-- 🆕 Required for AddBookFragment -->
+    <!-- Required for AddBookFragment -->
     <string name="toast_book_filled">Book details filled automatically. You can still edit.</string>
     <string name="toast_no_book_found">No book found</string>
-    <string name="toast_fill_all_fields">Please fill all required fields</string>
     <string name="toast_location_failed">Failed to get location</string>
     <string name="toast_book_saved">Book saved successfully</string>
     <string name="toast_save_failed">Failed to save book</string>
     <string name="toast_image_failed">Image upload failed</string>
+
+    <!-- Required for BookDetailsFragment -->
+    <string name="toast_book_not_found">Book not found</string>
+    <string name="toast_book_deleted">Book deleted</string>
+    <string name="toast_delete_failed">Failed to delete book</string>
+    <string name="toast_maps_not_found">Google Maps not found</string>
+
+    <!-- Required for LoginFragment -->
+    <string name="toast_login_success">Welcome!</string>
+    <string name="toast_login_failed">Login failed: %1$s</string>
+
+    <!-- Required for RegisterFragment -->
+    <string name="toast_register_success">Welcome!</string>
+    <string name="toast_register_save_failed">Failed saving user info</string>
+    <string name="toast_register_failed">Register failed: %1$s</string>
+
+    <!-- General -->
+    <string name="toast_fill_all_fields">Please fill all fields</string>
+
+
 </resources>
