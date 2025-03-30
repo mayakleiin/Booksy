@@ -83,6 +83,10 @@ class UserProfileFragment : Fragment() {
             FirebaseAuth.getInstance().signOut()
             findNavController().navigate(R.id.action_userProfileFragment_to_loginFragment)
         }
+
+        binding.backToHomeButton.setOnClickListener {
+            findNavController().navigate(R.id.homeFragment)
+        }
     }
 
     override fun onDestroyView() {
