@@ -36,4 +36,13 @@
     <string name="genre">Genre</string>
     <string name="available">AVAILABLE</string>
     <string name="filter">Filter</string>
+
+    <!-- 🆕 Required for AddBookFragment -->
+    <string name="toast_book_filled">Book details filled automatically. You can still edit.</string>
+    <string name="toast_no_book_found">No book found</string>
+    <string name="toast_fill_all_fields">Please fill all required fields</string>
+    <string name="toast_location_failed">Failed to get location</string>
+    <string name="toast_book_saved">Book saved successfully</string>
+    <string name="toast_save_failed">Failed to save book</string>
+    <string name="toast_image_failed">Image upload failed</string>
 </resources>
