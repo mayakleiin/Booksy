@@ -3,15 +3,16 @@
     <style name="Theme.Booksy" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:colorBackground">@color/black</item>
         <item name="colorSurface">@color/black</item>
-
         <item name="colorPrimary">@color/white</item>
         <item name="colorOnPrimary">@color/black</item>
-
         <item name="android:navigationBarColor">@color/black</item>
         <item name="android:statusBarColor">@color/black</item>
-
         <item name="buttonStyle">@style/BooksyButton.White</item>
+
+        <item name="android:fontFamily">@font/volkhov_family</item>
+        <item name="fontFamily">@font/volkhov_family</item>
     </style>
+
 
     <style name="BooksyButton.White" parent="Widget.Material3.Button">
         <item name="android:backgroundTint">@color/white</item>
