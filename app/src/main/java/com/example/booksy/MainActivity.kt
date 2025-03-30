@@ -43,29 +43,29 @@ class MainActivity : AppCompatActivity() {
 
         when (currentDestination) {
             R.id.loginFragment -> {
-                // Exit app with double press when in login screen
+                // Double press to exit the app from the login screen
                 if (backPressedTime + 2000 > System.currentTimeMillis()) {
                     super.onBackPressed()
                 } else {
-                    Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT).show()
                 }
                 backPressedTime = System.currentTimeMillis()
             }
             R.id.homeFragment -> {
-                // Exit app with double press when in home screen
+                // Double press to exit the app from the home screen
                 if (backPressedTime + 2000 > System.currentTimeMillis()) {
                     super.onBackPressed()
                 } else {
-                    Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT).show()
                 }
                 backPressedTime = System.currentTimeMillis()
             }
             R.id.userProfileFragment -> {
-                // Go back to home screen from profile
+                // Navigate back to the home screen from the profile screen
                 navController.navigate(R.id.homeFragment)
             }
             else -> {
-                // Normal back navigation for other screens
+                // Default back navigation for other screens
                 if (!navController.popBackStack()) {
                     super.onBackPressed()
                 }
