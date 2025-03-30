@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.booksy.databinding.FragmentSplashBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.example.booksy.R
 
 class SplashFragment : Fragment() {
     private var _binding: FragmentSplashBinding? = null
