@@ -43,7 +43,6 @@
     <string name="toast_location_failed">Failed to get location</string>
     <string name="toast_book_saved">Book saved successfully</string>
     <string name="toast_save_failed">Failed to save book</string>
-    <string name="toast_image_failed">Image upload failed</string>
 
     <!-- Required for BookDetailsFragment -->
     <string name="toast_book_not_found">Book not found</string>
@@ -60,8 +59,21 @@
     <string name="toast_register_save_failed">Failed saving user info</string>
     <string name="toast_register_failed">Register failed: %1$s</string>
 
+    <!-- Required for ProfileFragment -->
+    <string name="dialog_edit_profile_title">Edit Profile</string>
+    <string name="toast_name_required">Name cannot be empty</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Required for HomeFragment -->
+    <string name="tab_my_books">My Books</string>
+    <string name="tab_my_requests">My Requests</string>
+    <string name="tab_incoming_requests">Incoming Requests</string>
+    <string name="toast_profile_generic">%1$s</string>
+
     <!-- General -->
     <string name="toast_fill_all_fields">Please fill all fields</string>
+    <string name="toast_image_failed">Image upload failed</string>
 
 
 </resources>
