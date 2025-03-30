@@ -17,7 +17,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import coil.load
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentAddBookBinding
 import com.example.booksy.model.Book
@@ -31,6 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.android.material.chip.Chip
 import java.util.*
+import com.squareup.picasso.Picasso
 
 class AddBookFragment : Fragment() {
 
@@ -70,7 +70,11 @@ class AddBookFragment : Fragment() {
                 binding.authorEditText.setText(it.getAuthor())
                 binding.descriptionEditText.setText(it.getDescription())
                 binding.pagesEditText.setText(it.number_of_pages_median?.toString() ?: "")
-                binding.bookImageView.load(it.getCoverUrl())
+                Picasso.get()
+                    .load(it.getCoverUrl())
+                    .placeholder(R.drawable.ic_book_placeholder)
+                    .error(R.drawable.ic_book_placeholder)
+                    .into(binding.bookImageView)
                 Toast.makeText(requireContext(), getString(R.string.toast_book_filled), Toast.LENGTH_SHORT).show()
             }
         }
