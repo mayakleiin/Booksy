@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bookCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="6dp">
+    app:cardCornerRadius="8dp"
+    app:cardBackgroundColor="@color/booksy_surface_light"
+    app:cardElevation="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,6 +14,7 @@
         android:orientation="horizontal"
         android:padding="12dp">
 
+        <!-- Book cover image -->
         <ImageView
             android:id="@+id/bookImage"
             android:layout_width="72dp"
@@ -28,54 +29,89 @@
             android:orientation="vertical"
             android:layout_marginStart="12dp">
 
+            <!-- Book title -->
             <TextView
                 android:id="@+id/bookTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/book_title"
                 android:textStyle="bold"
+                android:textColor="@color/booksy_text_primary"
                 android:textSize="16sp" />
 
+            <!-- Author name -->
             <TextView
                 android:id="@+id/bookAuthor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/author"
                 android:textSize="14sp"
-                android:textColor="#555" />
+                android:textColor="@color/booksy_text_secondary" />
 
-            <TextView
-                android:id="@+id/bookGenre"
-                android:layout_width="wrap_content"
+            <!-- Genre section -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/genre"
-                android:textSize="14sp"
-                android:textColor="#777" />
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
 
-            <TextView
-                android:id="@+id/bookLanguage"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Genre: "
+                    android:textSize="13sp"
+                    android:textColor="@color/booksy_text_tertiary" />
+
+                <TextView
+                    android:id="@+id/bookGenre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/genre"
+                    android:textSize="13sp"
+                    android:textColor="@color/booksy_text_secondary" />
+            </LinearLayout>
+
+            <!-- Language section -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/language"
-                android:textSize="14sp"
-                android:textColor="#777" />
+                android:orientation="horizontal">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Language: "
+                    android:textSize="13sp"
+                    android:textColor="@color/booksy_text_tertiary" />
+
+                <TextView
+                    android:id="@+id/bookLanguage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/language"
+                    android:textSize="13sp"
+                    android:textColor="@color/booksy_text_secondary" />
+            </LinearLayout>
+
+            <!-- Status -->
             <TextView
                 android:id="@+id/bookStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/available"
                 android:textSize="13sp"
-                android:textColor="@android:color/holo_green_dark"
+                android:textColor="@color/booksy_available"
                 android:layout_marginTop="4dp"/>
 
+            <!-- Edit button -->
             <Button
                 android:id="@+id/editButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Edit"
                 android:layout_marginTop="8dp"
-                android:layout_gravity="end" />
+                android:layout_gravity="end"
+                style="@style/BooksyButton.Secondary" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

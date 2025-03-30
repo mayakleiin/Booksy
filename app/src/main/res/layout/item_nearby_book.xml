@@ -1,33 +1,58 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="140dp"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="8dp">
 
-    <ImageView
-        android:id="@+id/bookImageView"
-        android:layout_width="120dp"
-        android:layout_height="160dp"
-        android:src="@drawable/ic_book_placeholder" />
+    <!-- Book card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
 
+        <ImageView
+            android:id="@+id/bookImageView"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_book_placeholder" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Distance indicator -->
     <TextView
         android:id="@+id/distanceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="350m"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/booksy_available"
+        android:drawableStart="@drawable/ic_map"
+        android:drawablePadding="4dp"
+        android:layout_marginTop="6dp"
+        android:textSize="12sp" />
 
+    <!-- Book title -->
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/book_title"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/booksy_text_primary"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginTop="2dp" />
 
+    <!-- Author name -->
     <TextView
         android:id="@+id/authorTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/author" />
+        android:text="@string/author"
+        android:textColor="@color/booksy_text_secondary"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="12sp" />
 </LinearLayout>

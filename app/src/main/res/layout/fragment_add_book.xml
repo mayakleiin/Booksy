@@ -1,16 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/addBookRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/booksy_background">
+
+    <!-- Book search section -->
     <LinearLayout
         android:id="@+id/bookSearchContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:layout_margin="16dp">
 
         <EditText
             android:id="@+id/searchEditText"
@@ -19,19 +20,23 @@
             android:layout_height="wrap_content"
             android:hint="Search by book title"
             android:padding="12dp"
-            android:background="@drawable/edittext_bg" />
+            android:textColor="@color/booksy_text_primary"
+            android:textColorHint="@color/booksy_text_tertiary"
+            android:background="@drawable/input_field_background" />
 
         <Button
             android:id="@+id/searchButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Search"
-            android:layout_marginStart="8dp" />
+            android:layout_marginStart="8dp"
+            style="@style/BooksyButton.White" />
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="70dp"
         android:padding="16dp">
 
         <LinearLayout
@@ -42,13 +47,20 @@
             android:padding="16dp">
 
             <!-- Book Image Upload -->
-            <ImageView
-                android:id="@+id/bookImageView"
+            <androidx.cardview.widget.CardView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_book_placeholder"
-                android:contentDescription="@string/book_cover_desc" />
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
+
+                <ImageView
+                    android:id="@+id/bookImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_book_placeholder"
+                    android:contentDescription="@string/book_cover_desc" />
+            </androidx.cardview.widget.CardView>
 
             <Button
                 android:id="@+id/selectImageButton"
@@ -56,9 +68,8 @@
                 android:layout_height="wrap_content"
                 android:text="Upload Image"
                 android:layout_marginTop="8dp"
-                android:textColor="@android:color/white"
-                android:backgroundTint="@android:color/black" />
-
+                style="@style/BooksyButton.Secondary" />
+            <!-- Book title -->
             <EditText
                 android:id="@+id/titleEditText"
                 android:layout_width="match_parent"
@@ -66,9 +77,11 @@
                 android:hint="Book Title"
                 android:layout_marginTop="16dp"
                 android:padding="12dp"
-                android:textColor="@android:color/black"
-                android:background="@drawable/edittext_bg" />
+                android:textColor="@color/booksy_text_primary"
+                android:textColorHint="@color/booksy_text_tertiary"
+                android:background="@drawable/input_field_background" />
 
+            <!-- Author name -->
             <EditText
                 android:id="@+id/authorEditText"
                 android:layout_width="match_parent"
@@ -76,15 +89,17 @@
                 android:hint="Author"
                 android:layout_marginTop="8dp"
                 android:padding="12dp"
-                android:textColor="@android:color/black"
-                android:background="@drawable/edittext_bg" />
+                android:textColor="@color/booksy_text_primary"
+                android:textColorHint="@color/booksy_text_tertiary"
+                android:background="@drawable/input_field_background" />
 
+            <!-- Genre section -->
             <TextView
                 android:text="Genre"
                 android:layout_marginTop="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/booksy_text_primary" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/genreChipGroup"
@@ -92,17 +107,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 app:chipSpacing="8dp"
-                app:chipBackgroundColor="@color/white"
-                app:chipStrokeColor="@android:color/black"
+                app:chipBackgroundColor="@color/booksy_surface_light"
+                app:chipStrokeColor="@color/booksy_text_secondary"
                 app:chipStrokeWidth="1dp"
                 app:singleSelection="false" />
 
+            <!-- Language section -->
             <TextView
                 android:text="Language"
                 android:layout_marginTop="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/booksy_text_primary" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/languageChipGroup"
@@ -110,11 +126,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 app:chipSpacing="8dp"
-                app:chipBackgroundColor="@color/white"
-                app:chipStrokeColor="@android:color/black"
+                app:chipBackgroundColor="@color/booksy_surface_light"
+                app:chipStrokeColor="@color/booksy_text_secondary"
                 app:chipStrokeWidth="1dp"
                 app:singleSelection="false" />
 
+            <!-- Description -->
             <EditText
                 android:id="@+id/descriptionEditText"
                 android:layout_width="match_parent"
@@ -122,10 +139,14 @@
                 android:hint="Description"
                 android:layout_marginTop="8dp"
                 android:padding="12dp"
-                android:textColor="@android:color/black"
-                android:background="@drawable/edittext_bg"
-                android:inputType="textMultiLine" />
+                android:textColor="@color/booksy_text_primary"
+                android:textColorHint="@color/booksy_text_tertiary"
+                android:background="@drawable/input_field_background"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:gravity="top|start" />
 
+            <!-- Pages -->
             <EditText
                 android:id="@+id/pagesEditText"
                 android:layout_width="match_parent"
@@ -134,9 +155,11 @@
                 android:inputType="number"
                 android:layout_marginTop="8dp"
                 android:padding="12dp"
-                android:textColor="@android:color/black"
-                android:background="@drawable/edittext_bg" />
+                android:textColor="@color/booksy_text_primary"
+                android:textColorHint="@color/booksy_text_tertiary"
+                android:background="@drawable/input_field_background" />
 
+            <!-- Manual address input (hidden by default) -->
             <EditText
                 android:id="@+id/addressEditText"
                 android:layout_width="match_parent"
@@ -145,34 +168,52 @@
                 android:layout_marginTop="8dp"
                 android:visibility="gone"
                 android:padding="12dp"
-                android:textColor="@android:color/black"
-                android:background="@drawable/edittext_bg" />
+                android:textColor="@color/booksy_text_primary"
+                android:textColorHint="@color/booksy_text_tertiary"
+                android:background="@drawable/input_field_background" />
 
+            <!-- Location option -->
             <CheckBox
                 android:id="@+id/shareLocationCheckbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Use current location"
                 android:layout_marginTop="8dp"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/booksy_text_primary" />
 
-            <Button
-                android:id="@+id/saveBookButton"
+            <!-- Action buttons -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save Book"
-                android:textColor="@android:color/white"
-                android:backgroundTint="@android:color/black"
-                android:layout_marginTop="24dp" />
+                android:orientation="horizontal"
+                android:layout_marginTop="24dp">
 
+                <Button
+                    android:id="@+id/cancelButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Cancel"
+                    android:layout_marginEnd="8dp"
+                    style="@style/BooksyButton.Secondary" />
+
+                <Button
+                    android:id="@+id/saveBookButton"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Save Book"
+                    style="@style/BooksyButton.White" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
+    <!-- Loading overlay -->
     <FrameLayout
         android:id="@+id/loadingOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#88000000"
+        android:background="@color/booksy_overlay"
         android:visibility="gone"
         android:clickable="true"
         android:focusable="true">

@@ -43,6 +43,10 @@ class FilterBottomSheetFragment(
             onApply(filters)
             dismiss()
         }
+
+        binding.cancelFilterButton.setOnClickListener {
+            dismiss()
+        }
     }
 
     private fun setupSlider() {
