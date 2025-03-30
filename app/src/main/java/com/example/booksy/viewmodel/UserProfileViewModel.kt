@@ -77,10 +77,12 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
             .collection("books")
             .whereEqualTo("ownerId", userId)
 
+
         return Pager(
             config = PagingConfig(pageSize = 10),
             pagingSourceFactory = { FirestoreBookPagingSource(query) }
         ).flow
+
     }
 
 
