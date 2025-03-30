@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import coil.load
+import com.bumptech.glide.Glide
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentUserProfileBinding
 import com.example.booksy.ui.home.BookAdapter
@@ -47,7 +47,12 @@ class UserProfileFragment : Fragment() {
         viewModel.user.observe(viewLifecycleOwner) { user ->
             user?.let {
                 binding.userName.text = it.name
-                binding.userImage.load(it.imageUrl)
+
+                Glide.with(this)
+                    .load(it.imageUrl)
+                    .placeholder(R.drawable.ic_profile_placeholder)
+                    .error(R.drawable.ic_profile_placeholder)
+                    .into(binding.userImage)
             }
         }
 

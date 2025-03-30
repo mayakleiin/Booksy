@@ -8,6 +8,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.bumptech.glide.Glide
 import com.example.booksy.R
 import com.example.booksy.databinding.ItemBookBinding
 import com.example.booksy.model.Book
@@ -38,15 +39,12 @@ class BookAdapter(
                 ContextCompat.getColor(binding.root.context, colorRes)
             )
 
-            if (book.imageUrl.isNotEmpty()) {
-                binding.bookImage.load(book.imageUrl) {
-                    crossfade(true)
-                    placeholder(R.drawable.ic_book_placeholder)
-                    error(R.drawable.ic_book_placeholder)
-                }
-            } else {
-                binding.bookImage.setImageResource(R.drawable.ic_book_placeholder)
-            }
+            Glide.with(binding.root.context)
+                .load(if (book.imageUrl.isNotEmpty()) book.imageUrl else R.drawable.ic_book_placeholder)
+                .placeholder(R.drawable.ic_book_placeholder)
+                .error(R.drawable.ic_book_placeholder)
+                .into(binding.bookImage)
+
 
             binding.root.setOnClickListener {
                 onItemClick(book)

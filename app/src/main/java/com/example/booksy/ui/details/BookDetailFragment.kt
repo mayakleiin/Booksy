@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import coil.load
+import com.bumptech.glide.Glide
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentBookDetailBinding
 import com.example.booksy.viewmodel.BookDetailViewModel
@@ -54,11 +54,11 @@ class BookDetailFragment : Fragment() {
             binding.about.text = book.description
             binding.bookGenre.text = book.genres.joinToString(", ") { it.name }
 
-            binding.bookCover.load(book.imageUrl) {
-                crossfade(true)
-                placeholder(android.R.drawable.ic_menu_gallery)
-                error(android.R.drawable.ic_delete)
-            }
+            Glide.with(this)
+                .load(book.imageUrl)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_delete)
+                .into(binding.bookCover)
 
             val userId = currentUser.uid
 
