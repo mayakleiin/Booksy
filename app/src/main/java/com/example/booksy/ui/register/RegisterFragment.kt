@@ -22,10 +22,7 @@ class RegisterFragment : Fragment() {
     private lateinit var authViewModel: AuthViewModel
     private lateinit var loadingOverlay: FrameLayout
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentRegisterBinding.inflate(inflater, container, false)
         return binding.root
     }
