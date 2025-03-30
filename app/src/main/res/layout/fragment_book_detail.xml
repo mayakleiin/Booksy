@@ -243,6 +243,15 @@
                 android:layout_marginTop="8dp"
                 android:visibility="gone"
                 style="@style/BooksyButton.Danger" />
+
+            <Button
+                android:id="@+id/returnButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Return Book"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                style="@style/BooksyButton.White" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
