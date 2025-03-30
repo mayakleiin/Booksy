@@ -77,6 +77,9 @@
     <string name="toast_request_updated">Request %1$s</string>
     <string name="toast_update_failed">Failed to update request</string>
 
+    <!-- Required for HomeFragment and Filter -->
+    <string name="kilometers_format">%1$d km</string>
+    <string name="by_author_format">by %1$s</string>
 
     <!-- General -->
     <string name="toast_fill_all_fields">Please fill all fields</string>
