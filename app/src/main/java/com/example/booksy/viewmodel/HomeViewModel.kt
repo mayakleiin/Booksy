@@ -11,7 +11,10 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.booksy.data.FirestoreBookPagingSource
+import com.example.booksy.data.NearbyBooksPagingSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+
 
 class HomeViewModel : ViewModel() {
 
@@ -123,4 +126,22 @@ class HomeViewModel : ViewModel() {
     fun getAllBooksWithLocation(): List<Book> {
         return allBooks.filter { it.lat != null && it.lng != null }
     }
+
+    fun getPagedNearbyBooks(): Flow<PagingData<Book>> {
+        val location = internalLocation ?: return flowOf(PagingData.empty())
+        val maxDistanceMeters = filterDistanceMeters.value ?: 2000f
+
+        return Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = {
+                NearbyBooksPagingSource(
+                    allBooks = allBooks,
+                    currentLocation = location,
+                    maxDistanceMeters = maxDistanceMeters
+                )
+            }
+        ).flow
+    }
+
+
 }
