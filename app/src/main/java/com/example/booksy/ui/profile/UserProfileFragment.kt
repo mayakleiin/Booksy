@@ -14,6 +14,7 @@ import com.example.booksy.R
 import com.example.booksy.databinding.FragmentUserProfileBinding
 import com.example.booksy.ui.home.BookAdapter
 import com.example.booksy.viewmodel.UserProfileViewModel
+import com.example.booksy.viewmodel.UserProfileViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 
@@ -27,7 +28,8 @@ class UserProfileFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentUserProfileBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(this)[UserProfileViewModel::class.java]
+        val factory = UserProfileViewModelFactory(requireContext())
+        viewModel = ViewModelProvider(this, factory)[UserProfileViewModel::class.java]
         return binding.root
     }
 
