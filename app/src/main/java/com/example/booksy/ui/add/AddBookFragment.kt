@@ -1,3 +1,4 @@
+// 📁 AddBookFragment.kt
 package com.example.booksy.ui.add
 
 import android.Manifest
@@ -15,13 +16,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import coil.load
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentAddBookBinding
 import com.example.booksy.model.Book
 import com.example.booksy.model.BookStatus
 import com.example.booksy.model.Genre
 import com.example.booksy.model.Language
+import com.example.booksy.viewmodel.OpenLibraryViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -32,6 +36,7 @@ class AddBookFragment : Fragment() {
 
     private lateinit var binding: FragmentAddBookBinding
     private lateinit var loadingOverlay: FrameLayout
+    private val viewModel: OpenLibraryViewModel by viewModels()
 
     private var currentLat: Double? = null
     private var currentLng: Double? = null
@@ -55,6 +60,32 @@ class AddBookFragment : Fragment() {
 
         loadingOverlay = view.findViewById(R.id.loadingOverlay)
 
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            loadingOverlay.visibility = if (it) View.VISIBLE else View.GONE
+        }
+
+        viewModel.selectedBook.observe(viewLifecycleOwner) { book ->
+            book?.let {
+                binding.titleEditText.setText(it.title)
+                binding.authorEditText.setText(it.getAuthor())
+                binding.descriptionEditText.setText(it.getDescription())
+                binding.pagesEditText.setText(it.number_of_pages_median?.toString() ?: "")
+                binding.bookImageView.load(it.getCoverUrl())
+                Toast.makeText(requireContext(), "Book details filled automatically. You can still edit.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        viewModel.noResultFound.observe(viewLifecycleOwner) { noResult ->
+            if (noResult) Toast.makeText(requireContext(), "No book found", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.searchButton.setOnClickListener {
+            val query = binding.searchEditText.text.toString().trim()
+            if (query.isNotEmpty()) {
+                viewModel.searchBook(query)
+            }
+        }
+
         binding.shareLocationCheckbox.setOnCheckedChangeListener { _, isChecked ->
             binding.addressEditText.isVisible = !isChecked
             if (isChecked) requestLocation()
@@ -64,7 +95,6 @@ class AddBookFragment : Fragment() {
             uploadBook()
         }
 
-        // Genre selection
         Genre.values().forEach { genre ->
             val chip = createChip(genre.displayName, selectedGenres.contains(genre))
             chip.setOnClickListener {
@@ -78,7 +108,6 @@ class AddBookFragment : Fragment() {
             binding.genreChipGroup.addView(chip)
         }
 
-        // Language selection
         Language.values().forEach { lang ->
             val chip = createChip(lang.displayName, selectedLanguages.contains(lang))
             chip.setOnClickListener {
@@ -138,15 +167,6 @@ class AddBookFragment : Fragment() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1001 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            requestLocation()
-        }
-    }
-
     private fun uploadBook() {
         val title = binding.titleEditText.text.toString().trim()
         val author = binding.authorEditText.text.toString().trim()
@@ -163,7 +183,7 @@ class AddBookFragment : Fragment() {
             return
         }
 
-        showLoading(true)
+        loadingOverlay.visibility = View.VISIBLE
 
         if (!useCurrentLocation) {
             val geocoder = Geocoder(requireContext(), Locale.getDefault())
@@ -197,12 +217,12 @@ class AddBookFragment : Fragment() {
                 .document(bookId)
                 .set(book)
                 .addOnSuccessListener {
-                    showLoading(false)
+                    loadingOverlay.visibility = View.GONE
                     Toast.makeText(requireContext(), "Book saved successfully", Toast.LENGTH_SHORT).show()
                     findNavController().navigateUp()
                 }
                 .addOnFailureListener {
-                    showLoading(false)
+                    loadingOverlay.visibility = View.GONE
                     Toast.makeText(requireContext(), "Failed to save book", Toast.LENGTH_SHORT).show()
                 }
         }
@@ -216,15 +236,11 @@ class AddBookFragment : Fragment() {
                     }
                 }
                 .addOnFailureListener {
-                    showLoading(false)
+                    loadingOverlay.visibility = View.GONE
                     Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
                 }
         } else {
             saveBookToFirestore("")
         }
-    }
-
-    private fun showLoading(show: Boolean) {
-        loadingOverlay.visibility = if (show) View.VISIBLE else View.GONE
     }
 }
