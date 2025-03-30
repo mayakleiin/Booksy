@@ -84,7 +84,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                         MarkerOptions()
                             .position(LatLng(book.lat, book.lng))
                             .title(book.title)
-                            .snippet("by ${book.author}")
+                            .snippet(getString(R.string.by_author_format, book.author))
                     )
                     marker?.tag = book.id
                 }
@@ -154,7 +154,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
-    // lifecycle methods for mapView
     override fun onResume() {
         super.onResume()
         mapView.onResume()

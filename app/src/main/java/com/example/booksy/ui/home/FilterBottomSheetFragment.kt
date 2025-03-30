@@ -1,3 +1,5 @@
+package com.example.booksy.ui.home
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +10,6 @@ import com.example.booksy.model.Genre
 import com.example.booksy.model.Language
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
-
 
 class FilterBottomSheetFragment(
     private val currentFilters: BookFilters,
@@ -50,13 +51,12 @@ class FilterBottomSheetFragment(
 
         val defaultValue = currentFilters.maxDistanceKm.coerceIn(1f, binding.distanceSlider.valueTo)
         binding.distanceSlider.value = defaultValue
-        binding.distanceValueText.text = "${defaultValue.toInt()} km"
+        binding.distanceValueText.text = getString(com.example.booksy.R.string.kilometers_format, defaultValue.toInt())
 
         binding.distanceSlider.addOnChangeListener { _, value, _ ->
-            binding.distanceValueText.text = "${value.toInt()} km"
+            binding.distanceValueText.text = getString(com.example.booksy.R.string.kilometers_format, value.toInt())
         }
     }
-
 
     private fun setupChips() {
         Genre.values().forEachIndexed { index, genre ->

@@ -64,7 +64,7 @@ class IncomingRequestsFragment : Fragment() {
         }
 
         viewModel.toastMessage.observe(viewLifecycleOwner) {
-            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.toast_profile_generic, it), Toast.LENGTH_SHORT).show()
         }
 
         viewModel.loadIncomingRequests()
@@ -77,11 +77,11 @@ class IncomingRequestsFragment : Fragment() {
             .document(requestedBook.request.id)
             .update("status", newStatus.name)
             .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Request ${newStatus.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.toast_request_updated, newStatus.name), Toast.LENGTH_SHORT).show()
                 viewModel.loadIncomingRequests()
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to update request", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.toast_update_failed), Toast.LENGTH_SHORT).show()
                 viewModel.setIsLoading(false)
             }
     }

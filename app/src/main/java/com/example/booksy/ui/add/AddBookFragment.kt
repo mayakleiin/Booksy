@@ -1,4 +1,3 @@
-// 📁 AddBookFragment.kt
 package com.example.booksy.ui.add
 
 import android.Manifest
@@ -53,7 +52,7 @@ class AddBookFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser == null) {
+        if (currentUser === null) {
             findNavController().navigate(R.id.loginFragment)
             return
         }
@@ -71,12 +70,12 @@ class AddBookFragment : Fragment() {
                 binding.descriptionEditText.setText(it.getDescription())
                 binding.pagesEditText.setText(it.number_of_pages_median?.toString() ?: "")
                 binding.bookImageView.load(it.getCoverUrl())
-                Toast.makeText(requireContext(), "Book details filled automatically. You can still edit.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.toast_book_filled), Toast.LENGTH_SHORT).show()
             }
         }
 
         viewModel.noResultFound.observe(viewLifecycleOwner) { noResult ->
-            if (noResult) Toast.makeText(requireContext(), "No book found", Toast.LENGTH_SHORT).show()
+            if (noResult) Toast.makeText(requireContext(), getString(R.string.toast_no_book_found), Toast.LENGTH_SHORT).show()
         }
 
         binding.searchButton.setOnClickListener {
@@ -123,20 +122,22 @@ class AddBookFragment : Fragment() {
     }
 
     private fun createChip(text: String, isChecked: Boolean): com.google.android.material.chip.Chip {
-        val chip = com.google.android.material.chip.Chip(requireContext())
-        chip.text = text
-        chip.isCheckable = true
-        chip.isChecked = isChecked
-        return chip
+        return com.google.android.material.chip.Chip(requireContext()).apply {
+            this.text = text
+            isCheckable = true
+            this.isChecked = isChecked
+        }
     }
 
     private fun updateChips(group: ViewGroup, selectedList: List<Enum<*>>) {
         group.removeAllViews()
         selectedList.forEach { item ->
             val chip = createChip(
-                if (item is Genre) item.displayName
-                else if (item is Language) item.displayName
-                else item.name,
+                when (item) {
+                    is Genre -> item.displayName
+                    is Language -> item.displayName
+                    else -> item.name
+                },
                 true
             )
             group.addView(chip)
@@ -162,7 +163,7 @@ class AddBookFragment : Fragment() {
                 currentLat = location.latitude
                 currentLng = location.longitude
             } else {
-                Toast.makeText(requireContext(), "Failed to get location", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.toast_location_failed), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -179,7 +180,7 @@ class AddBookFragment : Fragment() {
             || selectedGenres.isEmpty() || selectedLanguages.isEmpty()
             || (!useCurrentLocation && addressText.isEmpty())
         ) {
-            Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.toast_fill_all_fields), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -218,18 +219,18 @@ class AddBookFragment : Fragment() {
                 .set(book)
                 .addOnSuccessListener {
                     loadingOverlay.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Book saved successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.toast_book_saved), Toast.LENGTH_SHORT).show()
                     findNavController().navigateUp()
                 }
                 .addOnFailureListener {
                     loadingOverlay.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Failed to save book", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.toast_save_failed), Toast.LENGTH_SHORT).show()
                 }
         }
 
-        if (imageUri != null) {
+        imageUri?.let { uri ->
             val storageRef = FirebaseStorage.getInstance().getReference("book_images/$bookId.jpg")
-            storageRef.putFile(imageUri!!)
+            storageRef.putFile(uri)
                 .addOnSuccessListener {
                     storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
                         saveBookToFirestore(downloadUri.toString())
@@ -237,10 +238,8 @@ class AddBookFragment : Fragment() {
                 }
                 .addOnFailureListener {
                     loadingOverlay.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.toast_image_failed), Toast.LENGTH_SHORT).show()
                 }
-        } else {
-            saveBookToFirestore("")
-        }
+        } ?: saveBookToFirestore("")
     }
 }

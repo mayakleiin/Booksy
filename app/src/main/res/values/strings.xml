@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">Booksy</string>
     <string name="book_cover_desc">Book cover image</string>
 
@@ -36,4 +37,55 @@
     <string name="genre">Genre</string>
     <string name="available">AVAILABLE</string>
     <string name="filter">Filter</string>
+
+    <!-- Required for AddBookFragment -->
+    <string name="toast_book_filled">Book details filled automatically. You can still edit.</string>
+    <string name="toast_no_book_found">No book found</string>
+    <string name="toast_location_failed">Failed to get location</string>
+    <string name="toast_book_saved">Book saved successfully</string>
+    <string name="toast_save_failed">Failed to save book</string>
+
+    <!-- Required for BookDetailsFragment -->
+    <string name="toast_book_not_found">Book not found</string>
+    <string name="toast_book_deleted">Book deleted</string>
+    <string name="toast_delete_failed">Failed to delete book</string>
+    <string name="toast_maps_not_found">Google Maps not found</string>
+
+    <!-- Required for LoginFragment -->
+    <string name="toast_login_success">Welcome!</string>
+    <string name="toast_login_failed">Login failed: %1$s</string>
+
+    <!-- Required for RegisterFragment -->
+    <string name="toast_register_success">Welcome!</string>
+    <string name="toast_register_save_failed">Failed saving user info</string>
+    <string name="toast_register_failed">Register failed: %1$s</string>
+
+    <!-- Required for ProfileFragment -->
+    <string name="tab_my_books">My Books</string>
+    <string name="tab_my_requests">My Requests</string>
+    <string name="tab_incoming_requests">Incoming Requests</string>
+
+    <!-- Required for EditProfile -->
+    <string name="dialog_edit_profile_title">Edit Profile</string>
+    <string name="toast_name_required">Name cannot be empty</string>
+    <string name="save">Save</string>
+
+    <!-- Required for ProfileTabs -->
+    <string name="no_books_found">You haven’t uploaded any books yet</string>
+    <string name="toast_request_canceled">Request canceled</string>
+    <string name="toast_cancel_failed">Failed to cancel request</string>
+    <string name="toast_request_updated">Request %1$s</string>
+    <string name="toast_update_failed">Failed to update request</string>
+
+    <!-- Required for HomeFragment and Filter -->
+    <string name="kilometers_format">%1$d km</string>
+    <string name="by_author_format">by %1$s</string>
+
+    <!-- General -->
+    <string name="toast_fill_all_fields">Please fill all fields</string>
+    <string name="toast_image_failed">Image upload failed</string>
+    <string name="toast_profile_generic">%1$s</string>
+    <string name="approve">Approve</string>
+    <string name="cancel">Cancel</string>
+
 </resources>

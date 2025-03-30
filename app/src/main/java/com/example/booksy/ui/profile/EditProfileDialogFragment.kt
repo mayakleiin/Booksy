@@ -1,5 +1,6 @@
 package com.example.booksy.ui.profile
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
@@ -13,6 +14,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import coil.load
+import com.example.booksy.R
 import com.example.booksy.databinding.FragmentEditProfileDialogBinding
 import com.example.booksy.viewmodel.UserProfileViewModel
 import com.google.firebase.storage.FirebaseStorage
@@ -32,6 +34,7 @@ class EditProfileDialogFragment : DialogFragment() {
             }
         }
 
+    @SuppressLint("UseGetLayoutInflater")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = FragmentEditProfileDialogBinding.inflate(LayoutInflater.from(context))
 
@@ -51,9 +54,9 @@ class EditProfileDialogFragment : DialogFragment() {
         }
 
         return AlertDialog.Builder(requireContext())
-            .setTitle("Edit Profile")
+            .setTitle(getString(R.string.dialog_edit_profile_title))
             .setView(binding.root)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
                 val newName = binding.nameEditText.text.toString().trim()
                 if (newName.isNotEmpty()) {
                     if (selectedImageUri != null) {
@@ -62,10 +65,10 @@ class EditProfileDialogFragment : DialogFragment() {
                         viewModel.updateUserProfile(newName, user?.imageUrl)
                     }
                 } else {
-                    Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.toast_name_required), Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .create()
     }
 
@@ -82,7 +85,7 @@ class EditProfileDialogFragment : DialogFragment() {
                 viewModel.updateUserProfile(name, uri.toString())
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.toast_image_failed), Toast.LENGTH_SHORT).show()
             }
     }
 }

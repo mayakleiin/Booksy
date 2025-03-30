@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentUserProfileBinding
-import com.example.booksy.ui.home.BookAdapter
 import com.example.booksy.viewmodel.UserProfileViewModel
 import com.example.booksy.viewmodel.UserProfileViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator
@@ -23,7 +22,6 @@ class UserProfileFragment : Fragment() {
     private var _binding: FragmentUserProfileBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: UserProfileViewModel
-    private lateinit var bookAdapter: BookAdapter
     private lateinit var loadingOverlay: FrameLayout
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -59,7 +57,7 @@ class UserProfileFragment : Fragment() {
         }
 
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.toast_profile_generic, message), Toast.LENGTH_SHORT).show()
         }
 
         viewModel.loadCurrentUser()
@@ -69,9 +67,9 @@ class UserProfileFragment : Fragment() {
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> "My Books"
-                1 -> "My Requests"
-                2 -> "Incoming Requests"
+                0 -> getString(R.string.tab_my_books)
+                1 -> getString(R.string.tab_my_requests)
+                2 -> getString(R.string.tab_incoming_requests)
                 else -> ""
             }
         }.attach()

@@ -56,20 +56,20 @@ class RegisterFragment : Fragment() {
                                 .document(uid)
                                 .set(userMap)
                                 .addOnSuccessListener {
-                                    Toast.makeText(requireContext(), "Welcome!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(requireContext(), getString(R.string.toast_register_success), Toast.LENGTH_SHORT).show()
                                     findNavController().navigate(R.id.action_registerFragment_to_userProfileFragment)
                                 }
                                 .addOnFailureListener {
-                                    Toast.makeText(requireContext(), "Failed saving user info", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(requireContext(), getString(R.string.toast_register_save_failed), Toast.LENGTH_LONG).show()
                                 }
                         }
                     },
                     onError = { error ->
-                        Toast.makeText(requireContext(), "Register failed: $error", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), getString(R.string.toast_register_failed, error), Toast.LENGTH_LONG).show()
                     }
                 )
             } else {
-                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.toast_fill_all_fields), Toast.LENGTH_SHORT).show()
             }
         }
 

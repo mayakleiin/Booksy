@@ -1,13 +1,14 @@
 package com.example.booksy.ui.profile
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.booksy.databinding.ItemRequestedBookBinding
 import com.example.booksy.model.RequestStatus
 import com.example.booksy.model.RequestedBook
-import android.view.View
+import com.example.booksy.R
 
 class RequestedBookAdapter(
     private var requestedBooks: List<RequestedBook>,
@@ -26,11 +27,10 @@ class RequestedBookAdapter(
             binding.bookAuthor.text = book.author
             binding.requestStatus.text = request.status.name
 
-            // Load image
-            binding.bookImage.load(book.imageUrl)
+            binding.bookImage.load(book.imageUrl.ifEmpty { R.drawable.ic_book_placeholder })
 
             if (isIncomingRequest) {
-                binding.cancelButton.text = "Approve"
+                binding.cancelButton.text = binding.root.context.getString(R.string.approve)
                 binding.cancelButton.isEnabled = request.status == RequestStatus.PENDING
                 binding.cancelButton.setOnClickListener {
                     onActionClick(item, RequestStatus.APPROVED)
@@ -43,7 +43,7 @@ class RequestedBookAdapter(
                 }
 
             } else {
-                binding.cancelButton.text = "Cancel"
+                binding.cancelButton.text = binding.root.context.getString(R.string.cancel)
                 binding.cancelButton.isEnabled = request.status == RequestStatus.PENDING
                 binding.cancelButton.setOnClickListener {
                     onActionClick(item, RequestStatus.REJECTED)
@@ -55,11 +55,7 @@ class RequestedBookAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RequestedBookViewHolder {
-        val binding = ItemRequestedBookBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
+        val binding = ItemRequestedBookBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return RequestedBookViewHolder(binding)
     }
 
