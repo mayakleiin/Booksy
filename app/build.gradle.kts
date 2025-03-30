@@ -125,6 +125,4 @@ dependencies {
     kapt(libs.glide.compiler)
 
     implementation(libs.androidx.core.splashscreen)
-
-
 }

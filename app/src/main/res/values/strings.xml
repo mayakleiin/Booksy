@@ -69,6 +69,10 @@
     <string name="dialog_edit_profile_title">Edit Profile</string>
     <string name="toast_name_required">Name cannot be empty</string>
     <string name="save">Save</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="toast_name_empty">Name cannot be empty</string>
+    <string name="toast_image_upload_failed">Image upload failed</string>
+    <string name="default_profile_description">Default profile image</string>
 
     <!-- Required for ProfileTabs -->
     <string name="no_books_found">You haven’t uploaded any books yet</string>
