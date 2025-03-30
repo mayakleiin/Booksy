@@ -10,10 +10,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import kotlinx.coroutines.flow.Flow
 import com.example.booksy.data.FirestoreBookPagingSource
-
-
+import kotlinx.coroutines.flow.Flow
 
 class HomeViewModel : ViewModel() {
 
@@ -29,8 +27,11 @@ class HomeViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private var currentLocation: Location? = null
     private var currentFilters = BookFilters()
+    private var internalLocation: Location? = null
+
+    private val _currentLocation = MutableLiveData<Location>()
+    val currentLocation: LiveData<Location> = _currentLocation
 
     private val _filterDistanceMeters = MutableLiveData(2000f)
     val filterDistanceMeters: LiveData<Float> = _filterDistanceMeters
@@ -43,7 +44,7 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun filterBooks() {
-        val location = currentLocation
+        val location = internalLocation
         val maxDistanceMeters = currentFilters.maxDistanceKm * 1000
 
         val filtered = allBooks.filter { book ->
@@ -66,13 +67,11 @@ class HomeViewModel : ViewModel() {
 
     fun getPagedBooks(): Flow<PagingData<Book>> {
         val baseQuery = db.collection("books").orderBy("title")
-
         return Pager(
             config = PagingConfig(pageSize = 10),
             pagingSourceFactory = { FirestoreBookPagingSource(baseQuery) }
         ).flow
     }
-
 
     fun setFilterDistance(distance: Float) {
         _filterDistanceMeters.value = distance
@@ -80,13 +79,13 @@ class HomeViewModel : ViewModel() {
     }
 
     fun updateCurrentLocation(location: Location) {
-        currentLocation = location
+        _currentLocation.value = location
+        internalLocation = location
         calculateNearbyBooks()
     }
 
     fun loadBooks() {
         _isLoading.value = true
-
         db.collection("books")
             .get()
             .addOnSuccessListener { result ->
@@ -103,7 +102,7 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun calculateNearbyBooks() {
-        val location = currentLocation ?: return
+        val location = internalLocation ?: return
         val list = allBooks
 
         val nearby = list.mapNotNull { book ->
@@ -119,5 +118,9 @@ class HomeViewModel : ViewModel() {
             .filter { it.second <= (_filterDistanceMeters.value ?: 2000f) }
 
         _nearbyBooks.value = nearby
+    }
+
+    fun getAllBooksWithLocation(): List<Book> {
+        return allBooks.filter { it.lat != null && it.lng != null }
     }
 }
