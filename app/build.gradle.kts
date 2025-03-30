@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.google.services)
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -118,4 +119,9 @@ dependencies {
     //Paging
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.common)
+
+    //Glide
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
+
 }
