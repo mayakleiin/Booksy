@@ -20,6 +20,18 @@
         <item name="shapeAppearance">@style/BooksyButtonShape</item>
         <item name="android:fontFamily">@font/volkhov_family</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <style name="TextButton">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="BooksyButtonShape" parent="ShapeAppearance.Material3.Corner.None">
