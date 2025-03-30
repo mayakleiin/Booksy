@@ -44,11 +44,15 @@ class EditProfileDialogFragment : DialogFragment() {
         val user = viewModel.user.value
         binding.nameEditText.setText(user?.name)
 
-        Picasso.get()
-            .load(user?.imageUrl)
-            .placeholder(R.drawable.default_profile)
-            .error(R.drawable.default_profile)
-            .into(binding.profileImage)
+        binding.profileImage.setImageResource(R.drawable.default_profile)
+
+        if (!user?.imageUrl.isNullOrBlank()) {
+            Picasso.get()
+                .load(user?.imageUrl)
+                .placeholder(R.drawable.default_profile)
+                .error(R.drawable.default_profile)
+                .into(binding.profileImage)
+        }
 
         binding.profileImage.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK).apply {
@@ -62,12 +66,12 @@ class EditProfileDialogFragment : DialogFragment() {
         }
 
         // Hide FAB when dialog is shown
-        (parentFragment?.view?.findViewById<View>(com.example.booksy.R.id.addBookButton))?.visibility = View.GONE
+        (parentFragment?.view?.findViewById<View>(R.id.addBookButton))?.visibility = View.GONE
 
-        return AlertDialog.Builder(requireContext())
-            .setTitle("Edit Profile")
+
+        return AlertDialog.Builder(requireContext(), R.style.EditProfileDialog)
             .setView(binding.root)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
                 val newName = binding.nameEditText.text.toString().trim()
                 if (newName.isNotEmpty()) {
                     if (selectedImageUri != null) {
@@ -76,20 +80,21 @@ class EditProfileDialogFragment : DialogFragment() {
                         viewModel.updateUserProfile(newName, user?.imageUrl)
                     }
                 } else {
-                    Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.toast_name_empty), Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancel") { _, _ -> dismiss() }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> dismiss() }
             .create()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         // Show FAB again when dialog is dismissed
-        (parentFragment?.view?.findViewById<View>(com.example.booksy.R.id.addBookButton))?.visibility = View.VISIBLE
+        (parentFragment?.view?.findViewById<View>(R.id.addBookButton))?.visibility = View.VISIBLE
     }
 
     private fun uploadImageToFirebase(name: String, imageUri: Uri) {
+        viewModel.setIsLoading(true)
         val storageRef = FirebaseStorage.getInstance().reference
         val imageRef = storageRef.child("profile_images/${UUID.randomUUID()}.jpg")
 
@@ -102,7 +107,8 @@ class EditProfileDialogFragment : DialogFragment() {
                 viewModel.updateUserProfile(name, uri.toString())
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
+                viewModel.setIsLoading(false)
+                Toast.makeText(requireContext(), getString(R.string.toast_image_upload_failed), Toast.LENGTH_SHORT).show()
             }
     }
 }

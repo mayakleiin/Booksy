@@ -128,7 +128,6 @@ dependencies {
 
     implementation(libs.circleimageview)
 
-
-
-
+    implementation(libs.androidx.core.ktx.v1120)
+    
 }
