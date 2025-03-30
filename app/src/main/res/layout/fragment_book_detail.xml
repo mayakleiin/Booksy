@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -9,230 +10,257 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Top bar with back button -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Book cover -->
-            <ImageView
-                android:id="@+id/book_cover"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/book_cover_desc" />
-
-            <!-- Back button with transparent background -->
+            <!-- Back button -->
             <ImageButton
                 android:id="@+id/backButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_arrow_back"
-                android:background="@drawable/circular_button_bg"
+                android:background="@drawable/back_button_bg"
                 android:padding="12dp"
                 android:contentDescription="Back"
                 android:layout_margin="16dp" />
         </FrameLayout>
 
-        <!-- Book details card -->
-        <androidx.cardview.widget.CardView
-            style="@style/BooksyCard"
+        <!-- Book cover with gradient overlay -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-20dp"
-            android:layout_marginHorizontal="16dp">
+            android:layout_height="250dp">
 
-            <LinearLayout
+            <ImageView
+                android:id="@+id/book_cover"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/book_cover_desc" />
 
-                <TextView
-                    android:id="@+id/title"
-                    style="@style/BooksyText.Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/book_title"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/author"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/author"
-                    android:textColor="@color/booksy_text_secondary"
-                    android:layout_marginTop="4dp" />
-
-                <View style="@style/BooksyDivider"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="12dp" />
-
-                <!-- Info row -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/distance"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:text="@string/distance"
-                        android:gravity="center"
-                        android:textColor="@color/booksy_text_secondary" />
-
-                    <TextView
-                        android:id="@+id/pages"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:text="@string/pages"
-                        android:gravity="center"
-                        android:textColor="@color/booksy_text_secondary" />
-
-                    <TextView
-                        android:id="@+id/language"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:text="@string/language"
-                        android:gravity="center"
-                        android:textColor="@color/booksy_text_secondary" />
-                </LinearLayout>
-
-                <!-- Genre section -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Genre"
-                    android:textColor="@color/booksy_text_tertiary"
-                    android:textSize="14sp"
-                    android:layout_marginTop="12dp" />
-
-                <TextView
-                    android:id="@+id/bookGenre"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fiction, Fantasy"
-                    android:textColor="@color/booksy_text_primary" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Owner info card -->
-        <androidx.cardview.widget.CardView
-            style="@style/BooksyCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp">
-
-            <LinearLayout
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_height="80dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/gradient_overlay" />
+        </FrameLayout>
 
-                <TextView
-                    style="@style/BooksyText.Subtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ask_from"
-                    android:layout_marginBottom="8dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:id="@+id/ownerImage"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/ic_user_placeholder"
-                        android:layout_marginEnd="8dp"
-                        android:scaleType="centerCrop" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/ownerName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/owner_name"
-                            android:textColor="@color/booksy_text_primary"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/openMapButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/open_map"
-                            android:textSize="12sp"
-                            android:textColor="#1E88E5"
-                            android:clickable="true"
-                            android:focusable="true" />
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Book description card -->
-        <androidx.cardview.widget.CardView
-            style="@style/BooksyCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    style="@style/BooksyText.Subtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/about"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:id="@+id/about"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/book_description"
-                    android:textColor="@color/booksy_text_secondary" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Action buttons -->
+        <!-- Book details section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
 
-            <Button
-                android:id="@+id/borrow_button"
+            <!-- Book title and author -->
+            <TextView
+                android:id="@+id/title"
+                style="@style/BooksyText.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/book_title"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/author"
+                style="@style/BooksyText.BodyBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/author"
+                android:layout_marginTop="4dp" />
+
+            <!-- Book statistics -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/ask"
-                style="@style/BooksyButton.White" />
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <!-- Distance -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/BooksyText.Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Distance" />
+
+                    <TextView
+                        android:id="@+id/distance"
+                        style="@style/BooksyText.Subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/distance" />
+                </LinearLayout>
+
+                <!-- Pages -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/BooksyText.Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pages" />
+
+                    <TextView
+                        android:id="@+id/pages"
+                        style="@style/BooksyText.Subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pages" />
+                </LinearLayout>
+
+                <!-- Language -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/BooksyText.Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Language" />
+
+                    <TextView
+                        android:id="@+id/language"
+                        style="@style/BooksyText.Subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/language" />
+                </LinearLayout>
+
+                <!-- Genre -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/BooksyText.Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Genre" />
+
+                    <TextView
+                        android:id="@+id/bookGenre"
+                        style="@style/BooksyText.Subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fiction, Fantasy" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Ask from section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                style="@style/BooksyText.Header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ask_from" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ownerImage"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_user_placeholder"
+                    app:civ_border_width="0dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginStart="12dp">
+
+                    <TextView
+                        android:id="@+id/ownerName"
+                        style="@style/BooksyText.BodyBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/owner_name" />
+
+                    <TextView
+                        android:id="@+id/openMapButton"
+                        style="@style/BooksyText.Body"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/open_map"
+                        android:textColor="@color/booksy_text_tertiary"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/borrowButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ask"
+                    style="@style/BooksyButton.White" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- About section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                style="@style/BooksyText.Header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about" />
+
+            <TextView
+                android:id="@+id/about"
+                style="@style/BooksyText.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/book_description"
+                android:layout_marginTop="12dp" />
+        </LinearLayout>
+
+        <!-- Owner actions (only visible to owner) -->
+        <LinearLayout
+            android:id="@+id/ownerActionsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/editButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Edit Book"
-                android:layout_marginTop="8dp"
-                android:visibility="gone"
                 style="@style/BooksyButton.White" />
 
             <Button
@@ -241,7 +269,6 @@
                 android:layout_height="wrap_content"
                 android:text="Delete Book"
                 android:layout_marginTop="8dp"
-                android:visibility="gone"
                 style="@style/BooksyButton.Danger" />
 
             <Button
@@ -253,5 +280,6 @@
                 android:visibility="gone"
                 style="@style/BooksyButton.White" />
         </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

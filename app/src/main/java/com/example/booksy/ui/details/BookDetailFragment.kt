@@ -7,17 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentBookDetailBinding
+import com.example.booksy.model.Book
+import com.example.booksy.model.BookStatus
 import com.example.booksy.viewmodel.BookDetailViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import androidx.core.net.toUri
-import com.example.booksy.model.Book
-import com.example.booksy.model.BookStatus
 import com.squareup.picasso.Picasso
 
 class BookDetailFragment : Fragment() {
@@ -41,7 +41,7 @@ class BookDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val currentUser = auth.currentUser
-        if (currentUser === null) {
+        if (currentUser == null) {
             findNavController().navigate(R.id.loginFragment)
             return
         }
@@ -70,7 +70,6 @@ class BookDetailFragment : Fragment() {
                 .into(binding.bookCover)
 
             val userId = currentUser.uid
-
             if (book.ownerId == userId) {
                 setupOwnerUI(book)
             } else {
@@ -102,20 +101,10 @@ class BookDetailFragment : Fragment() {
     }
 
     private fun setupOwnerUI(book: Book) {
-        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+        val currentUserId = auth.currentUser?.uid
 
-        binding.editButton.visibility = View.VISIBLE
-        binding.deleteButton.visibility = View.VISIBLE
+        binding.ownerActionsLayout.visibility = View.VISIBLE
         binding.borrowButton.visibility = View.GONE
-
-        if (book.status == BookStatus.BORROWED && book.ownerId == currentUserId) {
-            binding.returnButton.visibility = View.VISIBLE
-            binding.returnButton.setOnClickListener {
-                viewModel.returnBook(book.id)
-            }
-        } else {
-            binding.returnButton.visibility = View.GONE
-        }
 
         binding.editButton.setOnClickListener {
             val action = BookDetailFragmentDirections.actionBookDetailFragmentToAddBookFragment(book)
@@ -133,10 +122,18 @@ class BookDetailFragment : Fragment() {
                     Toast.makeText(requireContext(), getString(R.string.toast_delete_failed), Toast.LENGTH_SHORT).show()
                 }
         }
+
+        if (book.status == BookStatus.BORROWED && book.ownerId == currentUserId) {
+            binding.returnButton.visibility = View.VISIBLE
+            binding.returnButton.setOnClickListener {
+                viewModel.returnBook(book.id)
+            }
+        } else {
+            binding.returnButton.visibility = View.GONE
+        }
     }
 
-
-    private fun setupBorrowerUI(book: com.example.booksy.model.Book) {
+    private fun setupBorrowerUI(book: Book) {
         val userId = auth.uid ?: return
 
         FirebaseFirestore.getInstance()
@@ -160,6 +157,7 @@ class BookDetailFragment : Fragment() {
 
         binding.editButton.visibility = View.GONE
         binding.deleteButton.visibility = View.GONE
+        binding.returnButton.visibility = View.GONE
         binding.borrowButton.visibility = View.VISIBLE
     }
 
