@@ -7,8 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.booksy.databinding.ItemNearbyBookBinding
 import com.example.booksy.model.Book
 
-class NearbyBooksAdapter(private var books: List<Pair<Book, Float>>) :
-    RecyclerView.Adapter<NearbyBooksAdapter.BookViewHolder>() {
+class NearbyBooksAdapter(
+    private var books: List<Pair<Book, Float>>,
+    private val onItemClick: (Book) -> Unit
+) : RecyclerView.Adapter<NearbyBooksAdapter.BookViewHolder>() {
 
     inner class BookViewHolder(val binding: ItemNearbyBookBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -23,7 +25,12 @@ class NearbyBooksAdapter(private var books: List<Pair<Book, Float>>) :
         holder.binding.titleTextView.text = book.title
         holder.binding.authorTextView.text = book.author
         holder.binding.distanceTextView.text = "${distance.toInt()}m"
+
+        holder.itemView.setOnClickListener {
+            onItemClick(book)
+        }
     }
+
 
     override fun getItemCount(): Int = books.size
 

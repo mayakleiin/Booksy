@@ -25,6 +25,8 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import kotlinx.coroutines.launch
 
+
+
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var binding: FragmentHomeBinding
@@ -72,12 +74,17 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun setupRecyclerView() {
-        nearbyBooksAdapter = NearbyBooksAdapter(emptyList())
+        nearbyBooksAdapter = NearbyBooksAdapter(emptyList()) { book ->
+            val action = HomeFragmentDirections.actionHomeFragmentToBookDetailFragment(book.id)
+            findNavController().navigate(action)
+        }
+
         binding.nearbyBooksRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = nearbyBooksAdapter
         }
     }
+
 
     private fun observeViewModel() {
         viewModel.books.observe(viewLifecycleOwner) { books ->
