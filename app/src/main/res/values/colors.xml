@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base Colors -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="chip_background">#FFFFFF</color>
-    <color name="chip_text">#000000</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+
+    <!-- Booksy Colors -->
+    <color name="booksy_background">#000000</color>
+    <color name="booksy_surface">#222222</color>
+    <color name="booksy_surface_light">#333333</color>
+    <color name="booksy_text_primary">#FFFFFF</color>
+    <color name="booksy_text_secondary">#DDDDDD</color>
+    <color name="booksy_text_tertiary">#AAAAAA</color>
+    <color name="booksy_divider">#444444</color>
+    <color name="booksy_button_secondary">#444444</color>
+    <color name="booksy_available">#4CAF50</color>
+    <color name="booksy_borrowed">#FFC107</color>
+    <color name="booksy_danger">#D32F2F</color>
+    <color name="booksy_overlay">#88000000</color>
+
+    <!-- Exists -->
+    <color name="chip_background">#FFFFFF</color>
+    <color name="chip_text">#000000</color>
 </resources>

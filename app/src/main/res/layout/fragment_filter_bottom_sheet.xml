@@ -1,17 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/filterLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorSurface"
+    android:background="@color/booksy_surface"
     android:orientation="vertical"
     android:padding="24dp">
 
+    <!-- Filter title -->
     <TextView
+        style="@style/BooksyText.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Filter Books"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Distance section -->
+    <TextView
+        style="@style/BooksyText.Subtitle"
         android:text="Distance"
-        android:textStyle="bold"
-        android:textSize="18sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -19,6 +26,7 @@
         android:id="@+id/distanceValueText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/booksy_text_secondary"
         android:text="10 km"/>
 
     <com.google.android.material.slider.Slider
@@ -28,13 +36,20 @@
         android:valueFrom="1"
         android:valueTo="30"
         android:stepSize="1"
-        android:value="10"/>
+        android:value="10"
+        app:thumbColor="@color/white"
+        app:trackColorActive="@color/white"
+        app:trackColorInactive="@color/booksy_button_secondary"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Genre section with separator -->
+    <View style="@style/BooksyDivider"
+        android:layout_marginBottom="16dp" />
 
     <TextView
+        style="@style/BooksyText.Subtitle"
         android:text="Genre"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -44,13 +59,20 @@
         android:layout_height="wrap_content"
         app:singleSelection="false"
         app:chipSpacing="8dp"
-        android:padding="4dp"/>
+        android:padding="4dp"
+        app:chipBackgroundColor="@color/booksy_surface_light"
+        app:chipStrokeColor="@color/booksy_text_secondary"
+        app:chipStrokeWidth="1dp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Language section with separator -->
+    <View style="@style/BooksyDivider"
+        android:layout_marginBottom="16dp" />
 
     <TextView
+        style="@style/BooksyText.Subtitle"
         android:text="Language"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -60,12 +82,33 @@
         android:layout_height="wrap_content"
         app:singleSelection="false"
         app:chipSpacing="8dp"
-        android:padding="4dp"/>
+        android:padding="4dp"
+        app:chipBackgroundColor="@color/booksy_surface_light"
+        app:chipStrokeColor="@color/booksy_text_secondary"
+        app:chipStrokeWidth="1dp"
+        android:layout_marginBottom="24dp"/>
 
-    <Button
-        android:id="@+id/applyButton"
-        android:text="Apply"
-        android:layout_marginTop="24dp"
+    <!-- Action buttons -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancelFilterButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:layout_marginEnd="8dp"
+            style="@style/BooksyButton.Secondary" />
+
+        <Button
+            android:id="@+id/applyButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Apply"
+            style="@style/BooksyButton.White" />
+    </LinearLayout>
 </LinearLayout>

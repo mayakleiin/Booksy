@@ -124,6 +124,10 @@ class AddBookFragment : Fragment() {
             }
             binding.languageChipGroup.addView(chip)
         }
+
+        binding.cancelButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun createChip(text: String, isChecked: Boolean): Chip {
