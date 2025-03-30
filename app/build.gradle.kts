@@ -122,7 +122,9 @@ dependencies {
 
     //Glide
     implementation(libs.glide)
-    kapt(libs.glide.compiler)
+    ksp(libs.glide.compiler)
 
     implementation(libs.androidx.core.splashscreen)
+
+    implementation(libs.circleimageview)
 }

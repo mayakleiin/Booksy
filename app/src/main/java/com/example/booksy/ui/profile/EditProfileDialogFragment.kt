@@ -13,10 +13,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import coil.load
 import com.example.booksy.databinding.FragmentEditProfileDialogBinding
 import com.example.booksy.viewmodel.UserProfileViewModel
 import com.google.firebase.storage.FirebaseStorage
+import com.squareup.picasso.Picasso
 import java.util.*
 import com.example.booksy.R
 
@@ -30,7 +30,11 @@ class EditProfileDialogFragment : DialogFragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 selectedImageUri = result.data?.data
-                binding.profileImage.load(selectedImageUri)
+                Picasso.get()
+                    .load(selectedImageUri)
+                    .placeholder(R.drawable.default_profile)
+                    .error(R.drawable.default_profile)
+                    .into(binding.profileImage)
             }
         }
 
@@ -39,7 +43,13 @@ class EditProfileDialogFragment : DialogFragment() {
 
         val user = viewModel.user.value
         binding.nameEditText.setText(user?.name)
-        binding.profileImage.load(user?.imageUrl ?: R.drawable.default_profile)
+
+        Picasso.get()
+            .load(user?.imageUrl)
+            .placeholder(R.drawable.default_profile)
+            .error(R.drawable.default_profile)
+            .into(binding.profileImage)
+
         binding.profileImage.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK).apply {
                 type = "image/*"
