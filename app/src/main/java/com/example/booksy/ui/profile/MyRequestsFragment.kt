@@ -63,7 +63,7 @@ class MyRequestsFragment : Fragment() {
         }
 
         viewModel.toastMessage.observe(viewLifecycleOwner) {
-            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.toast_profile_generic, it), Toast.LENGTH_SHORT).show()
         }
 
         viewModel.loadRequestedBooks()
@@ -77,11 +77,11 @@ class MyRequestsFragment : Fragment() {
             .document(requestId)
             .delete()
             .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Request canceled", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.toast_request_canceled), Toast.LENGTH_SHORT).show()
                 viewModel.loadRequestedBooks()
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to cancel request", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.toast_cancel_failed), Toast.LENGTH_SHORT).show()
                 viewModel.setIsLoading(false)
             }
     }

@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import com.bumptech.glide.Glide
 import com.example.booksy.R
 import com.example.booksy.databinding.ItemBookBinding
@@ -45,7 +44,6 @@ class BookAdapter(
                 .error(R.drawable.ic_book_placeholder)
                 .into(binding.bookImage)
 
-
             binding.root.setOnClickListener {
                 onItemClick(book)
             }
@@ -75,11 +73,6 @@ class BookAdapter(
 }
 
 class BookDiffCallback : DiffUtil.ItemCallback<Book>() {
-    override fun areItemsTheSame(oldItem: Book, newItem: Book): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: Book, newItem: Book): Boolean {
-        return oldItem == newItem
-    }
+    override fun areItemsTheSame(oldItem: Book, newItem: Book): Boolean = oldItem.id == newItem.id
+    override fun areContentsTheSame(oldItem: Book, newItem: Book): Boolean = oldItem == newItem
 }
