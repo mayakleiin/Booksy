@@ -73,7 +73,7 @@ class MyRequestsFragment : Fragment() {
         viewModel.setIsLoading(true)
         val requestId = requestedBook.request.id
         FirebaseFirestore.getInstance()
-            .collection("requests")
+            .collection("borrowRequests")
             .document(requestId)
             .delete()
             .addOnSuccessListener {

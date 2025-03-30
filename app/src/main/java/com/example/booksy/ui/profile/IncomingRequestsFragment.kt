@@ -72,19 +72,36 @@ class IncomingRequestsFragment : Fragment() {
 
     private fun updateRequestStatus(requestedBook: RequestedBook, newStatus: RequestStatus) {
         viewModel.setIsLoading(true)
-        FirebaseFirestore.getInstance()
-            .collection("requests")
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("borrowRequests")
             .document(requestedBook.request.id)
             .update("status", newStatus.name)
             .addOnSuccessListener {
-                Toast.makeText(requireContext(), getString(R.string.toast_request_updated, newStatus.name), Toast.LENGTH_SHORT).show()
-                viewModel.loadIncomingRequests()
+                if (newStatus == RequestStatus.APPROVED) {
+                    db.collection("books")
+                        .document(requestedBook.book.id)
+                        .update("status", "BORROWED")
+                        .addOnSuccessListener {
+                            Toast.makeText(requireContext(), "Request approved and book marked as borrowed!", Toast.LENGTH_SHORT).show()
+                            viewModel.loadIncomingRequests()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(requireContext(), "Request approved, but failed to update book status.", Toast.LENGTH_SHORT).show()
+                            viewModel.setIsLoading(false)
+                        }
+                } else {
+
+                    Toast.makeText(requireContext(), getString(R.string.toast_request_updated, newStatus.name), Toast.LENGTH_SHORT).show()
+                    viewModel.loadIncomingRequests()
+                }
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(), getString(R.string.toast_update_failed), Toast.LENGTH_SHORT).show()
                 viewModel.setIsLoading(false)
             }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
