@@ -62,23 +62,28 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
             }
     }
 
-    fun loadUserBooks() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        _isLoading.value = true
-        FirebaseFirestore.getInstance()
+    fun getPagedUserBooks(): Flow<PagingData<Book>> {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = {
+                FirestoreBookPagingSource(
+                    FirebaseFirestore.getInstance().collection("books")
+                        .whereEqualTo("ownerId", "invalid") // fallback כדי שלא יחזיר כלום
+                )
+            }
+        ).flow
+
+        val query = FirebaseFirestore.getInstance()
             .collection("books")
             .whereEqualTo("ownerId", userId)
-            .get()
-            .addOnSuccessListener { result ->
-                _isLoading.value = false
-                val books = result.toObjects(Book::class.java)
-                _userBooks.postValue(books)
-            }
-            .addOnFailureListener {
-                _isLoading.value = false
-                _toastMessage.postValue("Failed to load user's books: ${it.message}")
-            }
+
+        return Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = { FirestoreBookPagingSource(query) }
+        ).flow
     }
+
+
 
     fun loadRequestedBooks() {
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -219,25 +224,5 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
     )
 
 
-    fun getPagedUserBooks(): Flow<PagingData<Book>> {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return Pager(
-            config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = {
-                FirestoreBookPagingSource(
-                    FirebaseFirestore.getInstance().collection("books")
-                        .whereEqualTo("ownerId", "invalid")
-                )
-            }
-        ).flow
 
-        val query: Query = FirebaseFirestore.getInstance()
-            .collection("books")
-            .whereEqualTo("ownerId", userId)
-            .orderBy("title")
-
-        return Pager(
-            config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = { FirestoreBookPagingSource(query) }
-        ).flow
-    }
 }
