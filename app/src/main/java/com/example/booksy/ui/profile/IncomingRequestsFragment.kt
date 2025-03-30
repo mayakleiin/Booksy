@@ -52,8 +52,15 @@ class IncomingRequestsFragment : Fragment() {
             isIncomingRequest = true,
             onActionClick = { requestedBook, newStatus ->
                 updateRequestStatus(requestedBook, newStatus)
+            },
+            onBookClick = { requestedBook ->
+                findNavController().navigate(
+                    R.id.action_global_bookDetailFragment,
+                    Bundle().apply { putString("bookId", requestedBook.book.id) }
+                )
             }
         )
+
 
         binding.incomingRequestsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.incomingRequestsRecyclerView.adapter = adapter

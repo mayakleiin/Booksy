@@ -13,7 +13,8 @@ import com.example.booksy.R
 class RequestedBookAdapter(
     private var requestedBooks: List<RequestedBook>,
     private val onActionClick: (RequestedBook, RequestStatus) -> Unit,
-    private val isIncomingRequest: Boolean = false
+    private val isIncomingRequest: Boolean = false,
+    private val onBookClick: (RequestedBook) -> Unit
 ) : RecyclerView.Adapter<RequestedBookAdapter.RequestedBookViewHolder>() {
 
     inner class RequestedBookViewHolder(private val binding: ItemRequestedBookBinding) :
@@ -50,6 +51,9 @@ class RequestedBookAdapter(
                 }
 
                 binding.rejectButton.visibility = View.GONE
+            }
+            binding.root.setOnClickListener {
+                onBookClick(item)
             }
         }
     }
