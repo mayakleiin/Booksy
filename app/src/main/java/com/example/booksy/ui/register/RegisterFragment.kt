@@ -52,6 +52,7 @@ class RegisterFragment : Fragment() {
                         val uid = authViewModel.getCurrentUserId()
                         if (uid != null) {
                             val userMap = hashMapOf(
+                                "uid" to uid,
                                 "name" to fullName,
                                 "email" to email,
                                 "imageUrl" to ""
@@ -62,7 +63,7 @@ class RegisterFragment : Fragment() {
                                 .set(userMap)
                                 .addOnSuccessListener {
                                     Toast.makeText(requireContext(), getString(R.string.toast_register_success), Toast.LENGTH_SHORT).show()
-                                    findNavController().navigate(R.id.action_registerFragment_to_userProfileFragment)
+                                    findNavController().navigate(R.id.homeFragment)
                                 }
                                 .addOnFailureListener {
                                     Toast.makeText(requireContext(), getString(R.string.toast_register_save_failed), Toast.LENGTH_LONG).show()

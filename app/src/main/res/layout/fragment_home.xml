@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -32,12 +33,25 @@
                     android:text="@string/find_a_book"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/filterButton"/>
+                    app:layout_constraintEnd_toStartOf="@id/profileButton"/>
+
+                <ImageButton
+                    android:id="@+id/profileButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_profile_placeholder"
+                    android:contentDescription="Profile"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:layout_constraintTop_toTopOf="@id/searchTitle"
+                    app:layout_constraintBottom_toBottomOf="@id/searchTitle"
+                    app:layout_constraintEnd_toStartOf="@id/filterButton"
+                    android:layout_marginEnd="8dp"
+                    app:tint="@color/booksy_text_primary" />
 
                 <ImageButton
                     android:id="@+id/filterButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:src="@drawable/ic_filter_list"
                     android:contentDescription="@string/filter"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -49,8 +63,8 @@
 
                 <ImageButton
                     android:id="@+id/toggleViewButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/toggle_view"
                     android:src="@drawable/ic_map"

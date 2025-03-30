@@ -143,5 +143,7 @@ class HomeViewModel : ViewModel() {
         ).flow
     }
 
-
+    fun getCurrentFilters(): BookFilters {
+        return currentFilters
+    }
 }

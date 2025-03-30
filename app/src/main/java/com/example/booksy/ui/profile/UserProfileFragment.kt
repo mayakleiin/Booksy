@@ -41,36 +41,41 @@ class UserProfileFragment : Fragment() {
             return
         }
 
+        // Show/hide loading overlay
         viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             loadingOverlay.visibility = if (loading) View.VISIBLE else View.GONE
         }
 
+        // Display user info
         viewModel.user.observe(viewLifecycleOwner) { user ->
             user?.let {
                 binding.userName.text = it.name
 
                 val imageUrl = it.imageUrl
                 if (imageUrl.isNullOrBlank()) {
-                    binding.userImage.setImageResource(R.drawable.default_profile)
+                    binding.userImage.setImageResource(R.drawable.ic_user_placeholder)
                 } else {
                     Picasso.get()
                         .load(imageUrl)
-                        .placeholder(R.drawable.default_profile)
-                        .error(R.drawable.default_profile)
+                        .placeholder(R.drawable.ic_user_placeholder)
+                        .error(R.drawable.ic_user_placeholder)
+                        .transform(CircleTransformation())
                         .into(binding.userImage)
                 }
             }
         }
 
+        // Show toast messages
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), getString(R.string.toast_profile_generic, message), Toast.LENGTH_SHORT).show()
         }
 
+        // Load user data
         viewModel.loadCurrentUser()
 
+        // Setup tabs
         val adapter = UserProfilePagerAdapter(this)
         binding.viewPager.adapter = adapter
-
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> getString(R.string.tab_my_books)
@@ -80,19 +85,25 @@ class UserProfileFragment : Fragment() {
             }
         }.attach()
 
+        // Edit profile button (pencil icon)
         binding.editProfileButton.setOnClickListener {
             val dialogFragment = EditProfileDialogFragment()
             dialogFragment.show(childFragmentManager, "EditProfileDialog")
         }
 
-        binding.logoutButton.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            findNavController().navigate(R.id.action_userProfileFragment_to_loginFragment)
-        }
+        // Logout buttons
+        binding.logoutButton.setOnClickListener { logoutUser() }
+        binding.logoutText.setOnClickListener { logoutUser() }
 
+        // Back to home button
         binding.backToHomeButton.setOnClickListener {
             findNavController().navigate(R.id.homeFragment)
         }
+    }
+
+    private fun logoutUser() {
+        FirebaseAuth.getInstance().signOut()
+        findNavController().navigate(R.id.action_userProfileFragment_to_loginFragment)
     }
 
     override fun onDestroyView() {

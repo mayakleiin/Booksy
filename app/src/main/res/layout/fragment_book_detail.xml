@@ -168,7 +168,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:background="@color/booksy_surface_light"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
 
             <TextView
                 style="@style/BooksyText.Header"
@@ -188,7 +191,8 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@drawable/ic_user_placeholder"
-                    app:civ_border_width="0dp" />
+                    app:civ_border_width="2dp"
+                    app:civ_border_color="@color/white" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -210,7 +214,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/open_map"
-                        android:textColor="@color/booksy_text_tertiary"
+                        android:textColor="@color/booksy_available"
+                        android:drawableStart="@drawable/ic_map"
+                        android:drawablePadding="4dp"
+                        android:drawableTint="@color/booksy_available"
                         android:gravity="center_vertical"
                         android:clickable="true"
                         android:focusable="true" />

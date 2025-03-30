@@ -2,25 +2,51 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/userBooksRoot"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/booksy_background">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/userBooksRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:clipToPadding="false" />
 
-    <TextView
+    <LinearLayout
         android:id="@+id/emptyMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/no_books_found"
+        android:orientation="vertical"
         android:gravity="center"
-        android:visibility="gone"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        android:padding="24dp"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_book_placeholder"
+            android:alpha="0.7"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/no_books_found"
+            android:textSize="18sp"
+            android:textColor="@color/booksy_text_primary"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add your first book by clicking the button below"
+            android:textColor="@color/booksy_text_secondary"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp" />
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addBookButton"
@@ -29,13 +55,15 @@
         android:layout_margin="16dp"
         app:srcCompat="@drawable/ic_add"
         android:contentDescription="@string/add_book"
+        android:backgroundTint="@color/white"
+        app:tint="@color/black"
         android:layout_gravity="bottom|end" />
 
     <FrameLayout
         android:id="@+id/loadingOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#88000000"
+        android:background="@color/booksy_overlay"
         android:visibility="gone"
         android:clickable="true"
         android:focusable="true">

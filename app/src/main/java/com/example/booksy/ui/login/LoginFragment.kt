@@ -21,7 +21,11 @@ class LoginFragment : Fragment() {
     private lateinit var authViewModel: AuthViewModel
     private lateinit var loadingOverlay: FrameLayout
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -47,20 +51,37 @@ class LoginFragment : Fragment() {
                     email = email,
                     password = password,
                     onSuccess = {
-                        Toast.makeText(requireContext(), getString(R.string.toast_login_success), Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(R.id.action_loginFragment_to_userProfileFragment)
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.toast_login_success),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        findNavController().navigate(R.id.homeFragment)
                     },
                     onError = { error ->
-                        Toast.makeText(requireContext(), getString(R.string.toast_login_failed, error), Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.toast_login_failed, error),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 )
             } else {
-                Toast.makeText(requireContext(), getString(R.string.toast_fill_all_fields), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.toast_fill_all_fields),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
         binding.goToRegisterButton.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        }
+
+        val currentUser = authViewModel.getCurrentUserId()
+        if (currentUser != null) {
+            findNavController().navigate(R.id.homeFragment)
         }
     }
 
