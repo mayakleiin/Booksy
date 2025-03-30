@@ -1,13 +1,8 @@
 package com.example.booksy.viewmodel
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
+import androidx.lifecycle.*
+import androidx.paging.*
 import com.example.booksy.data.FirestoreBookPagingSource
 import com.example.booksy.local.AppDatabase
 import com.example.booksy.local.entity.BookEntity
@@ -16,20 +11,18 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 class UserProfileViewModel(private val context: Context) : ViewModel() {
 
+    private val db = FirebaseFirestore.getInstance()
     private val _user = MutableLiveData<User?>()
     val user: LiveData<User?> get() = _user
 
-    private val bookDao = AppDatabase.getDatabase(context).bookDao()
-
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> get() = _toastMessage
-
-    private val _userBooks = MutableLiveData<List<Book>>()
-    val userBooks: LiveData<List<Book>> get() = _userBooks
 
     private val _requestedBooks = MutableLiveData<List<RequestedBook>>()
     val requestedBooks: LiveData<List<RequestedBook>> get() = _requestedBooks
@@ -40,11 +33,30 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
+    // --- Paging Setup ---
+    private val _refreshTrigger = MutableLiveData(Unit)
+
+    val pagedUserBooks: Flow<PagingData<Book>> = _refreshTrigger.asFlow().flatMapLatest {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@flatMapLatest flowOf()
+        val query: Query = db.collection("books")
+            .whereEqualTo("ownerId", userId)
+
+
+        Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = { FirestoreBookPagingSource(query) }
+        ).flow
+    }
+
+    fun refreshPagedBooks() {
+        _refreshTrigger.value = Unit
+    }
+
+    // --- Data Management ---
     fun loadCurrentUser() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         _isLoading.value = true
-        FirebaseFirestore.getInstance()
-            .collection("users")
+        db.collection("users")
             .document(userId)
             .get()
             .addOnSuccessListener { doc ->
@@ -62,38 +74,12 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
             }
     }
 
-    fun getPagedUserBooks(): Flow<PagingData<Book>> {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return Pager(
-            config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = {
-                FirestoreBookPagingSource(
-                    FirebaseFirestore.getInstance().collection("books")
-                        .whereEqualTo("ownerId", "invalid") // fallback כדי שלא יחזיר כלום
-                )
-            }
-        ).flow
-
-        val query = FirebaseFirestore.getInstance()
-            .collection("books")
-            .whereEqualTo("ownerId", userId)
-
-
-        return Pager(
-            config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = { FirestoreBookPagingSource(query) }
-        ).flow
-
-    }
-
-
-
     fun loadRequestedBooks() {
-        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         _isLoading.value = true
-        val db = FirebaseFirestore.getInstance()
 
         db.collection("borrowRequests")
-            .whereEqualTo("fromUserId", currentUserId)
+            .whereEqualTo("fromUserId", userId)
             .get()
             .addOnSuccessListener { requestDocs ->
                 val requests = requestDocs.toObjects(Request::class.java)
@@ -104,16 +90,12 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
                 }
 
                 val bookIds = requests.map { it.bookId }
-
-                db.collection("books")
-                    .whereIn("id", bookIds)
-                    .get()
+                db.collection("books").whereIn("id", bookIds).get()
                     .addOnSuccessListener { bookDocs ->
                         _isLoading.value = false
                         val books = bookDocs.toObjects(Book::class.java)
                         val combined = books.mapNotNull { book ->
-                            val matchingRequest = requests.find { it.bookId == book.id }
-                            matchingRequest?.let { request ->
+                            requests.find { it.bookId == book.id }?.let { request ->
                                 RequestedBook(book, request)
                             }
                         }
@@ -131,12 +113,11 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
     }
 
     fun loadIncomingRequests() {
-        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         _isLoading.value = true
-        val db = FirebaseFirestore.getInstance()
 
         db.collection("borrowRequests")
-            .whereEqualTo("toUserId", currentUserId)
+            .whereEqualTo("toUserId", userId)
             .get()
             .addOnSuccessListener { requestDocs ->
                 val requests = requestDocs.toObjects(Request::class.java)
@@ -147,16 +128,12 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
                 }
 
                 val bookIds = requests.map { it.bookId }
-
-                db.collection("books")
-                    .whereIn("id", bookIds)
-                    .get()
+                db.collection("books").whereIn("id", bookIds).get()
                     .addOnSuccessListener { bookDocs ->
                         _isLoading.value = false
                         val books = bookDocs.toObjects(Book::class.java)
                         val combined = books.mapNotNull { book ->
-                            val matchingRequest = requests.find { it.bookId == book.id }
-                            matchingRequest?.let { request ->
+                            requests.find { it.bookId == book.id }?.let { request ->
                                 RequestedBook(book, request)
                             }
                         }
@@ -179,8 +156,7 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
         newImageUrl?.let { updates["imageUrl"] = it }
 
         _isLoading.value = true
-        FirebaseFirestore.getInstance()
-            .collection("users")
+        db.collection("users")
             .document(uid)
             .update(updates)
             .addOnSuccessListener {
@@ -194,9 +170,8 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
             }
     }
 
-    fun setIsLoading(value: Boolean) {
-        _isLoading.value = value
-    }
+    // --- Room cache (לפי דרישת המרצה) ---
+    private val bookDao = AppDatabase.getDatabase(context).bookDao()
 
     fun cacheUserBooksLocally(books: List<Book>) {
         viewModelScope.launch {
@@ -225,6 +200,7 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
         FirebaseAuth.getInstance().currentUser?.uid ?: ""
     )
 
-
-
+    fun setIsLoading(value: Boolean) {
+        _isLoading.value = value
+    }
 }
