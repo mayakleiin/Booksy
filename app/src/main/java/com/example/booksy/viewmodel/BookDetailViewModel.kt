@@ -5,6 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.booksy.model.Book
+import com.example.booksy.model.Request
+import com.example.booksy.model.RequestStatus
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -35,22 +37,25 @@ class BookDetailViewModel(application: Application) : AndroidViewModel(applicati
     fun requestToBorrow(book: Book) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        val request = hashMapOf(
-            "bookId" to book.id,
-            "ownerId" to book.ownerId,
-            "requesterId" to userId,
-            "status" to "Pending",
-            "timestamp" to System.currentTimeMillis()
+        val requestId = FirebaseFirestore.getInstance().collection("requests").document().id
+        val request = Request(
+            id = requestId,
+            bookId = book.id,
+            fromUserId = userId,
+            toUserId = book.ownerId,
+            status = RequestStatus.PENDING
         )
 
         FirebaseFirestore.getInstance()
             .collection("borrowRequests")
-            .add(request)
+            .document(requestId)
+            .set(request)
             .addOnSuccessListener {
                 _toastMessage.postValue("Request sent!")
             }
             .addOnFailureListener {
-                _toastMessage.postValue("Failed to send request")
+                _toastMessage.postValue("Failed to send request: ${it.message}")
             }
     }
+
 }
