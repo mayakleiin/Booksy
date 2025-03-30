@@ -2,24 +2,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="140dp"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
     android:orientation="vertical"
-    android:padding="8dp"
-    android:layout_marginBottom="4dp">
+    android:padding="8dp">
 
-<!-- Book card -->
+    <!-- Book card -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
+        app:cardBackgroundColor="@color/booksy_surface_light"
         app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        app:cardBackgroundColor="@color/booksy_surface_light">
+        app:cardElevation="4dp">
 
         <ImageView
             android:id="@+id/bookImageView"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_book_placeholder" />
+
     </androidx.cardview.widget.CardView>
 
     <!-- Distance indicator -->
@@ -27,35 +28,35 @@
         android:id="@+id/distanceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="350m"
-        android:textStyle="bold"
-        android:textColor="@color/booksy_available"
+        android:layout_marginTop="6dp"
         android:drawableStart="@drawable/ic_map"
         android:drawablePadding="4dp"
         android:drawableTint="@color/booksy_available"
-        android:layout_marginTop="6dp"
-        android:textSize="12sp" />
+        android:text="350m"
+        android:textColor="@color/booksy_available"
+        android:textSize="12sp"
+        android:textStyle="bold" />
 
     <!-- Book title -->
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/book_title"
-        android:textStyle="bold"
-        android:textColor="@color/booksy_text_primary"
-        android:maxLines="1"
+        android:layout_marginTop="2dp"
         android:ellipsize="end"
-        android:layout_marginTop="2dp" />
+        android:maxLines="1"
+        android:text="@string/book_title"
+        android:textColor="@color/booksy_text_primary"
+        android:textStyle="bold" />
 
     <!-- Author name -->
     <TextView
         android:id="@+id/authorTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="@string/author"
         android:textColor="@color/booksy_text_secondary"
-        android:maxLines="1"
-        android:ellipsize="end"
         android:textSize="12sp" />
 </LinearLayout>

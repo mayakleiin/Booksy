@@ -183,6 +183,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                     result.lastLocation?.let { location ->
                         viewModel.updateCurrentLocation(location)
                         moveToLocation(location)
+                        addUserMarker(location)
                     }
                 }
             },
@@ -197,6 +198,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
                     moveToLocation(it)
+                    addUserMarker(it)
                 }
             }
         }
@@ -205,6 +207,16 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private fun moveToLocation(location: Location) {
         val latLng = LatLng(location.latitude, location.longitude)
         googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f))
+    }
+
+    private fun addUserMarker(location: Location) {
+        val userLatLng = LatLng(location.latitude, location.longitude)
+        googleMap?.addMarker(
+            MarkerOptions()
+                .position(userLatLng)
+                .title("You")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+        )
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

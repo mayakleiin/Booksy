@@ -8,7 +8,6 @@ import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksy.R
@@ -19,6 +18,7 @@ import com.example.booksy.viewmodel.UserProfileViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import androidx.paging.LoadState
 
 class UserBooksFragment : Fragment() {
 
@@ -50,32 +50,36 @@ class UserBooksFragment : Fragment() {
             loadingOverlay.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
-        adapter = BookAdapter(onItemClick = { book ->
-            findNavController().navigate(
-                R.id.action_global_bookDetailFragment,
-                Bundle().apply { putString("bookId", book.id) })
-        }, onEditClick = { book ->
-            findNavController().navigate(
-                R.id.action_global_addBookFragment,
-                Bundle().apply { putParcelable("bookToEdit", book) })
-        })
+        adapter = BookAdapter(
+            onItemClick = { book ->
+                findNavController().navigate(
+                    R.id.action_global_bookDetailFragment,
+                    Bundle().apply { putString("bookId", book.id) }
+                )
+            },
+            onEditClick = { book ->
+                findNavController().navigate(
+                    R.id.action_global_addBookFragment,
+                    Bundle().apply { putParcelable("bookToEdit", book) }
+                )
+            }
+        )
 
         binding.userBooksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.userBooksRecyclerView.adapter = adapter
 
+        adapter.addLoadStateListener { loadState ->
+            val isListEmpty = adapter.itemCount == 0 &&
+                    loadState.refresh is LoadState.NotLoading &&
+                    loadState.append is LoadState.NotLoading &&
+                    loadState.source.refresh is LoadState.NotLoading
+
+            binding.emptyMessage.visibility = if (isListEmpty) View.VISIBLE else View.GONE
+        }
 
         lifecycleScope.launch {
             viewModel.pagedUserBooks.collectLatest { pagingData ->
                 adapter.submitData(pagingData)
-
-
-                adapter.addLoadStateListener { loadState ->
-
-                    val isEmpty =
-                        adapter.itemCount == 0 && !(loadState.mediator?.refresh?.endOfPaginationReached
-                            ?: false)
-                    binding.emptyMessage.visibility = if (isEmpty) View.VISIBLE else View.GONE
-                }
             }
         }
 

@@ -6,6 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.booksy.databinding.ItemNearbyBookBinding
 import com.example.booksy.model.Book
+import com.squareup.picasso.Picasso
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
+import com.example.booksy.R
 
 class NearbyBooksAdapter(
     private var books: List<Pair<Book, Float>>,
@@ -22,15 +25,22 @@ class NearbyBooksAdapter(
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
         val (book, distance) = books[position]
+
         holder.binding.titleTextView.text = book.title
         holder.binding.authorTextView.text = book.author
         holder.binding.distanceTextView.text = "${distance.toInt()}m"
+
+        Picasso.get()
+            .load(book.imageUrl)
+            .placeholder(R.drawable.ic_book_placeholder)
+            .error(R.drawable.ic_book_placeholder)
+            .transform(RoundedCornersTransformation(24, 0))
+            .into(holder.binding.bookImageView)
 
         holder.itemView.setOnClickListener {
             onItemClick(book)
         }
     }
-
 
     override fun getItemCount(): Int = books.size
 
