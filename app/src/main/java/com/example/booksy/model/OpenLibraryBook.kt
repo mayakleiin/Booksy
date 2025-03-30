@@ -1,9 +1,5 @@
 package com.example.booksy.model
 
-data class OpenLibraryResponse(
-    val docs: List<OpenLibraryBook>
-)
-
 data class OpenLibraryBook(
     val title: String?,
     val author_name: List<String>?,
@@ -22,8 +18,7 @@ data class OpenLibraryBook(
 ) {
     fun getAuthor(): String = author_name?.joinToString(", ") ?: ""
     fun getCoverUrl(): String =
-        if (cover_i != null) "https://covers.openlibrary.org/b/id/${cover_i}-L.jpg"
-        else ""
+        if (cover_i != null) "https://covers.openlibrary.org/b/id/${cover_i}-L.jpg" else ""
     fun getDescription(): String =
         first_sentence?.values?.firstOrNull() ?: ""
 }

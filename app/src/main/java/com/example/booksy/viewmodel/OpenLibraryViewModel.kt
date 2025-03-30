@@ -7,6 +7,7 @@ import com.example.booksy.model.OpenLibraryBook
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
@@ -38,20 +39,34 @@ class OpenLibraryViewModel : ViewModel() {
                     val book = OpenLibraryBook(
                         title = first.optString("title"),
                         author_name = first.optJSONArray("author_name")?.let {
-                            0.until(it.length()).map { i -> it.getString(i) }
+                            List(it.length()) { i -> it.getString(i) }
                         },
                         cover_i = if (first.has("cover_i")) first.getInt("cover_i") else null,
                         number_of_pages_median = if (first.has("number_of_pages_median")) first.getInt("number_of_pages_median") else null,
-                        first_sentence = null,
-                        first_publish_year = null,
-                        key = null,
-                        publish_place = null,
-                        subject = null,
-                        isbn = null,
-                        publisher = null,
-                        language = null,
-                        edition_count = null,
-                        publish_year = null
+                        first_sentence = first.optJSONObject("first_sentence")?.let { obj ->
+                            obj.keys().asSequence().associateWith { key -> obj.getString(key) }
+                        },
+                        first_publish_year = if (first.has("first_publish_year")) first.getInt("first_publish_year") else null,
+                        key = first.optString("key"),
+                        publish_place = first.optJSONArray("publish_place")?.let {
+                            List(it.length()) { i -> it.getString(i) }
+                        },
+                        subject = first.optJSONArray("subject")?.let {
+                            List(it.length()) { i -> it.getString(i) }
+                        },
+                        isbn = first.optJSONArray("isbn")?.let {
+                            List(it.length()) { i -> it.getString(i) }
+                        },
+                        publisher = first.optJSONArray("publisher")?.let {
+                            List(it.length()) { i -> it.getString(i) }
+                        },
+                        language = first.optJSONArray("language")?.let {
+                            List(it.length()) { i -> it.getString(i) }
+                        },
+                        edition_count = if (first.has("edition_count")) first.getInt("edition_count") else null,
+                        publish_year = first.optJSONArray("publish_year")?.let {
+                            List(it.length()) { i -> it.getInt(i) }
+                        }
                     )
                     _selectedBook.postValue(book)
                     _noResultFound.postValue(false)

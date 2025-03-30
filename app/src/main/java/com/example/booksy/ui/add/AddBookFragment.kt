@@ -66,12 +66,12 @@ class AddBookFragment : Fragment() {
 
         viewModel.selectedBook.observe(viewLifecycleOwner) { book ->
             book?.let {
-                binding.titleEditText.setText(it.title)
-                binding.authorEditText.setText(it.getAuthor())
-                binding.descriptionEditText.setText(it.getDescription())
-                binding.pagesEditText.setText(it.number_of_pages_median?.toString() ?: "")
+                binding.titleEditText.setText(book.title)
+                binding.authorEditText.setText(book.getAuthor())
+                binding.descriptionEditText.setText(book.getDescription())
+                binding.pagesEditText.setText(book.number_of_pages_median?.toString() ?: "")
                 Picasso.get()
-                    .load(it.getCoverUrl())
+                    .load(book.getCoverUrl())
                     .placeholder(R.drawable.ic_book_placeholder)
                     .error(R.drawable.ic_book_placeholder)
                     .into(binding.bookImageView)
