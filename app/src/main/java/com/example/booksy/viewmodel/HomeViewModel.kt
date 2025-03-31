@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.flowOf
 class HomeViewModel : ViewModel() {
 
     private val db = FirebaseFirestore.getInstance()
-    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid // ✅ here
+    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
     private var allBooks: List<Book> = emptyList()
     private var internalLocation: Location? = null
@@ -118,6 +118,15 @@ class HomeViewModel : ViewModel() {
         _nearbyBooks.value = nearby
     }
 
+    fun updateCurrentLocation(location: Location) {
+        _currentLocation.value = location
+        internalLocation = location
+        calculateNearbyBooks()
+    }
+
+    fun getCurrentFilters(): BookFilters = currentFilters
+
+    // These are unused for now, but kept in case needed
     fun getPagedBooks(): Flow<PagingData<Book>> {
         val baseQuery = db.collection("books").orderBy("title")
         return Pager(
@@ -137,7 +146,7 @@ class HomeViewModel : ViewModel() {
                     allBooks = allBooks,
                     currentLocation = location,
                     maxDistanceMeters = maxDistanceMeters,
-                    currentUserId = currentUserId // ✅ now you have it
+                    currentUserId = currentUserId
                 )
             }
         ).flow
@@ -147,16 +156,8 @@ class HomeViewModel : ViewModel() {
         return allBooks.filter { it.lat != null && it.lng != null }
     }
 
-    fun getCurrentFilters(): BookFilters = currentFilters
-
     fun setFilterDistance(distance: Float) {
         _filterDistanceMeters.value = distance
-        calculateNearbyBooks()
-    }
-
-    fun updateCurrentLocation(location: Location) {
-        _currentLocation.value = location
-        internalLocation = location
         calculateNearbyBooks()
     }
 }
