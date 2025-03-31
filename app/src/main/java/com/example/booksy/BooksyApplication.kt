@@ -10,7 +10,7 @@ class BooksyApplication : Application() {
         super.onCreate()
 
         val picassoBuilder = Picasso.Builder(this)
-        picassoBuilder.memoryCache(LruCache(1024 * 1024 * 30))
+        picassoBuilder.memoryCache(LruCache(1024 * 1024 * 30)) // 30MB cache
 
         val cacheDir = File(cacheDir, "picasso-cache")
         if (!cacheDir.exists()) {
