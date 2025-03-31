@@ -69,6 +69,7 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
                     .addOnSuccessListener {
                         _toastMessage.postValue("Request approved and book marked as borrowed!")
                         loadIncomingRequests()
+                        refreshPagedBooks()
                         setIsLoading(false)
                         onComplete()
                     }
@@ -148,6 +149,7 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
 
         db.collection("borrowRequests")
             .whereEqualTo("fromUserId", userId)
+            .whereEqualTo("status", RequestStatus.PENDING.name)
             .get()
             .addOnSuccessListener { requestDocs ->
                 val requests = requestDocs.toObjects(Request::class.java)
@@ -186,6 +188,7 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
 
         db.collection("borrowRequests")
             .whereEqualTo("toUserId", userId)
+            .whereEqualTo("status", RequestStatus.PENDING.name)
             .get()
             .addOnSuccessListener { requestDocs ->
                 val requests = requestDocs.toObjects(Request::class.java)

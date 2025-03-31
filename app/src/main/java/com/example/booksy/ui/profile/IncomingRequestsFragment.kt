@@ -53,9 +53,11 @@ class IncomingRequestsFragment : Fragment() {
                 when (newStatus) {
                     RequestStatus.APPROVED -> viewModel.approveRequest(requestedBook) {
                         binding.loadingOverlay.visibility = View.GONE
+                        viewModel.loadIncomingRequests()
                     }
                     RequestStatus.REJECTED -> viewModel.rejectRequest(requestedBook) {
                         binding.loadingOverlay.visibility = View.GONE
+                        viewModel.loadIncomingRequests()
                     }
                     else -> binding.loadingOverlay.visibility = View.GONE
                 }

@@ -287,6 +287,13 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         if (::mapView.isInitialized) {
             mapView.onResume()
         }
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            binding.profileButton.setImageResource(R.drawable.default_profile)
+        } else {
+            userProfileViewModel.loadCurrentUser()
+        }
     }
 
     override fun onPause() {

@@ -204,7 +204,7 @@ class BookDetailFragment : Fragment() {
             }
         }
 
-        viewModel.checkIfRequestExists(book.id)
+        viewModel.listenToRequestStatus(book.id)
     }
 
     override fun onDestroyView() {

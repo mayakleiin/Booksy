@@ -70,18 +70,17 @@ class BookDetailViewModel(application: Application) : AndroidViewModel(applicati
             }
     }
 
+
     fun checkIfRequestExists(bookId: String) {
         val userId = auth.currentUser?.uid ?: return
 
         firestore.collection("borrowRequests")
             .whereEqualTo("bookId", bookId)
             .whereEqualTo("fromUserId", userId)
+            .whereEqualTo("status", RequestStatus.PENDING.name)
             .get()
             .addOnSuccessListener { requests ->
-                val activePendingRequest = requests.documents.any { doc ->
-                    val status = doc.getString("status")
-                    status == RequestStatus.PENDING.name || status == RequestStatus.APPROVED.name
-                }
+                val activePendingRequest = requests.documents.isNotEmpty()
                 _hasPendingRequest.postValue(activePendingRequest)
             }
     }
@@ -117,6 +116,23 @@ class BookDetailViewModel(application: Application) : AndroidViewModel(applicati
             }
             .addOnFailureListener {
                 _toastMessage.postValue("Failed to return book")
+            }
+    }
+
+    fun listenToRequestStatus(bookId: String) {
+        val userId = auth.currentUser?.uid ?: return
+
+        firestore.collection("borrowRequests")
+            .whereEqualTo("bookId", bookId)
+            .whereEqualTo("fromUserId", userId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) return@addSnapshotListener
+
+                val requests = snapshot?.documents ?: emptyList()
+                val hasPendingRequest = requests.any {
+                    it.getString("status") == RequestStatus.PENDING.name
+                }
+                _hasPendingRequest.postValue(hasPendingRequest)
             }
     }
 

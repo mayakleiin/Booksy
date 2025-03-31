@@ -49,7 +49,9 @@ class MyRequestsFragment : Fragment() {
             requestedBooks = emptyList(),
             isIncomingRequest = false,
             onActionClick = { requestedBook, _ ->
-                viewModel.cancelRequest(requestedBook)
+                viewModel.cancelRequest(requestedBook) {
+                    viewModel.loadRequestedBooks()
+                }
             },
             onBookClick = { requestedBook ->
                 findNavController().navigate(
