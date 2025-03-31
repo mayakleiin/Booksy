@@ -3,13 +3,16 @@ package com.example.booksy.ui.profile
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -22,7 +25,8 @@ import com.example.booksy.R
 
 class EditProfileDialogFragment : DialogFragment() {
 
-    private lateinit var binding: FragmentEditProfileDialogBinding
+    private var _binding: FragmentEditProfileDialogBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: UserProfileViewModel by activityViewModels()
     private var selectedImageUri: Uri? = null
 
@@ -39,7 +43,21 @@ class EditProfileDialogFragment : DialogFragment() {
         }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = FragmentEditProfileDialogBinding.inflate(LayoutInflater.from(context))
+
+        val dialog = Dialog(requireContext(), R.style.EditProfileDialog)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        return dialog
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentEditProfileDialogBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val user = viewModel.user.value
         binding.nameEditText.setText(user?.name)
@@ -61,36 +79,43 @@ class EditProfileDialogFragment : DialogFragment() {
             pickImageLauncher.launch(intent)
         }
 
-        viewModel.isLoading.observe(this) { loading ->
+        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.loader.isVisible = loading
         }
 
-        // Hide FAB when dialog is shown
-        (parentFragment?.view?.findViewById<View>(R.id.addBookButton))?.visibility = View.GONE
-
-
-        return AlertDialog.Builder(requireContext(), R.style.EditProfileDialog)
-            .setView(binding.root)
-            .setPositiveButton(getString(R.string.save)) { _, _ ->
-                val newName = binding.nameEditText.text.toString().trim()
-                if (newName.isNotEmpty()) {
-                    if (selectedImageUri != null) {
-                        uploadImageToFirebase(newName, selectedImageUri!!)
-                    } else {
-                        viewModel.updateUserProfile(newName, user?.imageUrl)
-                    }
+        binding.saveButton.setOnClickListener {
+            val newName = binding.nameEditText.text.toString().trim()
+            if (newName.isNotEmpty()) {
+                if (selectedImageUri != null) {
+                    uploadImageToFirebase(newName, selectedImageUri!!)
                 } else {
-                    Toast.makeText(requireContext(), getString(R.string.toast_name_empty), Toast.LENGTH_SHORT).show()
+                    viewModel.updateUserProfile(newName, user?.imageUrl)
+                    dismiss()
                 }
+            } else {
+                Toast.makeText(requireContext(), getString(R.string.toast_name_empty), Toast.LENGTH_SHORT).show()
             }
-            .setNegativeButton(getString(R.string.cancel)) { _, _ -> dismiss() }
-            .create()
+        }
+
+        binding.cancelButton.setOnClickListener {
+            dismiss()
+        }
+
+        try {
+            (parentFragment?.view?.findViewById<View>(R.id.addBookButton))?.visibility = View.GONE
+        } catch (e: Exception) {
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Show FAB again when dialog is dismissed
-        (parentFragment?.view?.findViewById<View>(R.id.addBookButton))?.visibility = View.VISIBLE
+
+        try {
+            (parentFragment?.view?.findViewById<View>(R.id.addBookButton))?.visibility = View.VISIBLE
+        } catch (e: Exception) {
+        }
+
+        _binding = null
     }
 
     private fun uploadImageToFirebase(name: String, imageUri: Uri) {
@@ -105,6 +130,7 @@ class EditProfileDialogFragment : DialogFragment() {
             }
             .addOnSuccessListener { uri ->
                 viewModel.updateUserProfile(name, uri.toString())
+                dismiss()
             }
             .addOnFailureListener {
                 viewModel.setIsLoading(false)

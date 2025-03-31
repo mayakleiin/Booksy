@@ -63,7 +63,27 @@
         android:padding="12dp"
         android:layout_marginBottom="24dp"/>
 
-    <Space
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="16dp" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/save"
+            style="@style/BooksyButton.White" />
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:layout_marginEnd="8dp"
+            style="@style/BooksyButton.Secondary" />
+    </LinearLayout>
 </LinearLayout>

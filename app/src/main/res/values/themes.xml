@@ -132,22 +132,9 @@
     <style name="EditProfileDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:background">@color/booksy_surface</item>
         <item name="android:textColorPrimary">@color/booksy_text_primary</item>
-        <item name="buttonBarPositiveButtonStyle">@style/EditProfileDialogButton</item>
-        <item name="buttonBarNegativeButtonStyle">@style/EditProfileDialogButton.Cancel</item>
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
-    </style>
-
-    <style name="EditProfileDialogButton" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@color/booksy_text_primary</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
-
-    <style name="EditProfileDialogButton.Cancel" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">@color/booksy_text_secondary</item>
-        <item name="android:background">@color/booksy_button_secondary</item>
-        <item name="android:textAllCaps">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 </resources>
 
