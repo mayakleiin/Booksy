@@ -17,7 +17,6 @@ class RequestedBookAdapter(
     private val onBookClick: (RequestedBook) -> Unit
 ) : RecyclerView.Adapter<RequestedBookAdapter.RequestedBookViewHolder>() {
 
-    // Map to track processing state per request ID
     private val processingMap = mutableMapOf<String, Boolean>()
 
     inner class RequestedBookViewHolder(private val binding: ItemRequestedBookBinding) :
@@ -26,40 +25,41 @@ class RequestedBookAdapter(
         fun bind(item: RequestedBook) {
             val book = item.book
             val request = item.request
-            val isProcessing = processingMap[request.id] == true
-            val isPending = request.status == RequestStatus.PENDING
 
             binding.bookTitle.text = book.title
             binding.bookAuthor.text = book.author
             binding.requestStatus.text = request.status.name
-
             binding.bookImage.load(book.imageUrl.ifEmpty { R.drawable.ic_book_placeholder })
 
             if (isIncomingRequest) {
-                // Approve (cancelButton)
-                binding.cancelButton.text = if (isProcessing) "" else binding.root.context.getString(R.string.approve)
-                binding.cancelButton.isEnabled = isPending && !isProcessing
+                // Approve
+                binding.cancelButton.text = binding.root.context.getString(R.string.approve)
+                binding.cancelButton.isEnabled = request.status == RequestStatus.PENDING
                 binding.cancelButton.setOnClickListener {
-                    disableButtons(request.id)
                     onActionClick(item, RequestStatus.APPROVED)
                 }
 
                 // Reject
                 binding.rejectButton.visibility = View.VISIBLE
-                binding.rejectButton.text = if (isProcessing) "" else binding.root.context.getString(R.string.reject)
-                binding.rejectButton.isEnabled = isPending && !isProcessing
+                binding.rejectButton.text = binding.root.context.getString(R.string.reject)
+                binding.rejectButton.isEnabled = request.status == RequestStatus.PENDING
                 binding.rejectButton.setOnClickListener {
-                    disableButtons(request.id)
                     onActionClick(item, RequestStatus.REJECTED)
                 }
 
             } else {
-                // Cancel
-                binding.cancelButton.text = if (isProcessing) "" else binding.root.context.getString(R.string.cancel)
-                binding.cancelButton.isEnabled = isPending && !isProcessing
-                binding.cancelButton.setOnClickListener {
-                    disableButtons(request.id)
-                    onActionClick(item, RequestStatus.REJECTED)
+                // My Requests
+                if (request.status == RequestStatus.PENDING) {
+                    binding.cancelButton.apply {
+                        visibility = View.VISIBLE
+                        text = binding.root.context.getString(R.string.cancel)
+                        isEnabled = true
+                        setOnClickListener {
+                            onActionClick(item, RequestStatus.REJECTED)
+                        }
+                    }
+                } else {
+                    binding.cancelButton.visibility = View.GONE
                 }
 
                 binding.rejectButton.visibility = View.GONE
@@ -68,12 +68,6 @@ class RequestedBookAdapter(
             binding.root.setOnClickListener {
                 onBookClick(item)
             }
-        }
-
-
-        private fun disableButtons(requestId: String) {
-            processingMap[requestId] = true
-            notifyItemChanged(requestedBooks.indexOfFirst { it.request.id == requestId })
         }
     }
 
@@ -90,7 +84,7 @@ class RequestedBookAdapter(
 
     fun updateData(newList: List<RequestedBook>) {
         requestedBooks = newList
-        processingMap.clear() // Reset all flags when new data arrives
+        processingMap.clear()
         notifyDataSetChanged()
     }
 }

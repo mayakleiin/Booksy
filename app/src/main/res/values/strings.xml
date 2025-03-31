@@ -95,4 +95,6 @@
     <string name="reject">Reject</string>
 
     <string name="book_already_borrowed">Book is already borrowed</string>
+    <string name="update_book">Update Book</string>
+
 </resources>

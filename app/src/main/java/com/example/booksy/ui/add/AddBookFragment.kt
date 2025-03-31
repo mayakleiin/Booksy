@@ -15,7 +15,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentAddBookBinding
@@ -23,82 +22,63 @@ import com.example.booksy.model.Book
 import com.example.booksy.model.BookStatus
 import com.example.booksy.model.Genre
 import com.example.booksy.model.Language
-import com.example.booksy.viewmodel.OpenLibraryViewModel
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.chip.Chip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.android.material.chip.Chip
-import java.util.*
 import com.squareup.picasso.Picasso
+import java.util.*
 
 class AddBookFragment : Fragment() {
 
     private lateinit var binding: FragmentAddBookBinding
     private lateinit var loadingOverlay: FrameLayout
-    private val viewModel: OpenLibraryViewModel by viewModels()
 
+    private var bookToEdit: Book? = null
+    private var imageUri: Uri? = null
     private var currentLat: Double? = null
     private var currentLng: Double? = null
-    private var imageUri: Uri? = null
+
     private val selectedGenres = mutableListOf<Genre>()
     private val selectedLanguages = mutableListOf<Language>()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentAddBookBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser === null) {
+        if (currentUser == null) {
             findNavController().navigate(R.id.loginFragment)
             return
         }
 
         loadingOverlay = view.findViewById(R.id.loadingOverlay)
+        bookToEdit = arguments?.getParcelable("bookToEdit")
 
-        viewModel.isLoading.observe(viewLifecycleOwner) {
-            loadingOverlay.visibility = if (it) View.VISIBLE else View.GONE
-        }
+        // If editing, pre-fill the fields
+        bookToEdit?.let { book ->
+            binding.titleEditText.setText(book.title)
+            binding.authorEditText.setText(book.author)
+            binding.descriptionEditText.setText(book.description)
+            binding.pagesEditText.setText(book.pages.toString())
+            selectedGenres.addAll(book.genres)
+            selectedLanguages.addAll(book.languages)
+            updateChips(binding.genreChipGroup, selectedGenres)
+            updateChips(binding.languageChipGroup, selectedLanguages)
+            currentLat = book.lat
+            currentLng = book.lng
 
-        viewModel.selectedBook.observe(viewLifecycleOwner) { book ->
-            book?.let {
-                binding.titleEditText.setText(book.title)
-                binding.authorEditText.setText(book.getAuthor())
-                binding.descriptionEditText.setText(book.getDescription())
-                binding.pagesEditText.setText(book.number_of_pages_median?.toString() ?: "")
-                Picasso.get()
-                    .load(book.getCoverUrl())
-                    .placeholder(R.drawable.ic_book_placeholder)
-                    .error(R.drawable.ic_book_placeholder)
-                    .into(binding.bookImageView)
-                Toast.makeText(requireContext(), getString(R.string.toast_book_filled), Toast.LENGTH_SHORT).show()
+            if (book.imageUrl.isNotEmpty()) {
+                Picasso.get().load(book.imageUrl).into(binding.bookImageView)
             }
+
+            binding.saveBookButton.text = getString(R.string.update_book)
         }
 
-        viewModel.noResultFound.observe(viewLifecycleOwner) { noResult ->
-            if (noResult) Toast.makeText(requireContext(), getString(R.string.toast_no_book_found), Toast.LENGTH_SHORT).show()
-        }
-
-        binding.searchButton.setOnClickListener {
-            val query = binding.searchEditText.text.toString().trim()
-            if (query.isNotEmpty()) {
-                viewModel.searchBook(query)
-            }
-        }
-
-        binding.shareLocationCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            binding.addressEditText.isVisible = !isChecked
-            if (isChecked) requestLocation()
-        }
-
-        binding.saveBookButton.setOnClickListener {
-            uploadBook()
-        }
-
+        // Genre chips
         Genre.values().forEach { genre ->
             val chip = createChip(genre.displayName, selectedGenres.contains(genre))
             chip.setOnClickListener {
@@ -112,6 +92,7 @@ class AddBookFragment : Fragment() {
             binding.genreChipGroup.addView(chip)
         }
 
+        // Language chips
         Language.values().forEach { lang ->
             val chip = createChip(lang.displayName, selectedLanguages.contains(lang))
             chip.setOnClickListener {
@@ -123,6 +104,15 @@ class AddBookFragment : Fragment() {
                 updateChips(binding.languageChipGroup, selectedLanguages)
             }
             binding.languageChipGroup.addView(chip)
+        }
+
+        binding.shareLocationCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            binding.addressEditText.isVisible = !isChecked
+            if (isChecked) requestLocation()
+        }
+
+        binding.saveBookButton.setOnClickListener {
+            uploadBook()
         }
 
         binding.cancelButton.setOnClickListener {
@@ -158,9 +148,8 @@ class AddBookFragment : Fragment() {
     }
 
     private fun requestLocation() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
                 requireActivity(),
@@ -208,7 +197,8 @@ class AddBookFragment : Fragment() {
             }
         }
 
-        val bookId = UUID.randomUUID().toString()
+        val existingId = bookToEdit?.id
+        val bookId = existingId ?: UUID.randomUUID().toString()
 
         val saveBookToFirestore: (String) -> Unit = { imageUrl ->
             val book = Book(
@@ -219,8 +209,8 @@ class AddBookFragment : Fragment() {
                 description = description,
                 languages = selectedLanguages,
                 pages = pages,
-                imageUrl = imageUrl,
-                status = BookStatus.AVAILABLE,
+                imageUrl = imageUrl.ifEmpty { bookToEdit?.imageUrl ?: "" },
+                status = bookToEdit?.status ?: BookStatus.AVAILABLE,
                 ownerId = FirebaseAuth.getInstance().uid ?: "user1",
                 lat = currentLat ?: 0.0,
                 lng = currentLng ?: 0.0
