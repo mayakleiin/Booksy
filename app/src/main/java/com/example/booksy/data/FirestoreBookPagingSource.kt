@@ -7,6 +7,7 @@ import com.example.booksy.model.Book
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
+
 class FirestoreBookPagingSource(
     private val query: Query
 ) : PagingSource<Query, Book>() {
