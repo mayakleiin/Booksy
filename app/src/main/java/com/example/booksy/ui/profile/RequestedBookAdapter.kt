@@ -44,10 +44,17 @@ class RequestedBookAdapter(
                 }
 
             } else {
-                binding.cancelButton.text = binding.root.context.getString(R.string.cancel)
-                binding.cancelButton.isEnabled = request.status == RequestStatus.PENDING
-                binding.cancelButton.setOnClickListener {
-                    onActionClick(item, RequestStatus.REJECTED)
+                if (request.status == RequestStatus.PENDING) {
+                    binding.cancelButton.apply {
+                        visibility = View.VISIBLE
+                        text = binding.root.context.getString(R.string.cancel)
+                        isEnabled = true
+                        setOnClickListener {
+                            onActionClick(item, RequestStatus.REJECTED)
+                        }
+                    }
+                } else {
+                    binding.cancelButton.visibility = View.GONE
                 }
 
                 binding.rejectButton.visibility = View.GONE
