@@ -17,6 +17,8 @@ class RequestedBookAdapter(
     private val onBookClick: (RequestedBook) -> Unit
 ) : RecyclerView.Adapter<RequestedBookAdapter.RequestedBookViewHolder>() {
 
+    private val processingMap = mutableMapOf<String, Boolean>()
+
     inner class RequestedBookViewHolder(private val binding: ItemRequestedBookBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -27,23 +29,26 @@ class RequestedBookAdapter(
             binding.bookTitle.text = book.title
             binding.bookAuthor.text = book.author
             binding.requestStatus.text = request.status.name
-
             binding.bookImage.load(book.imageUrl.ifEmpty { R.drawable.ic_book_placeholder })
 
             if (isIncomingRequest) {
+                // Approve
                 binding.cancelButton.text = binding.root.context.getString(R.string.approve)
                 binding.cancelButton.isEnabled = request.status == RequestStatus.PENDING
                 binding.cancelButton.setOnClickListener {
                     onActionClick(item, RequestStatus.APPROVED)
                 }
 
+                // Reject
                 binding.rejectButton.visibility = View.VISIBLE
+                binding.rejectButton.text = binding.root.context.getString(R.string.reject)
                 binding.rejectButton.isEnabled = request.status == RequestStatus.PENDING
                 binding.rejectButton.setOnClickListener {
                     onActionClick(item, RequestStatus.REJECTED)
                 }
 
             } else {
+                // My Requests
                 if (request.status == RequestStatus.PENDING) {
                     binding.cancelButton.apply {
                         visibility = View.VISIBLE
@@ -59,6 +64,7 @@ class RequestedBookAdapter(
 
                 binding.rejectButton.visibility = View.GONE
             }
+
             binding.root.setOnClickListener {
                 onBookClick(item)
             }
@@ -78,6 +84,7 @@ class RequestedBookAdapter(
 
     fun updateData(newList: List<RequestedBook>) {
         requestedBooks = newList
+        processingMap.clear()
         notifyDataSetChanged()
     }
 }

@@ -29,6 +29,7 @@ class EditProfileDialogFragment : DialogFragment() {
     private val binding get() = _binding!!
     private val viewModel: UserProfileViewModel by activityViewModels()
     private var selectedImageUri: Uri? = null
+    var onProfileUpdated: (() -> Unit)? = null
 
     private val pickImageLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -90,12 +91,14 @@ class EditProfileDialogFragment : DialogFragment() {
                     uploadImageToFirebase(newName, selectedImageUri!!)
                 } else {
                     viewModel.updateUserProfile(newName, user?.imageUrl)
+                    onProfileUpdated?.invoke()
                     dismiss()
                 }
             } else {
                 Toast.makeText(requireContext(), getString(R.string.toast_name_empty), Toast.LENGTH_SHORT).show()
             }
         }
+
 
         binding.cancelButton.setOnClickListener {
             dismiss()
@@ -130,6 +133,7 @@ class EditProfileDialogFragment : DialogFragment() {
             }
             .addOnSuccessListener { uri ->
                 viewModel.updateUserProfile(name, uri.toString())
+                onProfileUpdated?.invoke()
                 dismiss()
             }
             .addOnFailureListener {
@@ -137,4 +141,5 @@ class EditProfileDialogFragment : DialogFragment() {
                 Toast.makeText(requireContext(), getString(R.string.toast_image_upload_failed), Toast.LENGTH_SHORT).show()
             }
     }
+
 }

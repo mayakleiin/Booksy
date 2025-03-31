@@ -170,7 +170,89 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
             }
     }
 
-    // --- Room cache (לפי דרישת המרצה) ---
+    fun approveRequest(requestedBook: RequestedBook, onComplete: () -> Unit = {}) {
+        setIsLoading(true)
+        val db = FirebaseFirestore.getInstance()
+
+        _incomingRequests.value = _incomingRequests.value?.map {
+            if (it.request.id == requestedBook.request.id) {
+                it.copy(request = it.request.copy(status = RequestStatus.APPROVED))
+            } else it
+        }
+        db.collection("borrowRequests")
+            .document(requestedBook.request.id)
+            .update("status", RequestStatus.APPROVED.name)
+            .addOnSuccessListener {
+                db.collection("books")
+                    .document(requestedBook.book.id)
+                    .update("status", "BORROWED")
+                    .addOnSuccessListener {
+                        _toastMessage.postValue("Request approved and book marked as borrowed!")
+                        loadIncomingRequests()
+                        _incomingRequests.postValue(_incomingRequests.value)
+                        setIsLoading(false)
+                        onComplete()
+                    }
+                    .addOnFailureListener {
+                        _toastMessage.postValue("Request approved, but failed to update book status.")
+                        setIsLoading(false)
+                        onComplete()
+                    }
+            }
+            .addOnFailureListener {
+                _toastMessage.postValue("Failed to approve request.")
+                setIsLoading(false)
+                onComplete()
+            }
+    }
+
+    fun rejectRequest(requestedBook: RequestedBook, onComplete: () -> Unit = {}) {
+        setIsLoading(true)
+
+        _incomingRequests.value = _incomingRequests.value?.map {
+            if (it.request.id == requestedBook.request.id) {
+                it.copy(request = it.request.copy(status = RequestStatus.REJECTED))
+            } else it
+        }
+
+        FirebaseFirestore.getInstance()
+            .collection("borrowRequests")
+            .document(requestedBook.request.id)
+            .update("status", RequestStatus.REJECTED.name)
+            .addOnSuccessListener {
+                _toastMessage.postValue("Request rejected.")
+                loadIncomingRequests()
+                _incomingRequests.postValue(_incomingRequests.value)
+                setIsLoading(false)
+                onComplete()
+            }
+            .addOnFailureListener {
+                _toastMessage.postValue("Failed to reject request.")
+                setIsLoading(false)
+                onComplete()
+            }
+    }
+
+    fun cancelRequest(requestedBook: RequestedBook, onComplete: () -> Unit = {}) {
+        setIsLoading(true)
+        FirebaseFirestore.getInstance()
+            .collection("borrowRequests")
+            .document(requestedBook.request.id)
+            .delete()
+            .addOnSuccessListener {
+                _toastMessage.postValue("Request cancelled.")
+                loadRequestedBooks()
+                setIsLoading(false)
+                onComplete()
+            }
+            .addOnFailureListener {
+                _toastMessage.postValue("Failed to cancel request.")
+                setIsLoading(false)
+                onComplete()
+            }
+    }
+
+    // --- Room cache ---
     private val bookDao = AppDatabase.getDatabase(context).bookDao()
 
     fun cacheUserBooksLocally(books: List<Book>) {

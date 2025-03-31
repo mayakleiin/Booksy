@@ -92,6 +92,7 @@
     <string name="toast_profile_generic">%1$s</string>
     <string name="approve">Approve</string>
     <string name="cancel">Cancel</string>
+    <string name="reject">Reject</string>
 
     <string name="book_already_borrowed">Book is already borrowed</string>
     <string name="update_book">Update Book</string>
