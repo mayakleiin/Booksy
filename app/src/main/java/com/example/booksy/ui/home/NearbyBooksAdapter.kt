@@ -41,6 +41,7 @@ class NearbyBooksAdapter(
             holder.binding.bookImageView.setImageResource(R.drawable.ic_book_placeholder)
         }
 
+
         holder.itemView.setOnClickListener {
             onItemClick(book)
         }

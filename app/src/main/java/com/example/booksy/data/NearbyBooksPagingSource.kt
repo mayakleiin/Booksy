@@ -4,11 +4,13 @@ import android.location.Location
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.booksy.model.Book
+import com.example.booksy.model.BookStatus
 
 class NearbyBooksPagingSource(
     private val allBooks: List<Book>,
     private val currentLocation: Location,
-    private val maxDistanceMeters: Float
+    private val maxDistanceMeters: Float,
+    private val currentUserId: String?
 ) : PagingSource<Int, Book>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Book> {
@@ -16,7 +18,11 @@ class NearbyBooksPagingSource(
         val pageSize = params.loadSize
 
         val filteredBooks = allBooks.filter { book ->
-            book.lat != null && book.lng != null && calculateDistance(book) <= maxDistanceMeters
+            book.lat != null &&
+                    book.lng != null &&
+                    book.status == BookStatus.AVAILABLE &&
+                    book.ownerId != currentUserId &&
+                    calculateDistance(book) <= maxDistanceMeters
         }.sortedBy { calculateDistance(it) }
 
         val fromIndex = page * pageSize
