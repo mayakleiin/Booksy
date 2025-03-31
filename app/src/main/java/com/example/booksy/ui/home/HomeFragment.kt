@@ -3,12 +3,12 @@ package com.example.booksy.ui.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.FrameLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,8 +23,6 @@ import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.firebase.auth.FirebaseAuth
-import android.graphics.Bitmap
-import android.graphics.Canvas
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
@@ -50,6 +48,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
 
         loadingOverlay = binding.loadingOverlay
+        binding.nearbyCountTextView.visibility = View.GONE  // ✅ הסתרת הכותרת בהתחלה
 
         val mapViewBundle = savedInstanceState?.getBundle(MAP_VIEW_BUNDLE_KEY)
         mapView = binding.mapView
@@ -107,7 +106,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private fun observeViewModel() {
         viewModel.books.observe(viewLifecycleOwner) { books ->
             googleMap?.clear()
-
             val bookIcon = getScaledMarker(R.drawable.book_marker)
 
             books.forEach { book ->
@@ -125,12 +123,22 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
         viewModel.nearbyBooks.observe(viewLifecycleOwner) { nearby ->
             nearbyBooksAdapter.updateBooks(nearby)
-            binding.nearbyCountTextView.text = getString(R.string.books_nearby)
-                .replace("0", nearby.size.toString())
+            // אנחנו לא מעדכנים את הטקסט כאן – נעשה את זה אחרי שהטעינה תסתיים
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             loadingOverlay.visibility = if (isLoading) View.VISIBLE else View.GONE
+
+            if (!isLoading) {
+                val nearby = viewModel.nearbyBooks.value
+                if (nearby != null) {
+                    binding.nearbyCountTextView.text =
+                        getString(R.string.books_nearby).replace("0", nearby.size.toString())
+                    binding.nearbyCountTextView.visibility = View.VISIBLE
+                }
+            } else {
+                binding.nearbyCountTextView.visibility = View.GONE
+            }
         }
     }
 

@@ -87,12 +87,14 @@ class EditProfileDialogFragment : DialogFragment() {
         binding.saveButton.setOnClickListener {
             val newName = binding.nameEditText.text.toString().trim()
             if (newName.isNotEmpty()) {
+                viewModel.setIsLoading(true)
                 if (selectedImageUri != null) {
                     uploadImageToFirebase(newName, selectedImageUri!!)
                 } else {
                     viewModel.updateUserProfile(newName, user?.imageUrl)
                     onProfileUpdated?.invoke()
                     dismiss()
+                    viewModel.setIsLoading(false)
                 }
             } else {
                 Toast.makeText(requireContext(), getString(R.string.toast_name_empty), Toast.LENGTH_SHORT).show()
@@ -102,6 +104,7 @@ class EditProfileDialogFragment : DialogFragment() {
 
         binding.cancelButton.setOnClickListener {
             dismiss()
+            viewModel.setIsLoading(false)
         }
 
         try {
