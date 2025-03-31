@@ -36,7 +36,7 @@ class BookDetailViewModel(application: Application) : AndroidViewModel(applicati
                 val book = document.toObject(Book::class.java)
                 book?.let {
                     _book.postValue(it)
-                    checkIfRequestExists(it.id) // בדיקה אם קיימת בקשה
+                    checkIfRequestExists(it.id)
                 } ?: _toastMessage.postValue("Book not found")
             }
             .addOnFailureListener {
@@ -78,7 +78,11 @@ class BookDetailViewModel(application: Application) : AndroidViewModel(applicati
             .whereEqualTo("fromUserId", userId)
             .get()
             .addOnSuccessListener { requests ->
-                _hasPendingRequest.postValue(!requests.isEmpty)
+                val activePendingRequest = requests.documents.any { doc ->
+                    val status = doc.getString("status")
+                    status == RequestStatus.PENDING.name || status == RequestStatus.APPROVED.name
+                }
+                _hasPendingRequest.postValue(activePendingRequest)
             }
     }
 
@@ -93,7 +97,7 @@ class BookDetailViewModel(application: Application) : AndroidViewModel(applicati
                 for (doc in requests.documents) {
                     firestore.collection("borrowRequests")
                         .document(doc.id)
-                        .delete()
+                        .update("status", RequestStatus.REJECTED.name)
                 }
                 _toastMessage.postValue("Request cancelled")
                 _hasPendingRequest.postValue(false)

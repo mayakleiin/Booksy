@@ -32,29 +32,36 @@ class RequestedBookAdapter(
             binding.bookImage.load(book.imageUrl.ifEmpty { R.drawable.ic_book_placeholder })
 
             if (isIncomingRequest) {
-                // Approve button
+
+                val isPending = request.status == RequestStatus.PENDING
+
+
                 binding.cancelButton.text = binding.root.context.getString(R.string.approve)
-                binding.cancelButton.isEnabled = request.status == RequestStatus.PENDING
-                binding.cancelButton.setOnClickListener {
-                    if (!processingMap.getOrDefault(request.id, false)) {
-                        processingMap[request.id] = true
-                        onActionClick(item, RequestStatus.APPROVED)
+                binding.cancelButton.isEnabled = isPending
+                binding.cancelButton.visibility = if (isPending) View.VISIBLE else View.GONE
+                if (isPending) {
+                    binding.cancelButton.setOnClickListener {
+                        if (!processingMap.getOrDefault(request.id, false)) {
+                            processingMap[request.id] = true
+                            onActionClick(item, RequestStatus.APPROVED)
+                        }
                     }
                 }
 
                 // Reject button
-                binding.rejectButton.visibility = View.VISIBLE
+                binding.rejectButton.visibility = if (isPending) View.VISIBLE else View.GONE
                 binding.rejectButton.text = binding.root.context.getString(R.string.reject)
-                binding.rejectButton.isEnabled = request.status == RequestStatus.PENDING
-                binding.rejectButton.setOnClickListener {
-                    if (!processingMap.getOrDefault(request.id, false)) {
-                        processingMap[request.id] = true
-                        onActionClick(item, RequestStatus.REJECTED)
+                binding.rejectButton.isEnabled = isPending
+                if (isPending) {
+                    binding.rejectButton.setOnClickListener {
+                        if (!processingMap.getOrDefault(request.id, false)) {
+                            processingMap[request.id] = true
+                            onActionClick(item, RequestStatus.REJECTED)
+                        }
                     }
                 }
-
             } else {
-                // My Requests
+                // My Requests - אפשר לבטל רק בקשות ב-PENDING
                 if (request.status == RequestStatus.PENDING) {
                     binding.cancelButton.apply {
                         visibility = View.VISIBLE

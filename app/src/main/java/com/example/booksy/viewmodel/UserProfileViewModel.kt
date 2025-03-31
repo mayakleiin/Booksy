@@ -68,16 +68,13 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
                     .update("status", BookStatus.BORROWED.name)
                     .addOnSuccessListener {
                         _toastMessage.postValue("Request approved and book marked as borrowed!")
-                        _incomingRequests.postValue(
-                            _incomingRequests.value?.filter {
-                                it.request.id != requestedBook.request.id
-                            }
-                        )
+                        loadIncomingRequests()
                         setIsLoading(false)
                         onComplete()
                     }
                     .addOnFailureListener {
                         _toastMessage.postValue("Request approved, but failed to update book status.")
+                        loadIncomingRequests()
                         setIsLoading(false)
                         onComplete()
                     }
@@ -96,11 +93,7 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
             .update("status", RequestStatus.REJECTED.name)
             .addOnSuccessListener {
                 _toastMessage.postValue("Request rejected.")
-                _incomingRequests.postValue(
-                    _incomingRequests.value?.filter {
-                        it.request.id != requestedBook.request.id
-                    }
-                )
+                loadIncomingRequests()
                 setIsLoading(false)
                 onComplete()
             }
@@ -115,14 +108,10 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
         setIsLoading(true)
         db.collection("borrowRequests")
             .document(requestedBook.request.id)
-            .delete()
+            .update("status", RequestStatus.REJECTED.name)
             .addOnSuccessListener {
                 _toastMessage.postValue("Request cancelled.")
-                _requestedBooks.postValue(
-                    _requestedBooks.value?.filter {
-                        it.request.id != requestedBook.request.id
-                    }
-                )
+                loadRequestedBooks()
                 setIsLoading(false)
                 onComplete()
             }
@@ -132,7 +121,6 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
                 onComplete()
             }
     }
-
     fun loadCurrentUser() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         setIsLoading(true)

@@ -83,6 +83,10 @@ class IncomingRequestsFragment : Fragment() {
         viewModel.loadIncomingRequests()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadIncomingRequests()
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
