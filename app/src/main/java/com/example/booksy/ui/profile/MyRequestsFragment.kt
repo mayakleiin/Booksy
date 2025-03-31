@@ -15,7 +15,6 @@ import com.example.booksy.databinding.FragmentMyRequestsBinding
 import com.example.booksy.model.RequestedBook
 import com.example.booksy.viewmodel.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
 class MyRequestsFragment : Fragment() {
 
@@ -50,7 +49,7 @@ class MyRequestsFragment : Fragment() {
             requestedBooks = emptyList(),
             isIncomingRequest = false,
             onActionClick = { requestedBook, _ ->
-                cancelRequest(requestedBook)
+                viewModel.cancelRequest(requestedBook)
             },
             onBookClick = { requestedBook ->
                 findNavController().navigate(
@@ -59,7 +58,6 @@ class MyRequestsFragment : Fragment() {
                 )
             }
         )
-
 
         binding.myRequestsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.myRequestsRecyclerView.adapter = adapter
@@ -74,23 +72,6 @@ class MyRequestsFragment : Fragment() {
         }
 
         viewModel.loadRequestedBooks()
-    }
-
-    private fun cancelRequest(requestedBook: RequestedBook) {
-        viewModel.setIsLoading(true)
-        val requestId = requestedBook.request.id
-        FirebaseFirestore.getInstance()
-            .collection("borrowRequests")
-            .document(requestId)
-            .delete()
-            .addOnSuccessListener {
-                Toast.makeText(requireContext(), getString(R.string.toast_request_canceled), Toast.LENGTH_SHORT).show()
-                viewModel.loadRequestedBooks()
-            }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), getString(R.string.toast_cancel_failed), Toast.LENGTH_SHORT).show()
-                viewModel.setIsLoading(false)
-            }
     }
 
     override fun onDestroyView() {

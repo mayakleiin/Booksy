@@ -88,6 +88,9 @@ class UserProfileFragment : Fragment() {
         // Edit profile button (pencil icon)
         binding.editProfileButton.setOnClickListener {
             val dialogFragment = EditProfileDialogFragment()
+            dialogFragment.onProfileUpdated = {
+                viewModel.loadCurrentUser()
+            }
             dialogFragment.show(childFragmentManager, "EditProfileDialog")
         }
 
