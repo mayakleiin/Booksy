@@ -174,22 +174,25 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
         setIsLoading(true)
         val db = FirebaseFirestore.getInstance()
 
+        // Immediate UI update for quick feedback
         _incomingRequests.value = _incomingRequests.value?.map {
             if (it.request.id == requestedBook.request.id) {
                 it.copy(request = it.request.copy(status = RequestStatus.APPROVED))
             } else it
         }
+
+        // Update the request status in Firestore
         db.collection("borrowRequests")
             .document(requestedBook.request.id)
             .update("status", RequestStatus.APPROVED.name)
             .addOnSuccessListener {
+                // After request is approved, update the book's status to BORROWED
                 db.collection("books")
                     .document(requestedBook.book.id)
-                    .update("status", "BORROWED")
+                    .update("status", BookStatus.BORROWED.name)
                     .addOnSuccessListener {
                         _toastMessage.postValue("Request approved and book marked as borrowed!")
-                        loadIncomingRequests()
-                        _incomingRequests.postValue(_incomingRequests.value)
+                        loadIncomingRequests() // Reload requests
                         setIsLoading(false)
                         onComplete()
                     }
@@ -209,20 +212,21 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
     fun rejectRequest(requestedBook: RequestedBook, onComplete: () -> Unit = {}) {
         setIsLoading(true)
 
+        // Immediate UI update
         _incomingRequests.value = _incomingRequests.value?.map {
             if (it.request.id == requestedBook.request.id) {
                 it.copy(request = it.request.copy(status = RequestStatus.REJECTED))
             } else it
         }
 
+        // Update the request status in Firestore
         FirebaseFirestore.getInstance()
             .collection("borrowRequests")
             .document(requestedBook.request.id)
             .update("status", RequestStatus.REJECTED.name)
             .addOnSuccessListener {
                 _toastMessage.postValue("Request rejected.")
-                loadIncomingRequests()
-                _incomingRequests.postValue(_incomingRequests.value)
+                loadIncomingRequests() // Reload requests
                 setIsLoading(false)
                 onComplete()
             }
@@ -232,6 +236,7 @@ class UserProfileViewModel(private val context: Context) : ViewModel() {
                 onComplete()
             }
     }
+
 
     fun cancelRequest(requestedBook: RequestedBook, onComplete: () -> Unit = {}) {
         setIsLoading(true)

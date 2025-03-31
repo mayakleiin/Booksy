@@ -32,14 +32,14 @@ class RequestedBookAdapter(
             binding.bookImage.load(book.imageUrl.ifEmpty { R.drawable.ic_book_placeholder })
 
             if (isIncomingRequest) {
-                // Approve
+                // Approve button
                 binding.cancelButton.text = binding.root.context.getString(R.string.approve)
                 binding.cancelButton.isEnabled = request.status == RequestStatus.PENDING
                 binding.cancelButton.setOnClickListener {
                     onActionClick(item, RequestStatus.APPROVED)
                 }
 
-                // Reject
+                // Reject button
                 binding.rejectButton.visibility = View.VISIBLE
                 binding.rejectButton.text = binding.root.context.getString(R.string.reject)
                 binding.rejectButton.isEnabled = request.status == RequestStatus.PENDING
