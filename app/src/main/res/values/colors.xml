@@ -8,6 +8,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="gray">#888888</color>
 
     <!-- Booksy Colors -->
     <color name="booksy_background">#000000</color>

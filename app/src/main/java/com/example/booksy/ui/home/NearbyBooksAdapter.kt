@@ -30,12 +30,16 @@ class NearbyBooksAdapter(
         holder.binding.authorTextView.text = book.author
         holder.binding.distanceTextView.text = "${distance.toInt()}m"
 
-        Picasso.get()
-            .load(book.imageUrl)
-            .placeholder(R.drawable.ic_book_placeholder)
-            .error(R.drawable.ic_book_placeholder)
-            .transform(RoundedCornersTransformation(24, 0))
-            .into(holder.binding.bookImageView)
+        if (!book.imageUrl.isNullOrEmpty()) {
+            Picasso.get()
+                .load(book.imageUrl)
+                .placeholder(R.drawable.ic_book_placeholder)
+                .error(R.drawable.ic_book_placeholder)
+                .transform(RoundedCornersTransformation(24, 0))
+                .into(holder.binding.bookImageView)
+        } else {
+            holder.binding.bookImageView.setImageResource(R.drawable.ic_book_placeholder)
+        }
 
         holder.itemView.setOnClickListener {
             onItemClick(book)
