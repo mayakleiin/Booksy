@@ -34,6 +34,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
     private var googleMap: GoogleMap? = null
     private lateinit var loadingOverlay: FrameLayout
     private lateinit var nearbyBooksAdapter: NearbyBooksAdapter
+    private var isMapMovedToUser = false
 
     companion object {
         private const val LOCATION_PERMISSION_CODE = 1001
@@ -196,7 +197,10 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
                 override fun onLocationResult(result: LocationResult) {
                     result.lastLocation?.let { location ->
                         viewModel.updateCurrentLocation(location)
-                        moveToLocation(location)
+                        if (!isMapMovedToUser) {
+                            moveToLocation(location)
+                            isMapMovedToUser = true
+                        }
                         addUserMarker(location)
                     }
                 }
