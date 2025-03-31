@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.booksy.model.Book
 import com.example.booksy.model.BookFilters
+import com.example.booksy.model.BookStatus
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -15,11 +17,14 @@ import com.example.booksy.data.NearbyBooksPagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-
 class HomeViewModel : ViewModel() {
 
     private val db = FirebaseFirestore.getInstance()
+    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid // ✅ here
+
     private var allBooks: List<Book> = emptyList()
+    private var internalLocation: Location? = null
+    private var currentFilters = BookFilters()
 
     private val _books = MutableLiveData<List<Book>>()
     val books: LiveData<List<Book>> = _books
@@ -30,14 +35,31 @@ class HomeViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private var currentFilters = BookFilters()
-    private var internalLocation: Location? = null
+    private val _filterDistanceMeters = MutableLiveData(2000f)
+    val filterDistanceMeters: LiveData<Float> = _filterDistanceMeters
 
     private val _currentLocation = MutableLiveData<Location>()
     val currentLocation: LiveData<Location> = _currentLocation
 
-    private val _filterDistanceMeters = MutableLiveData(2000f)
-    val filterDistanceMeters: LiveData<Float> = _filterDistanceMeters
+    fun loadBooks() {
+        _isLoading.value = true
+
+        db.collection("books")
+            .get()
+            .addOnSuccessListener { result ->
+                allBooks = result.toObjects(Book::class.java)
+                    .filter { it.ownerId != currentUserId }
+
+                filterBooks()
+                calculateNearbyBooks()
+                _isLoading.value = false
+            }
+            .addOnFailureListener {
+                allBooks = emptyList()
+                _books.value = emptyList()
+                _isLoading.value = false
+            }
+    }
 
     fun applyFilters(filters: BookFilters) {
         currentFilters = filters
@@ -51,8 +73,11 @@ class HomeViewModel : ViewModel() {
         val maxDistanceMeters = currentFilters.maxDistanceKm * 1000
 
         val filtered = allBooks.filter { book ->
-            val matchesGenre = currentFilters.selectedGenres.isEmpty() || book.genres.any { it in currentFilters.selectedGenres }
-            val matchesLanguage = currentFilters.selectedLanguages.isEmpty() || book.languages.any { it in currentFilters.selectedLanguages }
+            val matchesGenre = currentFilters.selectedGenres.isEmpty() ||
+                    book.genres.any { it in currentFilters.selectedGenres }
+
+            val matchesLanguage = currentFilters.selectedLanguages.isEmpty() ||
+                    book.languages.any { it in currentFilters.selectedLanguages }
 
             val distanceOk = if (location != null && book.lat != null && book.lng != null) {
                 val bookLocation = Location("").apply {
@@ -62,10 +87,35 @@ class HomeViewModel : ViewModel() {
                 location.distanceTo(bookLocation) <= maxDistanceMeters
             } else true
 
-            matchesGenre && matchesLanguage && distanceOk
+            val isAvailable = book.status == BookStatus.AVAILABLE
+            val isNotMine = book.ownerId != currentUserId
+
+            matchesGenre && matchesLanguage && distanceOk && isAvailable && isNotMine
         }
 
         _books.value = filtered
+    }
+
+    private fun calculateNearbyBooks() {
+        val location = internalLocation ?: return
+
+        val nearby = allBooks
+            .filter { book ->
+                book.lat != null && book.lng != null &&
+                        book.status == BookStatus.AVAILABLE &&
+                        book.ownerId != currentUserId
+            }
+            .map { book ->
+                val bookLocation = Location("").apply {
+                    latitude = book.lat!!
+                    longitude = book.lng!!
+                }
+                Pair(book, location.distanceTo(bookLocation))
+            }
+            .filter { it.second <= (_filterDistanceMeters.value ?: 2000f) }
+            .sortedBy { it.second }
+
+        _nearbyBooks.value = nearby
     }
 
     fun getPagedBooks(): Flow<PagingData<Book>> {
@@ -74,57 +124,6 @@ class HomeViewModel : ViewModel() {
             config = PagingConfig(pageSize = 10),
             pagingSourceFactory = { FirestoreBookPagingSource(baseQuery) }
         ).flow
-    }
-
-    fun setFilterDistance(distance: Float) {
-        _filterDistanceMeters.value = distance
-        calculateNearbyBooks()
-    }
-
-    fun updateCurrentLocation(location: Location) {
-        _currentLocation.value = location
-        internalLocation = location
-        calculateNearbyBooks()
-    }
-
-    fun loadBooks() {
-        _isLoading.value = true
-        db.collection("books")
-            .get()
-            .addOnSuccessListener { result ->
-                allBooks = result.toObjects(Book::class.java)
-                _books.value = allBooks
-                _isLoading.value = false
-                calculateNearbyBooks()
-            }
-            .addOnFailureListener {
-                allBooks = emptyList()
-                _books.value = emptyList()
-                _isLoading.value = false
-            }
-    }
-
-    private fun calculateNearbyBooks() {
-        val location = internalLocation ?: return
-        val list = allBooks
-
-        val nearby = list.mapNotNull { book ->
-            if (book.lat != null && book.lng != null) {
-                val bookLocation = Location("").apply {
-                    latitude = book.lat
-                    longitude = book.lng
-                }
-                val distance = location.distanceTo(bookLocation)
-                Pair(book, distance)
-            } else null
-        }.sortedBy { it.second }
-            .filter { it.second <= (_filterDistanceMeters.value ?: 2000f) }
-
-        _nearbyBooks.value = nearby
-    }
-
-    fun getAllBooksWithLocation(): List<Book> {
-        return allBooks.filter { it.lat != null && it.lng != null }
     }
 
     fun getPagedNearbyBooks(): Flow<PagingData<Book>> {
@@ -137,13 +136,27 @@ class HomeViewModel : ViewModel() {
                 NearbyBooksPagingSource(
                     allBooks = allBooks,
                     currentLocation = location,
-                    maxDistanceMeters = maxDistanceMeters
+                    maxDistanceMeters = maxDistanceMeters,
+                    currentUserId = currentUserId // ✅ now you have it
                 )
             }
         ).flow
     }
 
-    fun getCurrentFilters(): BookFilters {
-        return currentFilters
+    fun getAllBooksWithLocation(): List<Book> {
+        return allBooks.filter { it.lat != null && it.lng != null }
+    }
+
+    fun getCurrentFilters(): BookFilters = currentFilters
+
+    fun setFilterDistance(distance: Float) {
+        _filterDistanceMeters.value = distance
+        calculateNearbyBooks()
+    }
+
+    fun updateCurrentLocation(location: Location) {
+        _currentLocation.value = location
+        internalLocation = location
+        calculateNearbyBooks()
     }
 }

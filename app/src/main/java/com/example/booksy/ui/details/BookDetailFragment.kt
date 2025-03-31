@@ -107,12 +107,18 @@ class BookDetailFragment : Fragment() {
         binding.about.text = book.description
         binding.bookGenre.text = book.genres.joinToString(", ") { it.name }
 
-        Picasso.get()
-            .load(book.imageUrl)
-            .placeholder(R.drawable.ic_book_placeholder)
-            .error(R.drawable.ic_book_placeholder)
-            .into(binding.bookCover)
+        // Safe loading of the book image
+        if (!book.imageUrl.isNullOrEmpty()) {
+            Picasso.get()
+                .load(book.imageUrl)
+                .placeholder(R.drawable.ic_book_placeholder)
+                .error(R.drawable.ic_book_placeholder)
+                .into(binding.bookCover)
+        } else {
+            binding.bookCover.setImageResource(R.drawable.ic_book_placeholder)
+        }
     }
+
 
     private fun loadOwnerInfo(ownerId: String) {
         FirebaseFirestore.getInstance()
