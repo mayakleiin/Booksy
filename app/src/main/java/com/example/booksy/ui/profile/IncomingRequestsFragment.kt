@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentIncomingRequestsBinding
 import com.example.booksy.model.RequestStatus
-import com.example.booksy.model.RequestedBook
 import com.example.booksy.viewmodel.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 
@@ -50,20 +49,15 @@ class IncomingRequestsFragment : Fragment() {
             requestedBooks = emptyList(),
             isIncomingRequest = true,
             onActionClick = { requestedBook, newStatus ->
+                binding.loadingOverlay.visibility = View.VISIBLE
                 when (newStatus) {
-                    RequestStatus.APPROVED -> {
-                        binding.loadingOverlay.visibility = View.VISIBLE
-                        viewModel.approveRequest(requestedBook) {
-                            binding.loadingOverlay.visibility = View.GONE
-                        }
+                    RequestStatus.APPROVED -> viewModel.approveRequest(requestedBook) {
+                        binding.loadingOverlay.visibility = View.GONE
                     }
-                    RequestStatus.REJECTED -> {
-                        binding.loadingOverlay.visibility = View.VISIBLE
-                        viewModel.rejectRequest(requestedBook) {
-                            binding.loadingOverlay.visibility = View.GONE
-                        }
+                    RequestStatus.REJECTED -> viewModel.rejectRequest(requestedBook) {
+                        binding.loadingOverlay.visibility = View.GONE
                     }
-                    else -> {  }
+                    else -> binding.loadingOverlay.visibility = View.GONE
                 }
             },
             onBookClick = { requestedBook ->

@@ -41,17 +41,18 @@ class AddBookFragment : Fragment() {
 
     private var bookToEdit: Book? = null
     private var imageUri: Uri? = null
+    private var apiImageUrl: String? = null
     private var currentLat: Double? = null
     private var currentLng: Double? = null
 
     private val selectedGenres = mutableListOf<Genre>()
     private val selectedLanguages = mutableListOf<Language>()
 
-
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == android.app.Activity.RESULT_OK) {
             val data = result.data
             imageUri = data?.data
+            apiImageUrl = null // override API image URL if user chooses a local one
             binding.bookImageView.setImageURI(imageUri)
         }
     }
@@ -71,9 +72,7 @@ class AddBookFragment : Fragment() {
         loadingOverlay = view.findViewById(R.id.loadingOverlay)
         bookToEdit = arguments?.getParcelable("bookToEdit")
 
-
         val openLibraryViewModel = ViewModelProvider(this)[OpenLibraryViewModel::class.java]
-
 
         binding.searchButton.setOnClickListener {
             val query = binding.searchEditText.text.toString().trim()
@@ -95,6 +94,7 @@ class AddBookFragment : Fragment() {
 
                 val coverUrl = it.getCoverUrl()
                 if (coverUrl.isNotEmpty()) {
+                    apiImageUrl = coverUrl
                     Picasso.get().load(coverUrl).into(binding.bookImageView)
                 }
 
@@ -124,6 +124,7 @@ class AddBookFragment : Fragment() {
             currentLng = book.lng
 
             if (book.imageUrl.isNotEmpty()) {
+                apiImageUrl = book.imageUrl
                 Picasso.get().load(book.imageUrl).into(binding.bookImageView)
             }
 
@@ -262,6 +263,8 @@ class AddBookFragment : Fragment() {
         val bookId = existingId ?: UUID.randomUUID().toString()
 
         val saveBookToFirestore: (String) -> Unit = { imageUrl ->
+            val finalImageUrl = imageUrl.ifEmpty { apiImageUrl ?: bookToEdit?.imageUrl ?: "" }
+
             val book = Book(
                 id = bookId,
                 title = title,
@@ -270,7 +273,7 @@ class AddBookFragment : Fragment() {
                 description = description,
                 languages = selectedLanguages,
                 pages = pages,
-                imageUrl = imageUrl.ifEmpty { bookToEdit?.imageUrl ?: "" },
+                imageUrl = finalImageUrl,
                 status = bookToEdit?.status ?: BookStatus.AVAILABLE,
                 ownerId = FirebaseAuth.getInstance().uid ?: "user1",
                 lat = currentLat ?: 0.0,
