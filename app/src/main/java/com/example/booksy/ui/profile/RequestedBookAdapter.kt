@@ -36,7 +36,10 @@ class RequestedBookAdapter(
                 binding.cancelButton.text = binding.root.context.getString(R.string.approve)
                 binding.cancelButton.isEnabled = request.status == RequestStatus.PENDING
                 binding.cancelButton.setOnClickListener {
-                    onActionClick(item, RequestStatus.APPROVED)
+                    if (!processingMap.getOrDefault(request.id, false)) {
+                        processingMap[request.id] = true
+                        onActionClick(item, RequestStatus.APPROVED)
+                    }
                 }
 
                 // Reject button
@@ -44,7 +47,10 @@ class RequestedBookAdapter(
                 binding.rejectButton.text = binding.root.context.getString(R.string.reject)
                 binding.rejectButton.isEnabled = request.status == RequestStatus.PENDING
                 binding.rejectButton.setOnClickListener {
-                    onActionClick(item, RequestStatus.REJECTED)
+                    if (!processingMap.getOrDefault(request.id, false)) {
+                        processingMap[request.id] = true
+                        onActionClick(item, RequestStatus.REJECTED)
+                    }
                 }
 
             } else {
@@ -55,7 +61,10 @@ class RequestedBookAdapter(
                         text = binding.root.context.getString(R.string.cancel)
                         isEnabled = true
                         setOnClickListener {
-                            onActionClick(item, RequestStatus.REJECTED)
+                            if (!processingMap.getOrDefault(request.id, false)) {
+                                processingMap[request.id] = true
+                                onActionClick(item, RequestStatus.REJECTED)
+                            }
                         }
                     }
                 } else {

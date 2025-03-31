@@ -51,9 +51,19 @@ class IncomingRequestsFragment : Fragment() {
             isIncomingRequest = true,
             onActionClick = { requestedBook, newStatus ->
                 when (newStatus) {
-                    RequestStatus.APPROVED -> viewModel.approveRequest(requestedBook)
-                    RequestStatus.REJECTED -> viewModel.rejectRequest(requestedBook)
-                    else -> {}
+                    RequestStatus.APPROVED -> {
+                        binding.loadingOverlay.visibility = View.VISIBLE
+                        viewModel.approveRequest(requestedBook) {
+                            binding.loadingOverlay.visibility = View.GONE
+                        }
+                    }
+                    RequestStatus.REJECTED -> {
+                        binding.loadingOverlay.visibility = View.VISIBLE
+                        viewModel.rejectRequest(requestedBook) {
+                            binding.loadingOverlay.visibility = View.GONE
+                        }
+                    }
+                    else -> {  }
                 }
             },
             onBookClick = { requestedBook ->

@@ -249,30 +249,40 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY) ?: Bundle()
-        mapView.onSaveInstanceState(mapViewBundle)
-        outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle)
+
+        if (::mapView.isInitialized) {
+            val mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY) ?: Bundle()
+            mapView.onSaveInstanceState(mapViewBundle)
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        mapView.onResume()
-        viewModel.loadBooks()
+        if (::mapView.isInitialized) {
+            mapView.onResume()
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        mapView.onPause()
+        if (::mapView.isInitialized) {
+            mapView.onPause()
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mapView.onDestroy()
+        if (::mapView.isInitialized) {
+            mapView.onDestroy()
+        }
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView.onLowMemory()
+        if (::mapView.isInitialized) {
+            mapView.onLowMemory()
+        }
     }
 
     private fun getScaledMarker(resourceId: Int, width: Int = 72, height: Int = 72): BitmapDescriptor {

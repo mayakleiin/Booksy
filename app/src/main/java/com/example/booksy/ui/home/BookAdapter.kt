@@ -7,11 +7,11 @@ import androidx.core.content.ContextCompat
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.booksy.R
 import com.example.booksy.databinding.ItemBookBinding
 import com.example.booksy.model.Book
 import com.example.booksy.model.BookStatus
+import com.squareup.picasso.Picasso
 
 class BookAdapter(
     private val onItemClick: (Book) -> Unit,
@@ -38,11 +38,15 @@ class BookAdapter(
                 ContextCompat.getColor(binding.root.context, colorRes)
             )
 
-            Glide.with(binding.root.context)
-                .load(if (book.imageUrl.isNotEmpty()) book.imageUrl else R.drawable.ic_book_placeholder)
-                .placeholder(R.drawable.ic_book_placeholder)
-                .error(R.drawable.ic_book_placeholder)
-                .into(binding.bookImage)
+            if (!book.imageUrl.isNullOrEmpty()) {
+                Picasso.get()
+                    .load(book.imageUrl)
+                    .placeholder(R.drawable.ic_book_placeholder)
+                    .error(R.drawable.ic_book_placeholder)
+                    .into(binding.bookImage)
+            } else {
+                binding.bookImage.setImageResource(R.drawable.ic_book_placeholder)
+            }
 
             binding.root.setOnClickListener {
                 onItemClick(book)
