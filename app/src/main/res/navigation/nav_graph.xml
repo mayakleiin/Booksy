@@ -83,6 +83,10 @@
         android:id="@+id/action_global_addBookFragment"
         app:destination="@id/addBookFragment" />
 
+    <argument
+        android:name="bookToEdit"
+        app:argType="com.example.booksy.model.Book"
+        app:nullable="true" />
 
 
 
