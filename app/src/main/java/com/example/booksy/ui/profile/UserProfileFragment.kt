@@ -73,6 +73,8 @@ class UserProfileFragment : Fragment() {
         // Load user data
         viewModel.loadCurrentUser()
 
+        viewModel.refreshPagedBooks()
+
         // Setup tabs
         val adapter = UserProfilePagerAdapter(this)
         binding.viewPager.adapter = adapter
@@ -90,6 +92,7 @@ class UserProfileFragment : Fragment() {
             val dialogFragment = EditProfileDialogFragment()
             dialogFragment.onProfileUpdated = {
                 viewModel.loadCurrentUser()
+                viewModel.refreshPagedBooks()
             }
             dialogFragment.show(childFragmentManager, "EditProfileDialog")
         }
