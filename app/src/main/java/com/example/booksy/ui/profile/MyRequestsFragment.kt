@@ -74,6 +74,12 @@ class MyRequestsFragment : Fragment() {
         viewModel.loadRequestedBooks()
     }
 
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadRequestedBooks()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

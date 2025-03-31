@@ -1,3 +1,4 @@
+// HomeFragment.kt
 package com.example.booksy.ui.home
 
 import android.Manifest
@@ -13,21 +14,29 @@ import android.widget.FrameLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.booksy.R
 import com.example.booksy.databinding.FragmentHomeBinding
 import com.example.booksy.viewmodel.HomeViewModel
+import com.example.booksy.viewmodel.UserProfileViewModel
+import com.example.booksy.viewmodel.UserProfileViewModelFactory
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.firebase.auth.FirebaseAuth
+import com.squareup.picasso.Picasso
 
 class HomeFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var binding: FragmentHomeBinding
-    private val viewModel: HomeViewModel by viewModels()
+    private val viewModel: HomeViewModel by activityViewModels()
+
+    private val userProfileViewModel: UserProfileViewModel by activityViewModels {
+        UserProfileViewModelFactory(requireContext())
+    }
+
     private lateinit var mapView: MapView
     private var googleMap: GoogleMap? = null
     private lateinit var loadingOverlay: FrameLayout
@@ -48,7 +57,7 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
 
         loadingOverlay = binding.loadingOverlay
-        binding.nearbyCountTextView.visibility = View.GONE  // ✅ הסתרת הכותרת בהתחלה
+        binding.nearbyCountTextView.visibility = View.GONE
 
         val mapViewBundle = savedInstanceState?.getBundle(MAP_VIEW_BUNDLE_KEY)
         mapView = binding.mapView
@@ -60,6 +69,23 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
         requestLocationPermission()
         setupProfileButton()
         setupFilterButton()
+
+        // טען פרטי משתמש רק אם לא נטענו עדיין
+        if (userProfileViewModel.user.value == null) {
+            userProfileViewModel.loadCurrentUser()
+        }
+
+        userProfileViewModel.user.observe(viewLifecycleOwner) { user ->
+            val imageUrl = user?.imageUrl
+            if (!imageUrl.isNullOrBlank()) {
+                Picasso.get().load(imageUrl)
+                    .placeholder(R.drawable.default_profile)
+                    .error(R.drawable.default_profile)
+                    .into(binding.profileButton)
+            } else {
+                binding.profileButton.setImageResource(R.drawable.default_profile)
+            }
+        }
 
         binding.mapView.visibility = View.GONE
         binding.nearbyBooksRecyclerView.visibility = View.VISIBLE
@@ -123,7 +149,6 @@ class HomeFragment : Fragment(), OnMapReadyCallback {
 
         viewModel.nearbyBooks.observe(viewLifecycleOwner) { nearby ->
             nearbyBooksAdapter.updateBooks(nearby)
-            // אנחנו לא מעדכנים את הטקסט כאן – נעשה את זה אחרי שהטעינה תסתיים
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
